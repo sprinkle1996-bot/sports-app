@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Ad-Free Sports Hub</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      margin: 0;
+      padding: 16px;
+      max-width: 700px;
+      margin-inline: auto;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      gap: 8px;
+    }
+    h1 { font-size: 1.35rem; margin: 0; }
+    .header-actions { display: flex; gap: 8px; }
+    .controls {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .controls::-webkit-scrollbar { display: none; }
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 18px;
+      background: #1e293b;
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid #334155;
+    }
+    button {
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.88rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    button.active {
+      background: #3b82f6;
+      border-color: #3b82f6;
+      color: #fff;
+    }
+    button.my-teams-btn {
+      border-color: #f59e0b;
+      color: #fde68a;
+    }
+    button.my-teams-btn.active {
+      background: #d97706;
+      border-color: #f59e0b;
+      color: #fff;
+    }
+    .tabs button {
+      border: none;
+      background: transparent;
+      padding: 8px;
+    }
+    .tabs button.active { background: #3b82f6; }
+
+    /* Favorites drawer */
+    .fav-panel {
+      display: none;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+    .fav-panel.open { display: block; }
+    .fav-panel-title {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .fav-form { display: flex; gap: 8px; margin-bottom: 10px; }
+    .fav-form select, .fav-form input {
+      background: #0f172a;
+      color: #f8fafc;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 0.9rem;
+    }
+    .fav-form input { flex: 1; min-width: 0; }
+    .fav-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .fav-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #0f172a;
+      border: 1px solid #f59e0b;
+      color: #fde68a;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .fav-chip-league {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+    }
+    .fav-chip button {
+      background: transparent;
+      border: none;
+      color: #fde68a;
+      padding: 0 2px;
+      font-size: 0.95rem;
+      line-height: 1;
+    }
+
+    /* Game cards */
+    .game-card, .news-card {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      border: 1px solid #334155;
+    }
+    .game-card.clickable { cursor: pointer; }
+    .game-card.pinned {
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.25);
+    }
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .status-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .league-pill, .source-pill {
+      background: #334155;
+      color: #e2e8f0;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      letter-spacing: 0.03em;
+      flex-shrink: 0;
+    }
+    .source-pill { background: #1d4ed8; color: #dbeafe; }
+    .status { font-size: 0.8rem; color: #94a3b8; font-weight: 600; }
+    .status.live { color: #ef4444; }
+    .pinned-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fbbf24;
+      flex-shrink: 0;
+    }
+    .tap-hint {
+      font-size: 0.72rem;
+      color: #64748b;
+      margin-top: 8px;
+      text-align: right;
+    }
+    .event-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
+    .team-row, .leader-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0;
+      gap: 8px;
+    }
+    .leader-row {
+      border-top: 1px solid #334155;
+      font-size: 0.92rem;
+      padding: 7px 0;
+    }
+    .leader-row:first-of-type { border-top: none; }
+    .leader-row.pinned-leader {
+      background: rgba(245, 158, 11, 0.08);
+      margin-inline: -8px;
+      padding-inline: 8px;
+      border-radius: 6px;
+    }
+    .team-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      flex: 1;
+    }
+    .team-info img { width: 24px; height: 24px; object-fit: contain; flex-shrink: 0; }
+    .rank { font-size: 0.78rem; color: #94a3b8; font-weight: 700; min-width: 18px; }
+    .record { font-size: 0.78rem; color: #94a3b8; margin-left: 2px; }
+    .score { font-size: 1.15rem; font-weight: 700; }
+    .pos { font-weight: 700; color: #94a3b8; width: 28px; display: inline-block; flex-shrink: 0; }
+    .star-btn {
+      background: transparent;
+      border: none;
+      padding: 2px 4px;
+      font-size: 1.05rem;
+      line-height: 1;
+      color: #64748b;
+    }
+    .star-btn.starred { color: #fbbf24; }
+
+    /* Box score drawer */
+    .box-drawer {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #334155;
+      cursor: default;
+    }
+    .box-drawer.open { display: block; }
+    .box-subtabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .box-subtabs button {
+      padding: 5px 10px;
+      font-size: 0.78rem;
+      background: #0f172a;
+      border-color: #334155;
+    }
+    .box-subtabs button.active {
+      background: #3b82f6;
+      border-color: #3b82f6;
+    }
+    .stat-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+    .stat-table th, .stat-table td {
+      padding: 6px 4px;
+      border-bottom: 1px solid #334155;
+    }
+    .stat-table th { color: #94a3b8; font-weight: 600; font-size: 0.76rem; }
+    .stat-table td:first-child, .stat-table th:first-child { text-align: left; }
+    .stat-table td:nth-child(2), .stat-table th:nth-child(2) { text-align: center; color: #94a3b8; }
+    .stat-table td:last-child, .stat-table th:last-child { text-align: right; }
+    .leader-item {
+      padding: 7px 0;
+      border-bottom: 1px solid #334155;
+      font-size: 0.85rem;
+    }
+    .leader-item:last-child { border-bottom: none; }
+    .leader-cat { font-size: 0.74rem; color: #94a3b8; text-transform: uppercase; font-weight: 700; }
+    .play-item {
+      padding: 7px 0;
+      border-bottom: 1px solid #334155;
+      font-size: 0.84rem;
+      line-height: 1.35;
+    }
+    .play-item:last-child { border-bottom: none; }
+    .play-clock { font-size: 0.74rem; color: #94a3b8; font-weight: 700; margin-bottom: 2px; }
+
+    /* News styles */
+    .news-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      padding: 0;
+      overflow: hidden;
+    }
+    .news-card img {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+    .news-body { padding: 14px 16px; }
+    .news-headline {
+      font-size: 1.02rem;
+      font-weight: 700;
+      margin: 0 0 6px 0;
+      line-height: 1.3;
+    }
+    .news-desc {
+      font-size: 0.88rem;
+      color: #cbd5e1;
+      margin: 0 0 10px 0;
+      line-height: 1.4;
+    }
+    .news-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 0.78rem;
+      color: #94a3b8;
+    }
+    .empty { color: #94a3b8; text-align: center; padding: 30px 12px; line-height: 1.5; }
+    .quiet-note { font-size: 0.8rem; color: #94a3b8; text-align: center; padding: 8px 0 4px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Sports Hub</h1>
+    <div class="header-actions">
+      <button id="fav-toggle-btn">★ Pins</button>
+      <button id="refresh-btn">Refresh</button>
+    </div>
+  </header>
+
+  <div class="controls" id="league-buttons"></div>
+
+  <div class="fav-panel" id="fav-panel">
+    <div class="fav-panel-title" id="fav-panel-title">Pinned</div>
+    <form class="fav-form" id="fav-form">
+      <select id="fav-league-select" style="display:none;"></select>
+      <input type="text" id="fav-input" placeholder="Add team or player name..." autocomplete="off" />
+      <button type="submit" class="active">Add</button>
+    </form>
+    <div class="fav-chips" id="fav-chips"></div>
+  </div>
+
+  <div class="tabs" id="view-tabs">
+    <button data-view="scores" class="active">Scores</button>
+    <button data-view="news">News</button>
+  </div>
+
+  <div id="content">Loading...</div>
+
+  <script>
+    const STORAGE_KEY = "sportsHubFavorites_v1";
+    const LEAGUES = [
+      {
+        path: "football/college-football", label: "CFB", type: "team",
+        rss: [
+          { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/college-football/" },
+          { source: "Yahoo Sports", url: "https://sports.yahoo.com/ncaaf/rss.xml" }
+        ]
+      },
+      {
+        path: "basketball/mens-college-basketball", label: "CBB", type: "team",
+        rss: [
+          { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/college-basketball/" },
+          { source: "Yahoo Sports", url: "https://sports.yahoo.com/ncaab/rss.xml" }
+        ]
+      },
+      {
+        path: "racing/f1", label: "F1", type: "leaderboard",
+        rss: [
+          { source: "BBC Sport", url: "https://feeds.bbci.co.uk/sport/formula1/rss.xml" },
+          { source: "Yahoo Sports", url: "https://sports.yahoo.com/f1/rss.xml" }
+        ]
+      },
+      {
+        path: "football/nfl", label: "NFL", type: "team",
+        rss: [
+          { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/nfl/" },
+          { source: "Yahoo Sports", url: "https://sports.yahoo.com/nfl/rss.xml" }
+        ]
+      },
+      {
+        path: "golf/pga", label: "PGA", type: "leaderboard",
+        rss: [
+          { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/golf/" },
+          { source: "BBC Sport", url: "https://feeds.bbci.co.uk/sport/golf/rss.xml" }
+        ]
+      },
+      {
+        path: "baseball/mlb", label: "MLB", type: "team",
+        rss: [
+          { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/mlb/" },
+          { source: "Yahoo Sports", url: "https://sports.yahoo.com/mlb/rss.xml" }
+        ]
+      },
+      {
+        path: "hockey/nhl", label: "NHL", type: "team",
+        rss: [
+          { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/nhl/" },
+          { source: "Yahoo Sports", url: "https://sports.yahoo.com/nhl/rss.xml" }
+        ]
+      },
+      {
+        path: "basketball/nba", label: "NBA", type: "team",
+        rss: [
+          { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/nba/" },
+          { source: "Yahoo Sports", url: "https://sports.yahoo.com/nba/rss.xml" }
+        ]
+      }
+    ];
+
+    const leagueMap = Object.fromEntries(LEAGUES.map(l => [l.path, l]));
+    const leagueButtonsEl = document.getElementById("league-buttons");
+    const contentEl = document.getElementById("content");
+    const favPanelEl = document.getElementById("fav-panel");
+    const favPanelTitleEl = document.getElementById("fav-panel-title");
+    const favChipsEl = document.getElementById("fav-chips");
+    const favInputEl = document.getElementById("fav-input");
+    const favLeagueSelectEl = document.getElementById("fav-league-select");
+
+    const summaryCache = new Map();
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function stripHtml(html) {
+      const tmp = document.createElement("div");
+      tmp.innerHTML = html || "";
+      return (tmp.textContent || tmp.innerText || "").trim();
+    }
+
+    function loadFavorites() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+      } catch {
+        return {};
+      }
+    }
+
+    let favorites = loadFavorites();
+
+    function saveFavorites() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
+      } catch {}
+    }
+
+    function getLeagueFavs(leaguePath) { return favorites[leaguePath] || []; }
+    function getActiveFavLeagues() { return LEAGUES.filter(l => getLeagueFavs(l.path).length > 0); }
+    function hasAnyFavorites() { return getActiveFavLeagues().length > 0; }
+
+    let currentLeague = hasAnyFavorites() ? "my-teams" : LEAGUES[0].path;
+    let currentView = "scores";
+    let lastEvents = [];
+    let lastCombinedData = [];
+
+    function buildNavigation() {
+      const myTeamsBtn = `<button data-path="my-teams" class="my-teams-btn ${currentLeague === "my-teams" ? "active" : ""}">★ My Teams</button>`;
+      const otherBtns = LEAGUES.map(l =>
+        `<button data-path="${l.path}" class="${currentLeague === l.path ? "active" : ""}">${l.label}</button>`
+      ).join("");
+      leagueButtonsEl.innerHTML = myTeamsBtn + otherBtns;
+
+      favLeagueSelectEl.innerHTML = LEAGUES.map(l =>
+        `<option value="${l.path}">${l.label}</option>`
+      ).join("");
+    }
+
+    function matchesFav(fav, id, names) {
+      if (fav.id && id && String(fav.id) === String(id)) return true;
+      const needle = (fav.name || "").trim().toLowerCase();
+      if (!needle) return false;
+      return names.some(n => n && n.toLowerCase().includes(needle));
+    }
+
+    function isFavorited(leaguePath, id, names) {
+      return getLeagueFavs(leaguePath).some(fav => matchesFav(fav, id, names));
+    }
+
+    function toggleFavorite(leaguePath, id, displayName, allNames = []) {
+      const list = getLeagueFavs(leaguePath);
+      const namesToCheck = [displayName, ...allNames].filter(Boolean);
+      const exists = list.some(fav => matchesFav(fav, id, namesToCheck));
+
+      if (exists) {
+        favorites[leaguePath] = list.filter(fav => !matchesFav(fav, id, namesToCheck));
+      } else {
+        favorites[leaguePath] = [...list, { id: id ? String(id) : null, name: displayName }];
+      }
+
+      saveFavorites();
+      renderFavChips();
+
+      if (currentView === "scores") {
+        if (currentLeague === "my-teams") {
+          const alreadyFetched = lastCombinedData.some(d => d.league.path === leaguePath);
+          if (!exists && !alreadyFetched) loadCombinedScores();
+          else renderCombinedScoreboard();
+        } else if (lastEvents.length > 0) {
+          renderCurrentScoreboard();
+        }
+      }
+    }
+
+    function removeFavorite(leaguePath, index) {
+      const list = getLeagueFavs(leaguePath);
+      list.splice(index, 1);
+      favorites[leaguePath] = list;
+      saveFavorites();
+      renderFavChips();
+
+      if (currentView === "scores") {
+        if (currentLeague === "my-teams") renderCombinedScoreboard();
+        else if (lastEvents.length > 0) renderCurrentScoreboard();
+      }
+    }
+
+    function renderFavChips() {
+      if (currentLeague === "my-teams") {
+        favPanelTitleEl.textContent = "All Pinned Teams & Players";
+        favLeagueSelectEl.style.display = "block";
+        const allChips = [];
+        LEAGUES.forEach(league => {
+          getLeagueFavs(league.path).forEach((fav, idx) => {
+            allChips.push(`
+              <span class="fav-chip">
+                <span class="fav-chip-league">${league.label}</span>
+                ★ ${escapeHtml(fav.name)}
+                <button type="button" data-remove-league="${league.path}" data-remove-idx="${idx}" aria-label="Remove">×</button>
+              </span>
+            `);
+          });
+        });
+        favChipsEl.innerHTML = allChips.length > 0
+          ? allChips.join("")
+          : `<span style="font-size:0.82rem;color:#94a3b8;">No pins yet. Pick a league above and add a team or player, or tap ☆ on any scoreboard.</span>`;
+        return;
+      }
+
+      const league = leagueMap[currentLeague];
+      favPanelTitleEl.textContent = `Pinned in ${league.label}`;
+      favLeagueSelectEl.style.display = "none";
+      const list = getLeagueFavs(currentLeague);
+      if (list.length === 0) {
+        favChipsEl.innerHTML = `<span style="font-size:0.82rem;color:#94a3b8;">No pins yet. Tap ☆ on any team or player, or add one above.</span>`;
+        return;
+      }
+      favChipsEl.innerHTML = list.map((fav, idx) => `
+        <span class="fav-chip">
+          ★ ${escapeHtml(fav.name)}
+          <button type="button" data-remove-league="${currentLeague}" data-remove-idx="${idx}" aria-label="Remove">×</button>
+        </span>
+      `).join("");
+    }
+
+    function formatTimeAgo(dateStr) {
+      if (!dateStr) return "";
+      const ts = new Date(dateStr).getTime();
+      if (Number.isNaN(ts)) return "";
+      const diffMins = Math.floor((Date.now() - ts) / 60000);
+      if (diffMins < 60) return `${Math.max(1, diffMins)}m ago`;
+      const diffHrs = Math.floor(diffMins / 60);
+      if (diffHrs < 24) return `${diffHrs}h ago`;
+      return `${Math.floor(diffHrs / 24)}d ago`;
+    }
+
+    function getStatePriority(state) {
+      if (state === "in") return 0;
+      if (state === "pre") return 1;
+      return 2;
+    }
+
+    /* ---------- BOX SCORE RENDERING ---------- */
+    function renderBoxScoreHtml(data, activeSubtab = "stats") {
+      const teams = data.boxscore?.teams || [];
+      const awayTeam = teams[0];
+      const homeTeam = teams[1];
+
+      // 1. Team Stats
+      let statsHtml = `<div class="empty" style="padding:12px 0;">Team stats not available yet.</div>`;
+      if (awayTeam && homeTeam && awayTeam.statistics?.length) {
+        const homeStatMap = Object.fromEntries(
+          (homeTeam.statistics || []).map(s => [s.name || s.label, s.displayValue])
+        );
+        const rows = awayTeam.statistics.slice(0, 12).map(s => `
+          <tr>
+            <td>${escapeHtml(s.displayValue)}</td>
+            <td>${escapeHtml(s.label || s.name)}</td>
+            <td>${escapeHtml(homeStatMap[s.name || s.label] ?? "-")}</td>
+          </tr>
+        `).join("");
+        statsHtml = `
+          <table class="stat-table">
+            <thead>
+              <tr>
+                <th>${escapeHtml(awayTeam.team?.abbreviation || "Away")}</th>
+                <th>Stat</th>
+                <th>${escapeHtml(homeTeam.team?.abbreviation || "Home")}</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        `;
+      }
+
+      // 2. Game Leaders
+      let leadersHtml = `<div class="empty" style="padding:12px 0;">Game leaders not posted yet.</div>`;
+      const leaderGroups = data.leaders || [];
+      const leaderItems = [];
+      leaderGroups.forEach(group => {
+        const teamAbbr = group.team?.abbreviation || "";
+        (group.leaders || []).forEach(cat => {
+          const top = cat.leaders?.[0];
+          if (!top) return;
+          leaderItems.push(`
+            <div class="leader-item">
+              <div class="leader-cat">${escapeHtml(teamAbbr)} · ${escapeHtml(cat.displayName || cat.name || "")}</div>
+              <div><strong>${escapeHtml(top.athlete?.displayName || "Player")}</strong> — ${escapeHtml(top.displayValue || "")}</div>
+            </div>
+          `);
+        });
+      });
+      if (leaderItems.length > 0) leadersHtml = leaderItems.join("");
+
+      // 3. Recent Plays / Scoring Plays
+      let playsHtml = `<div class="empty" style="padding:12px 0;">Play-by-play not available yet.</div>`;
+      const rawPlays = data.scoringPlays?.length ? data.scoringPlays : (data.plays || []);
+      if (rawPlays.length > 0) {
+        const recent = rawPlays.slice(-10).reverse();
+        playsHtml = recent.map(p => {
+          const period = p.period?.displayValue || (p.period?.number ? `P${p.period.number}` : "");
+          const clock = p.clock?.displayValue || "";
+          const scoreLine = (p.awayScore !== undefined && p.homeScore !== undefined)
+            ? ` · ${p.awayScore}-${p.homeScore}` : "";
+          return `
+            <div class="play-item">
+              <div class="play-clock">${escapeHtml([period, clock].filter(Boolean).join(" "))}${escapeHtml(scoreLine)}</div>
+              <div>${escapeHtml(p.text || p.shortText || "")}</div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      const body = activeSubtab === "stats"
+        ? statsHtml
+        : activeSubtab === "leaders" ? leadersHtml : playsHtml;
+
+      return `
+        <div class="box-subtabs">
+          <button type="button" data-box-tab="stats" class="${activeSubtab === "stats" ? "active" : ""}">Team Stats</button>
+          <button type="button" data-box-tab="leaders" class="${activeSubtab === "leaders" ? "active" : ""}">Leaders</button>
+          <button type="button" data-box-tab="plays" class="${activeSubtab === "plays" ? "active" : ""}">Plays</button>
+        </div>
+        <div class="box-body">${body}</div>
+      `;
+    }
+
+    async function toggleBoxScore(cardEl) {
+      const drawer = cardEl.querySelector(".box-drawer");
+      if (!drawer) return;
+
+      if (drawer.classList.contains("open")) {
+        drawer.classList.remove("open");
+        return;
+      }
+
+      drawer.classList.add("open");
+      const leaguePath = cardEl.dataset.league;
+      const eventId = cardEl.dataset.eventId;
+      const cacheKey = `${leaguePath}:${eventId}`;
+
+      if (summaryCache.has(cacheKey)) {
+        drawer.innerHTML = renderBoxScoreHtml(summaryCache.get(cacheKey), "stats");
+        return;
+      }
+
+      drawer.innerHTML = `<div class="empty" style="padding:12px 0;">Loading box score...</div>`;
+      try {
+        const res = await fetch(
+          `https://site.api.espn.com/apis/site/v2/sports/${leaguePath}/summary?event=${eventId}`
+        );
+        const data = await res.json();
+        summaryCache.set(cacheKey, data);
+        drawer.innerHTML = renderBoxScoreHtml(data, "stats");
+      } catch {
+        drawer.innerHTML = `<div class="empty" style="padding:12px 0;">Could not load box score.</div>`;
+      }
+    }
+
+    /* ---------- SCOREBOARD CARDS ---------- */
+    function renderTeamCard(event, leaguePath, showLeaguePill = false) {
+      const comp = event.competitions?.[0];
+      const competitors = comp?.competitors || [];
+      const away = competitors.find(c => c.homeAway === "away") || competitors[0];
+      const home = competitors.find(c => c.homeAway === "home") || competitors[1];
+
+      const awayFav = away && isFavorited(leaguePath, away.team?.id, [
+        away.team?.shortDisplayName, away.team?.displayName, away.team?.abbreviation
+      ]);
+      const homeFav = home && isFavorited(leaguePath, home.team?.id, [
+        home.team?.shortDisplayName, home.team?.displayName, home.team?.abbreviation
+      ]);
+      const isPinned = Boolean(awayFav || homeFav);
+
+      const statusText = event.status?.type?.shortDetail || "";
+      const isLive = event.status?.type?.state === "in";
+      const leagueLabel = leagueMap[leaguePath]?.label || "";
+
+      const renderTeam = (c, starred) => {
+        const rankNum = c?.curatedRank?.current;
+        const rankHtml = rankNum && rankNum <= 25 ? `<span class="rank">${rankNum}</span>` : "";
+        const teamId = c?.team?.id || "";
+        const shortName = c?.team?.shortDisplayName || "TBD";
+        const fullName = c?.team?.displayName || shortName;
+        return `
+          <div class="team-row">
+            <div class="team-info">
+              <button
+                type="button"
+                class="star-btn ${starred ? "starred" : ""}"
+                data-league="${leaguePath}"
+                data-fav-id="${escapeHtml(teamId)}"
+                data-fav-name="${escapeHtml(shortName)}"
+                data-fav-full="${escapeHtml(fullName)}"
+                aria-label="Pin ${escapeHtml(shortName)}"
+              >${starred ? "★" : "☆"}</button>
+              ${rankHtml}
+              <img src="${c?.team?.logo || ""}" alt="" />
+              <span>${escapeHtml(shortName)}</span>
+              <span class="record">${escapeHtml(c?.records?.[0]?.summary || "")}</span>
+            </div>
+            <div class="score">${escapeHtml(c?.score ?? "-")}</div>
+          </div>
+        `;
+      };
+
+      return {
+        isPinned,
+        state: event.status?.type?.state || "post",
+        html: `
+          <div class="game-card clickable ${isPinned ? "pinned" : ""}" data-event-id="${escapeHtml(event.id)}" data-league="${leaguePath}">
+            <div class="status-row">
+              <div class="status-left">
+                ${showLeaguePill ? `<span class="league-pill">${leagueLabel}</span>` : ""}
+                <div class="status ${isLive ? "live" : ""}">${isLive ? "● " : ""}${escapeHtml(statusText)}</div>
+              </div>
+              ${isPinned && !showLeaguePill ? `<span class="pinned-badge">★ PINNED</span>` : ""}
+            </div>
+            ${renderTeam(away, awayFav)}
+            ${renderTeam(home, homeFav)}
+            <div class="tap-hint">Tap for box score ▾</div>
+            <div class="box-drawer"></div>
+          </div>
+        `
+      };
+    }
+
+    function renderLeaderboardCard(event, leaguePath, onlyPinned = false) {
+      const isF1 = leaguePath === "racing/f1";
+      const maxRows = isF1 ? 10 : 15;
+      const leagueLabel = leagueMap[leaguePath]?.label || "";
+
+      const comps = event.competitions || [];
+      const comp = isF1
+        ? (comps.find(c => c.type?.abbreviation === "Race") || comps[comps.length - 1])
+        : comps[0];
+
+      const state = comp?.status?.type?.state || event.status?.type?.state || "post";
+      const statusText = comp?.status?.type?.shortDetail || event.status?.type?.shortDetail || "";
+      const isLive = state === "in";
+      const allSorted = (comp?.competitors || [])
+        .slice()
+        .sort((a, b) => (a.order ?? a.sortOrder ?? 999) - (b.order ?? b.sortOrder ?? 999));
+
+      const pinnedItems = [];
+      const regularItems = [];
+
+      allSorted.forEach((c, idx) => {
+        const id = c.athlete?.id || "";
+        const name = c.athlete?.displayName || c.athlete?.shortName || "TBD";
+        const starred = isFavorited(leaguePath, id, [name, c.athlete?.shortName]);
+        const item = { c, idx, id, name, starred };
+        if (starred) pinnedItems.push(item);
+        else if (!onlyPinned && regularItems.length < maxRows) regularItems.push(item);
+      });
+
+      if (onlyPinned && pinnedItems.length === 0) return { isPinned: false, state, html: "" };
+
+      const displayList = onlyPinned ? pinnedItems : [...pinnedItems, ...regularItems];
+      const rowsHtml = displayList.length > 0
+        ? displayList.map(({ c, idx, id, name, starred }) => {
+            const pos = c.status?.position?.displayName || (idx + 1);
+            const score = typeof c.score === "object" ? (c.score?.displayValue || "") : (c.score ?? "");
+            return `
+              <div class="leader-row ${starred ? "pinned-leader" : ""}">
+                <div class="team-info">
+                  <button
+                    type="button"
+                    class="star-btn ${starred ? "starred" : ""}"
+                    data-league="${leaguePath}"
+                    data-fav-id="${escapeHtml(id)}"
+                    data-fav-name="${escapeHtml(name)}"
+                    data-fav-full="${escapeHtml(name)}"
+                    aria-label="Pin ${escapeHtml(name)}"
+                  >${starred ? "★" : "☆"}</button>
+                  <span class="pos">${escapeHtml(pos)}</span>
+                  <span>${escapeHtml(name)}</span>
+                </div>
+                <div class="score" style="font-size:0.95rem;">${escapeHtml(score)}</div>
+              </div>
+            `;
+          }).join("")
+        : `<div class="empty" style="padding:12px 0;">Leaderboard not posted yet.</div>`;
+
+      return {
+        isPinned: pinnedItems.length > 0,
+        state,
+        html: `
+          <div class="game-card ${pinnedItems.length > 0 ? "pinned" : ""}">
+            <div class="event-title">${escapeHtml(event.name || event.shortName || "Event")}</div>
+            <div class="status-row">
+              <div class="status-left">
+                ${onlyPinned ? `<span class="league-pill">${leagueLabel}</span>` : ""}
+                <div class="status ${isLive ? "live" : ""}">${isLive ? "● " : ""}${escapeHtml(statusText)}</div>
+              </div>
+              ${pinnedItems.length > 0 && !onlyPinned ? `<span class="pinned-badge">★ ${pinnedItems.length} PINNED</span>` : ""}
+            </div>
+            ${rowsHtml}
+          </div>
+        `
+      };
+    }
+
+    function renderCurrentScoreboard() {
+      if (lastEvents.length === 0) {
+        contentEl.innerHTML = `<div class="empty">No active events scheduled right now.</div>`;
+        return;
+      }
+
+      const league = leagueMap[currentLeague];
+      if (league.type === "leaderboard") {
+        contentEl.innerHTML = lastEvents.map(ev => renderLeaderboardCard(ev, currentLeague, false).html).join("");
+        return;
+      }
+
+      const cards = lastEvents.map((ev, idx) => ({ ...renderTeamCard(ev, currentLeague, false), idx }));
+      cards.sort((a, b) => Number(b.isPinned) - Number(a.isPinned) || a.idx - b.idx);
+      contentEl.innerHTML = cards.map(c => c.html).join("");
+    }
+
+    function renderCombinedScoreboard() {
+      const activeLeagues = getActiveFavLeagues();
+      if (activeLeagues.length === 0) {
+        contentEl.innerHTML = `
+          <div class="empty">
+            No teams or players pinned yet.<br/>
+            Switch to any league and tap <strong>☆</strong>, or tap <strong>★ Pins</strong> above to add your favorites.
+          </div>
+        `;
+        return;
+      }
+
+      const matchedCards = [];
+      const quietLeagues = [];
+
+      lastCombinedData.forEach(({ league, events }) => {
+        if (getLeagueFavs(league.path).length === 0) return;
+        let foundInLeague = false;
+        events.forEach(ev => {
+          const card = league.type === "leaderboard"
+            ? renderLeaderboardCard(ev, league.path, true)
+            : renderTeamCard(ev, league.path, true);
+          if (card.isPinned && card.html) {
+            matchedCards.push(card);
+            foundInLeague = true;
+          }
+        });
+        if (!foundInLeague) quietLeagues.push(league.label);
+      });
+
+      matchedCards.sort((a, b) => getStatePriority(a.state) - getStatePriority(b.state));
+
+      if (matchedCards.length === 0) {
+        contentEl.innerHTML = `<div class="empty">None of your pinned teams or players have an active event on the scoreboard right now.</div>`;
+        return;
+      }
+
+      const quietHtml = quietLeagues.length > 0
+        ? `<div class="quiet-note">No current games for your pins in: ${quietLeagues.join(", ")}</div>`
+        : "";
+      contentEl.innerHTML = matchedCards.map(c => c.html).join("") + quietHtml;
+    }
+
+    async function loadScores() {
+      contentEl.innerHTML = `<div class="empty">Loading scores...</div>`;
+      try {
+        const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${currentLeague}/scoreboard`);
+        const data = await res.json();
+        lastEvents = data.events || [];
+        renderCurrentScoreboard();
+      } catch {
+        contentEl.innerHTML = `<div class="empty">Could not load scores. Try refreshing.</div>`;
+      }
+    }
+
+    async function loadCombinedScores() {
+      const activeLeagues = getActiveFavLeagues();
+      if (activeLeagues.length === 0) {
+        lastCombinedData = [];
+        renderCombinedScoreboard();
+        return;
+      }
+
+      contentEl.innerHTML = `<div class="empty">Loading your pinned teams...</div>`;
+      const results = await Promise.allSettled(
+        activeLeagues.map(async league => {
+          const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${league.path}/scoreboard`);
+          const data = await res.json();
+          return { league, events: data.events || [] };
+        })
+      );
+
+      lastCombinedData = results.filter(r => r.status === "fulfilled").map(r => r.value);
+      renderCombinedScoreboard();
+    }
+
+    /* ---------- MULTI-SOURCE RSS NEWS ---------- */
+    async function fetchRssFeed(feed, leagueLabel) {
+      const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`;
+      const res = await fetch(apiUrl);
+      const data = await res.json();
+      if (data.status !== "ok" || !Array.isArray(data.items)) return [];
+
+      return data.items.map(item => ({
+        title: stripHtml(item.title),
+        description: stripHtml(item.description).slice(0, 180),
+        link: item.link,
+        pubDate: item.pubDate,
+        image: item.thumbnail || item.enclosure?.link || "",
+        source: feed.source,
+        leagueLabel
+      }));
+    }
+
+    function renderNewsCard(article, showLeaguePill = false) {
+      const timeAgo = formatTimeAgo(article.pubDate);
+      return `
+        <a class="news-card" href="${escapeHtml(article.link || "#")}" target="_blank" rel="noopener noreferrer">
+          ${article.image ? `<img src="${escapeHtml(article.image)}" alt="" loading="lazy" />` : ""}
+          <div class="news-body">
+            <div class="news-headline">${escapeHtml(article.title || "Untitled")}</div>
+            ${article.description ? `<p class="news-desc">${escapeHtml(article.description)}</p>` : ""}
+            <div class="news-meta">
+              <span class="source-pill">${escapeHtml(article.source)}</span>
+              ${showLeaguePill && article.leagueLabel ? `<span class="league-pill">${escapeHtml(article.leagueLabel)}</span>` : ""}
+              <span>${escapeHtml(timeAgo)}</span>
+            </div>
+          </div>
+        </a>
+      `;
+    }
+
+    async function loadNews() {
+      const league = leagueMap[currentLeague];
+      contentEl.innerHTML = `<div class="empty">Loading news from multiple sources...</div>`;
+
+      const results = await Promise.allSettled(
+        (league.rss || []).map(feed => fetchRssFeed(feed, league.label))
+      );
+
+      const seen = new Set();
+      const articles = [];
+      results.forEach(r => {
+        if (r.status !== "fulfilled") return;
+        r.value.forEach(item => {
+          const key = item.link || item.title;
+          if (!seen.has(key)) {
+            seen.add(key);
+            articles.push(item);
+          }
+        });
+      });
+
+      if (articles.length === 0) {
+        contentEl.innerHTML = `<div class="empty">Could not load RSS feeds right now. Try refreshing in a moment.</div>`;
+        return;
+      }
+
+      articles.sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
+      contentEl.innerHTML = articles.slice(0, 25).map(a => renderNewsCard(a, false)).join("");
+    }
+
+    async function loadCombinedNews() {
+      const activeLeagues = getActiveFavLeagues();
+      if (activeLeagues.length === 0) {
+        contentEl.innerHTML = `<div class="empty">Pin a few teams or players first to see a combined multi-source news feed here.</div>`;
+        return;
+      }
+
+      contentEl.innerHTML = `<div class="empty">Loading multi-source news for your pinned teams...</div>`;
+
+      const jobs = [];
+      activeLeagues.forEach(league => {
+        (league.rss || []).forEach(feed => {
+          jobs.push(fetchRssFeed(feed, league.label).then(items => ({ league, items })));
+        });
+      });
+
+      const results = await Promise.allSettled(jobs);
+      const seen = new Set();
+      const matched = [];
+
+      results.forEach(r => {
+        if (r.status !== "fulfilled") return;
+        const { league, items } = r.value;
+        const favs = getLeagueFavs(league.path);
+
+        items.forEach(item => {
+          const key = item.link || item.title;
+          if (seen.has(key)) return;
+          const textBlob = `${item.title} ${item.description}`.toLowerCase();
+          const isMatch = favs.some(fav => {
+            const needle = (fav.name || "").trim().toLowerCase();
+            return needle && textBlob.includes(needle);
+          });
+          if (isMatch) {
+            seen.add(key);
+            matched.push(item);
+          }
+        });
+      });
+
+      if (matched.length === 0) {
+        contentEl.innerHTML = `<div class="empty">No recent headlines across CBS, Yahoo, or BBC directly mention your pinned teams right now.</div>`;
+        return;
+      }
+
+      matched.sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
+      contentEl.innerHTML = matched.slice(0, 30).map(a => renderNewsCard(a, true)).join("");
+    }
+
+    function loadCurrentView() {
+      renderFavChips();
+      if (currentLeague === "my-teams") {
+        if (currentView === "scores") loadCombinedScores();
+        else loadCombinedNews();
+      } else {
+        if (currentView === "scores") loadScores();
+        else loadNews();
+      }
+    }
+
+    /* ---------- EVENT LISTENERS ---------- */
+    leagueButtonsEl.addEventListener("click", (e) => {
+      if (e.target.tagName !== "BUTTON") return;
+      document.querySelectorAll("#league-buttons button").forEach(b => b.classList.remove("active"));
+      e.target.classList.add("active");
+      currentLeague = e.target.dataset.path;
+      lastEvents = [];
+      loadCurrentView();
+    });
+
+    document.getElementById("view-tabs").addEventListener("click", (e) => {
+      if (e.target.tagName !== "BUTTON") return;
+      document.querySelectorAll("#view-tabs button").forEach(b => b.classList.remove("active"));
+      e.target.classList.add("active");
+      currentView = e.target.dataset.view;
+      loadCurrentView();
+    });
+
+    document.getElementById("fav-toggle-btn").addEventListener("click", () => {
+      favPanelEl.classList.toggle("open");
+      renderFavChips();
+    });
+
+    document.getElementById("fav-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const val = favInputEl.value.trim();
+      if (!val) return;
+      const targetLeague = currentLeague === "my-teams" ? favLeagueSelectEl.value : currentLeague;
+      toggleFavorite(targetLeague, null, val, [val]);
+      favInputEl.value = "";
+    });
+
+    favChipsEl.addEventListener("click", (e) => {
+      const idx = e.target.dataset.removeIdx;
+      const leaguePath = e.target.dataset.removeLeague;
+      if (idx !== undefined && leaguePath) removeFavorite(leaguePath, Number(idx));
+    });
+
+    contentEl.addEventListener("click", (e) => {
+      const starBtn = e.target.closest(".star-btn");
+      if (starBtn) {
+        e.stopPropagation();
+        toggleFavorite(
+          starBtn.dataset.league || currentLeague,
+          starBtn.dataset.favId || null,
+          starBtn.dataset.favName,
+          [starBtn.dataset.favFull]
+        );
+        return;
+      }
+
+      const boxTab = e.target.closest("[data-box-tab]");
+      if (boxTab) {
+        e.stopPropagation();
+        const cardEl = boxTab.closest(".game-card");
+        const drawer = cardEl.querySelector(".box-drawer");
+        const cacheKey = `${cardEl.dataset.league}:${cardEl.dataset.eventId}`;
+        if (summaryCache.has(cacheKey)) {
+          drawer.innerHTML = renderBoxScoreHtml(summaryCache.get(cacheKey), boxTab.dataset.boxTab);
+        }
+        return;
+      }
+
+      if (e.target.closest(".box-drawer")) return;
+
+      const cardEl = e.target.closest(".game-card.clickable");
+      if (cardEl) toggleBoxScore(cardEl);
+    });
+
+    document.getElementById("refresh-btn").addEventListener("click", () => {
+      summaryCache.clear();
+      loadCurrentView();
+    });
+
+    buildNavigation();
+    loadCurrentView();
+    setInterval(() => {
+      if (currentView === "scores") {
+        if (currentLeague === "my-teams") loadCombinedScores();
+        else loadScores();
+      }
+    }, 60000);
+  </script>
+</body>
+</html>
