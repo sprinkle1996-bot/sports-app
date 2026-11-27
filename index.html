@@ -499,7 +499,7 @@
     }
     .odds-sep { color: var(--text-dim); }
 
-    /* Card Footer (Watch Links + Box Score Hint) */
+    /* Card Footer */
     .card-footer {
       display: flex;
       justify-content: space-between;
@@ -548,17 +548,180 @@
       border-radius: 9px;
       margin-bottom: 12px;
     }
+    .box-subtabs.four-col {
+      grid-template-columns: repeat(4, 1fr);
+    }
     .box-subtabs button {
+      background: transparent;
+      color: var(--text-sec);
+      border: none;
+      padding: 6px 4px;
+      border-radius: 7px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .box-subtabs button.active { background: var(--surface-2); color: var(--text); }
+
+    /* Football Field / Scorecast Visualizer */
+    .field-card {
+      background: #111113;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+    }
+    .field-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .field-poss {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text);
+    }
+    .field-poss-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--gold);
+    }
+    .field-situation {
+      color: var(--gold);
+      font-variant-numeric: tabular-nums;
+    }
+    .field-svg-wrap {
+      width: 100%;
+      margin: 6px 0 8px;
+    }
+    .field-svg-wrap svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+    }
+    .field-markers {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 9%;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-sec);
+      margin-bottom: 10px;
+      font-variant-numeric: tabular-nums;
+    }
+    .last-play-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.82rem;
+      line-height: 1.4;
+      color: #e5e5ea;
+    }
+    .last-play-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-sec);
+      margin-bottom: 4px;
+    }
+    .drive-summary-line {
+      margin-top: 8px;
+      font-size: 0.74rem;
+      color: var(--text-sec);
+      text-align: center;
+      font-weight: 600;
+    }
+
+    /* Player Stat Breakdowns */
+    .player-team-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      background: #000;
+      padding: 3px;
+      border-radius: 9px;
+      margin-bottom: 12px;
+    }
+    .player-team-toggle button {
       background: transparent;
       color: var(--text-sec);
       border: none;
       padding: 6px 8px;
       border-radius: 7px;
-      font-size: 0.76rem;
-      font-weight: 600;
+      font-size: 0.78rem;
+      font-weight: 700;
       cursor: pointer;
     }
-    .box-subtabs button.active { background: var(--surface-2); color: var(--text); }
+    .player-team-toggle button.active {
+      background: var(--accent);
+      color: #fff;
+    }
+    .player-cat-block {
+      margin-bottom: 14px;
+    }
+    .player-cat-block:last-child { margin-bottom: 0; }
+    .player-cat-title {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--text-sec);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+    .player-table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      background: #111113;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 4px 8px;
+    }
+    .player-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .player-table th {
+      color: var(--text-sec);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 6px 5px;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .player-table th:first-child { text-align: left; }
+    .player-table td {
+      padding: 7px 5px;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      color: #e5e5ea;
+    }
+    .player-table tr:last-child td { border-bottom: none; }
+    .player-table td:first-child {
+      text-align: left;
+      font-weight: 600;
+      color: #fff;
+      max-width: 135px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .player-pos {
+      color: var(--text-dim);
+      font-size: 0.68rem;
+      font-weight: 600;
+      margin-left: 4px;
+    }
 
     .stat-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; font-variant-numeric: tabular-nums; }
     .stat-table th, .stat-table td { padding: 7px 4px; border-bottom: 1px solid var(--border); }
@@ -566,9 +729,6 @@
     .stat-table td:first-child, .stat-table th:first-child { text-align: left; font-weight: 600; }
     .stat-table td:nth-child(2), .stat-table th:nth-child(2) { text-align: center; color: var(--text-sec); }
     .stat-table td:last-child, .stat-table th:last-child { text-align: right; font-weight: 600; }
-    .leader-item { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.86rem; }
-    .leader-item:last-child { border-bottom: none; }
-    .leader-cat { font-size: 0.72rem; color: var(--text-sec); text-transform: uppercase; font-weight: 700; margin-bottom: 2px; }
     .play-item { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.84rem; line-height: 1.4; }
     .play-item:last-child { border-bottom: none; }
     .play-clock { font-size: 0.72rem; color: var(--text-sec); font-weight: 700; margin-bottom: 2px; }
@@ -1348,7 +1508,7 @@
       const cols = pickStandingsColumns(allEntries, leaguePath);
       const leagueLabel = leagueMap[leaguePath]?.label || "";
 
-      const rowsHtml = entries.map((entry, idx) => {
+      const rowsHtml = entries.map(entry => {
         const stats = entry.stats || [];
         const meta = getEntryMeta(entry);
         const isFav = isFavorited(leaguePath, meta.id, [meta.name, meta.fullName, meta.abbr]);
@@ -1494,81 +1654,259 @@
       renderCombinedStandingsList();
     }
 
-    /* ---------- BOX SCORE RENDERING ---------- */
-    function renderBoxScoreHtml(data, activeSubtab = "stats") {
+    /* ---------- FOOTBALL FIELD & DRIVE VISUALIZER (SCORECAST) ---------- */
+    function renderFieldHtml(data) {
+      const drives = data.drives || {};
+      const activeDrive = drives.current || (drives.previous?.length ? drives.previous[drives.previous.length - 1] : null);
+      if (!activeDrive) {
+        return `<div class="empty" style="padding:16px 0;">Field & drive tracker will appear once the game begins.</div>`;
+      }
+
+      const headerComp = data.header?.competitions?.[0];
+      const comps = headerComp?.competitors || [];
+      const awayComp = comps.find(c => c.homeAway === "away") || comps[0];
+      const homeComp = comps.find(c => c.homeAway === "home") || comps[1];
+
+      const awayAbbr = awayComp?.team?.abbreviation || "AWAY";
+      const homeAbbr = homeComp?.team?.abbreviation || "HOME";
+      const awayColor = awayComp?.team?.color ? `#${awayComp.team.color}` : "#1d4ed8";
+      const homeColor = homeComp?.team?.color ? `#${homeComp.team.color}` : "#b91c1c";
+
+      const possTeam = activeDrive.team || {};
+      const possAbbr = possTeam.abbreviation || "";
+      const isAwayPoss = possAbbr && possAbbr === awayAbbr;
+
+      const plays = activeDrive.plays || [];
+      const lastPlay = plays[plays.length - 1] || {};
+      const firstPlay = plays[0] || {};
+
+      // Convert yardsToEndzone (0-100) into field X coordinate (0 = Away EZ, 100 = Home EZ)
+      const endYardsToEZ = lastPlay.end?.yardsToEndzone ?? lastPlay.start?.yardsToEndzone ?? 50;
+      const startYardsToEZ = firstPlay.start?.yardsToEndzone ?? endYardsToEZ;
+
+      const ballFieldYard = isAwayPoss ? (100 - endYardsToEZ) : endYardsToEZ;
+      const startFieldYard = isAwayPoss ? (100 - startYardsToEZ) : startYardsToEZ;
+
+      const distance = lastPlay.end?.distance ?? lastPlay.start?.distance ?? 0;
+      const firstDownYard = distance > 0
+        ? (isAwayPoss ? Math.min(100, ballFieldYard + distance) : Math.max(0, ballFieldYard - distance))
+        : null;
+
+      // SVG coordinates: viewBox 0..120 width (0-10 Away EZ, 10-110 Field, 110-120 Home EZ), height 46
+      const toSvgX = (yard) => 10 + Math.max(0, Math.min(100, yard));
+      const ballX = toSvgX(ballFieldYard);
+      const startX = toSvgX(startFieldYard);
+      const trailX = Math.min(startX, ballX);
+      const trailW = Math.abs(ballX - startX);
+      const fdX = firstDownYard !== null ? toSvgX(firstDownYard) : null;
+
+      const downDist = lastPlay.end?.shortDownDistanceText || lastPlay.start?.shortDownDistanceText || activeDrive.result || "";
+      const yardText = lastPlay.end?.possessionText || lastPlay.start?.possessionText || "";
+      const situationText = [downDist, yardText ? `@ ${yardText}` : ""].filter(Boolean).join(" ");
+      const clockText = lastPlay.clock?.displayValue || "";
+      const periodText = lastPlay.period?.number ? `Q${lastPlay.period.number}` : "";
+
+      // Alternating 10-yard turf bands
+      let stripesSvg = "";
+      for (let i = 0; i < 10; i++) {
+        const fill = i % 2 === 0 ? "#246b35" : "#2c7d3f";
+        stripesSvg += `<rect x="${10 + i * 10}" y="4" width="10" height="38" fill="${fill}" />`;
+        if (i > 0) {
+          stripesSvg += `<line x1="${10 + i * 10}" y1="4" x2="${10 + i * 10}" y2="42" stroke="rgba(255,255,255,0.22)" stroke-width="0.4" />`;
+        }
+      }
+
+      const driveDesc = activeDrive.description || (plays.length ? `${plays.length} plays` : "");
+      const isCurrent = Boolean(drives.current);
+
+      return `
+        <div class="field-card">
+          <div class="field-header">
+            <span class="field-poss">
+              <span class="field-poss-dot"></span>
+              ${escapeHtml(possTeam.shortDisplayName || possTeam.displayName || possAbbr || "Drive")} ${isCurrent ? "Ball" : "Last Drive"}
+            </span>
+            <span class="field-situation">${escapeHtml(situationText)}</span>
+          </div>
+
+          <div class="field-svg-wrap">
+            <svg viewBox="0 0 120 46" xmlns="http://www.w3.org/2000/svg">
+              <!-- End Zones -->
+              <rect x="0" y="4" width="10" height="38" fill="${escapeHtml(awayColor)}" />
+              <rect x="110" y="4" width="10" height="38" fill="${escapeHtml(homeColor)}" />
+              <text x="5" y="23" fill="rgba(255,255,255,0.85)" font-size="3.6" font-weight="800" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 5 23)">${escapeHtml(awayAbbr)}</text>
+              <text x="115" y="23" fill="rgba(255,255,255,0.85)" font-size="3.6" font-weight="800" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 115 23)">${escapeHtml(homeAbbr)}</text>
+
+              <!-- Turf & Yard Lines -->
+              ${stripesSvg}
+              <line x1="10" y1="4" x2="10" y2="42" stroke="#ffffff" stroke-width="0.6" />
+              <line x1="110" y1="4" x2="110" y2="42" stroke="#ffffff" stroke-width="0.6" />
+
+              <!-- Drive Progress Bar -->
+              ${trailW > 0.5 ? `<rect x="${trailX}" y="18" width="${trailW}" height="10" fill="rgba(10, 132, 255, 0.45)" rx="1.5" />` : ""}
+
+              <!-- Yellow 1st Down Line -->
+              ${fdX !== null && isCurrent ? `<line x1="${fdX}" y1="4" x2="${fdX}" y2="42" stroke="#ffd60a" stroke-width="1" />` : ""}
+
+              <!-- Line of Scrimmage & Football Pin -->
+              <line x1="${ballX}" y1="4" x2="${ballX}" y2="42" stroke="#0a84ff" stroke-width="0.9" />
+              <circle cx="${ballX}" cy="23" r="3.4" fill="#ffffff" stroke="#0a84ff" stroke-width="1" />
+              <ellipse cx="${ballX}" cy="23" rx="2" ry="1.2" fill="#8b4513" />
+            </svg>
+          </div>
+
+          <div class="field-markers">
+            <span>${escapeHtml(awayAbbr)}</span>
+            <span>20</span>
+            <span>50</span>
+            <span>20</span>
+            <span>${escapeHtml(homeAbbr)}</span>
+          </div>
+
+          ${lastPlay.text ? `
+            <div class="last-play-box">
+              <div class="last-play-meta">
+                <span>Last Play</span>
+                <span>${escapeHtml([periodText, clockText].filter(Boolean).join(" · "))}</span>
+              </div>
+              <div>${escapeHtml(lastPlay.text)}</div>
+            </div>
+          ` : ""}
+
+          ${driveDesc ? `<div class="drive-summary-line">Drive: ${escapeHtml(driveDesc)}</div>` : ""}
+        </div>
+      `;
+    }
+
+    /* ---------- PLAYER STAT BREAKDOWNS ---------- */
+    function renderPlayersHtml(data, activeTeamIdx = 0) {
+      const playerTeams = data.boxscore?.players || [];
+      if (playerTeams.length === 0) {
+        return `<div class="empty" style="padding:14px 0;">Player stats are not available yet.</div>`;
+      }
+
+      const safeIdx = playerTeams[activeTeamIdx] ? activeTeamIdx : 0;
+      const selectedTeam = playerTeams[safeIdx];
+
+      const toggleHtml = `
+        <div class="player-team-toggle">
+          ${playerTeams.map((pt, idx) => `
+            <button type="button" data-player-team="${idx}" class="${idx === safeIdx ? "active" : ""}">
+              ${escapeHtml(pt.team?.shortDisplayName || pt.team?.abbreviation || `Team ${idx + 1}`)}
+            </button>
+          `).join("")}
+        </div>
+      `;
+
+      const statGroups = (selectedTeam.statistics || []).filter(g => g.athletes && g.athletes.length > 0);
+      if (statGroups.length === 0) {
+        return toggleHtml + `<div class="empty" style="padding:14px 0;">No player stats recorded yet.</div>`;
+      }
+
+      const groupsHtml = statGroups.map(group => {
+        const headers = (group.labels && group.labels.length ? group.labels : group.names) || [];
+        const maxCols = Math.min(headers.length, 6);
+        const colHeaders = headers.slice(0, maxCols);
+
+        const rowsHtml = group.athletes.slice(0, 12).map(a => {
+          const name = a.athlete?.shortName || a.athlete?.displayName || "Player";
+          const pos = a.athlete?.position?.abbreviation || "";
+          const vals = (a.stats || []).slice(0, maxCols);
+          return `
+            <tr>
+              <td>${escapeHtml(name)}${pos ? `<span class="player-pos">${escapeHtml(pos)}</span>` : ""}</td>
+              ${vals.map(v => `<td>${escapeHtml(v)}</td>`).join("")}
+            </tr>
+          `;
+        }).join("");
+
+        return `
+          <div class="player-cat-block">
+            ${group.text || group.name ? `<div class="player-cat-title">${escapeHtml(group.text || group.name)}</div>` : ""}
+            <div class="player-table-wrap">
+              <table class="player-table">
+                <thead>
+                  <tr>
+                    <th>Player</th>
+                    ${colHeaders.map(h => `<th>${escapeHtml(h)}</th>`).join("")}
+                  </tr>
+                </thead>
+                <tbody>${rowsHtml}</tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      return toggleHtml + groupsHtml;
+    }
+
+    /* ---------- BOX SCORE DRAWER ---------- */
+    function renderBoxScoreHtml(data, leaguePath, activeSubtab = "stats", activePlayerTeam = 0) {
+      const isFootball = leaguePath === "football/nfl" || leaguePath === "football/college-football";
       const teams = data.boxscore?.teams || [];
       const awayTeam = teams[0];
       const homeTeam = teams[1];
 
-      let statsHtml = `<div class="empty" style="padding:14px 0;">Team stats not available yet.</div>`;
-      if (awayTeam && homeTeam && awayTeam.statistics?.length) {
-        const homeStatMap = Object.fromEntries(
-          (homeTeam.statistics || []).map(s => [s.name || s.label, s.displayValue])
-        );
-        const rows = awayTeam.statistics.slice(0, 12).map(s => `
-          <tr>
-            <td>${escapeHtml(s.displayValue)}</td>
-            <td>${escapeHtml(s.label || s.name)}</td>
-            <td>${escapeHtml(homeStatMap[s.name || s.label] ?? "-")}</td>
-          </tr>
-        `).join("");
-        statsHtml = `
-          <table class="stat-table">
-            <thead>
-              <tr>
-                <th>${escapeHtml(awayTeam.team?.abbreviation || "Away")}</th>
-                <th>Stat</th>
-                <th>${escapeHtml(homeTeam.team?.abbreviation || "Home")}</th>
-              </tr>
-            </thead>
-            <tbody>${rows}</tbody>
-          </table>
-        `;
-      }
+      let body = "";
 
-      let leadersHtml = `<div class="empty" style="padding:14px 0;">Game leaders not posted yet.</div>`;
-      const leaderItems = [];
-      (data.leaders || []).forEach(group => {
-        const teamAbbr = group.team?.abbreviation || "";
-        (group.leaders || []).forEach(cat => {
-          const top = cat.leaders?.[0];
-          if (!top) return;
-          leaderItems.push(`
-            <div class="leader-item">
-              <div class="leader-cat">${escapeHtml(teamAbbr)} · ${escapeHtml(cat.displayName || cat.name || "")}</div>
-              <div><strong>${escapeHtml(top.athlete?.displayName || "Player")}</strong> — ${escapeHtml(top.displayValue || "")}</div>
-            </div>
-          `);
-        });
-      });
-      if (leaderItems.length > 0) leadersHtml = leaderItems.join("");
-
-      let playsHtml = `<div class="empty" style="padding:14px 0;">Play-by-play not available yet.</div>`;
-      const rawPlays = data.scoringPlays?.length ? data.scoringPlays : (data.keyEvents?.length ? data.keyEvents : (data.plays || []));
-      if (rawPlays.length > 0) {
-        const recent = rawPlays.slice(-10).reverse();
-        playsHtml = recent.map(p => {
-          const period = p.period?.displayValue || (p.period?.number ? `P${p.period.number}` : "");
-          const clock = p.clock?.displayValue || "";
-          const scoreLine = (p.awayScore !== undefined && p.homeScore !== undefined)
-            ? ` · ${p.awayScore}-${p.homeScore}` : "";
-          return `
-            <div class="play-item">
-              <div class="play-clock">${escapeHtml([period, clock].filter(Boolean).join(" "))}${escapeHtml(scoreLine)}</div>
-              <div>${escapeHtml(p.text || p.shortText || p.type?.text || "")}</div>
-            </div>
+      if (activeSubtab === "field" && isFootball) {
+        body = renderFieldHtml(data);
+      } else if (activeSubtab === "players") {
+        body = renderPlayersHtml(data, activePlayerTeam);
+      } else if (activeSubtab === "stats") {
+        if (awayTeam && homeTeam && awayTeam.statistics?.length) {
+          const homeStatMap = Object.fromEntries(
+            (homeTeam.statistics || []).map(s => [s.name || s.label, s.displayValue])
+          );
+          const rows = awayTeam.statistics.slice(0, 12).map(s => `
+            <tr>
+              <td>${escapeHtml(s.displayValue)}</td>
+              <td>${escapeHtml(s.label || s.name)}</td>
+              <td>${escapeHtml(homeStatMap[s.name || s.label] ?? "-")}</td>
+            </tr>
+          `).join("");
+          body = `
+            <table class="stat-table">
+              <thead>
+                <tr>
+                  <th>${escapeHtml(awayTeam.team?.abbreviation || "Away")}</th>
+                  <th>Stat</th>
+                  <th>${escapeHtml(homeTeam.team?.abbreviation || "Home")}</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
           `;
-        }).join("");
+        } else {
+          body = `<div class="empty" style="padding:14px 0;">Team stats not available yet.</div>`;
+        }
+      } else {
+        const rawPlays = data.scoringPlays?.length ? data.scoringPlays : (data.keyEvents?.length ? data.keyEvents : (data.plays || []));
+        if (rawPlays.length > 0) {
+          const recent = rawPlays.slice(-10).reverse();
+          body = recent.map(p => {
+            const period = p.period?.displayValue || (p.period?.number ? `P${p.period.number}` : "");
+            const clock = p.clock?.displayValue || "";
+            const scoreLine = (p.awayScore !== undefined && p.homeScore !== undefined)
+              ? ` · ${p.awayScore}-${p.homeScore}` : "";
+            return `
+              <div class="play-item">
+                <div class="play-clock">${escapeHtml([period, clock].filter(Boolean).join(" "))}${escapeHtml(scoreLine)}</div>
+                <div>${escapeHtml(p.text || p.shortText || p.type?.text || "")}</div>
+              </div>
+            `;
+          }).join("");
+        } else {
+          body = `<div class="empty" style="padding:14px 0;">Play-by-play not available yet.</div>`;
+        }
       }
-
-      const body = activeSubtab === "stats"
-        ? statsHtml
-        : activeSubtab === "leaders" ? leadersHtml : playsHtml;
 
       return `
-        <div class="box-subtabs">
-          <button type="button" data-box-tab="stats" class="${activeSubtab === "stats" ? "active" : ""}">Stats</button>
-          <button type="button" data-box-tab="leaders" class="${activeSubtab === "leaders" ? "active" : ""}">Leaders</button>
+        <div class="box-subtabs ${isFootball ? "four-col" : ""}">
+          ${isFootball ? `<button type="button" data-box-tab="field" class="${activeSubtab === "field" ? "active" : ""}">Field</button>` : ""}
+          <button type="button" data-box-tab="players" class="${activeSubtab === "players" ? "active" : ""}">Players</button>
+          <button type="button" data-box-tab="stats" class="${activeSubtab === "stats" ? "active" : ""}">Team</button>
           <button type="button" data-box-tab="plays" class="${activeSubtab === "plays" ? "active" : ""}">Plays</button>
         </div>
         <div class="box-body">${body}</div>
@@ -1587,21 +1925,26 @@
       drawer.classList.add("open");
       const leaguePath = cardEl.dataset.league;
       const eventId = cardEl.dataset.eventId;
+      const isFootball = leaguePath === "football/nfl" || leaguePath === "football/college-football";
+      const defaultTab = isFootball ? "field" : "players";
       const cacheKey = `${leaguePath}:${eventId}`;
 
+      cardEl.dataset.boxTab = defaultTab;
+      cardEl.dataset.playerTeam = "0";
+
       if (summaryCache.has(cacheKey)) {
-        drawer.innerHTML = renderBoxScoreHtml(summaryCache.get(cacheKey), "stats");
+        drawer.innerHTML = renderBoxScoreHtml(summaryCache.get(cacheKey), leaguePath, defaultTab, 0);
         return;
       }
 
-      drawer.innerHTML = `<div class="empty" style="padding:14px 0;">Loading box score...</div>`;
+      drawer.innerHTML = `<div class="empty" style="padding:14px 0;">Loading game details...</div>`;
       try {
         const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${leaguePath}/summary?event=${eventId}`);
         const data = await res.json();
         summaryCache.set(cacheKey, data);
-        drawer.innerHTML = renderBoxScoreHtml(data, "stats");
+        drawer.innerHTML = renderBoxScoreHtml(data, leaguePath, defaultTab, 0);
       } catch {
-        drawer.innerHTML = `<div class="empty" style="padding:14px 0;">Could not load box score.</div>`;
+        drawer.innerHTML = `<div class="empty" style="padding:14px 0;">Could not load game details.</div>`;
       }
     }
 
@@ -2143,9 +2486,28 @@
         e.stopPropagation();
         const cardEl = boxTab.closest(".game-card");
         const drawer = cardEl.querySelector(".box-drawer");
-        const cacheKey = `${cardEl.dataset.league}:${cardEl.dataset.eventId}`;
+        const leaguePath = cardEl.dataset.league;
+        const cacheKey = `${leaguePath}:${cardEl.dataset.eventId}`;
+        const activeTab = boxTab.dataset.boxTab;
+        const activeTeam = Number(cardEl.dataset.playerTeam || 0);
+        cardEl.dataset.boxTab = activeTab;
         if (summaryCache.has(cacheKey)) {
-          drawer.innerHTML = renderBoxScoreHtml(summaryCache.get(cacheKey), boxTab.dataset.boxTab);
+          drawer.innerHTML = renderBoxScoreHtml(summaryCache.get(cacheKey), leaguePath, activeTab, activeTeam);
+        }
+        return;
+      }
+
+      const playerTeamBtn = e.target.closest("[data-player-team]");
+      if (playerTeamBtn) {
+        e.stopPropagation();
+        const cardEl = playerTeamBtn.closest(".game-card");
+        const drawer = cardEl.querySelector(".box-drawer");
+        const leaguePath = cardEl.dataset.league;
+        const cacheKey = `${leaguePath}:${cardEl.dataset.eventId}`;
+        const teamIdx = Number(playerTeamBtn.dataset.playerTeam || 0);
+        cardEl.dataset.playerTeam = String(teamIdx);
+        if (summaryCache.has(cacheKey)) {
+          drawer.innerHTML = renderBoxScoreHtml(summaryCache.get(cacheKey), leaguePath, "players", teamIdx);
         }
         return;
       }
