@@ -2,146 +2,323 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Ad-Free Sports Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Sports</title>
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #0f172a;
-      color: #f8fafc;
-      margin: 0;
-      padding: 16px;
-      max-width: 700px;
-      margin-inline: auto;
+    :root {
+      --bg: #000000;
+      --surface: #1c1c1e;
+      --surface-2: #2c2c2e;
+      --border: rgba(255, 255, 255, 0.09);
+      --text: #ffffff;
+      --text-sec: #8e8e93;
+      --text-dim: #636366;
+      --accent: #0a84ff;
+      --gold: #ffd60a;
+      --live: #ff453a;
+      --green: #30d158;
     }
-    header {
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0 0 40px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app-shell {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* Frosted Sticky Header */
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border-bottom: 1px solid var(--border);
+      padding: max(14px, env(safe-area-inset-top)) 16px 12px;
+    }
+
+    .top-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
-      gap: 8px;
+      margin-bottom: 12px;
     }
-    h1 { font-size: 1.35rem; margin: 0; }
+
+    h1 {
+      font-size: 1.7rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 0;
+    }
+
     .header-actions { display: flex; gap: 8px; }
+
+    .icon-btn {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .icon-btn.active {
+      background: var(--text);
+      color: #000;
+      border-color: var(--text);
+    }
+
+    /* Horizontal League Pills */
     .controls {
       display: flex;
       gap: 8px;
       overflow-x: auto;
-      padding-bottom: 6px;
-      margin-bottom: 12px;
+      padding-bottom: 2px;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
     }
     .controls::-webkit-scrollbar { display: none; }
-    .tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 18px;
-      background: #1e293b;
-      padding: 4px;
-      border-radius: 10px;
-      border: 1px solid #334155;
-    }
-    button {
-      background: #1e293b;
-      color: #e2e8f0;
-      border: 1px solid #334155;
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
+
+    .league-btn {
+      background: var(--surface);
+      color: #d1d1d6;
+      border: 1px solid transparent;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 0.84rem;
       font-weight: 600;
-      font-size: 0.88rem;
       white-space: nowrap;
       flex-shrink: 0;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
     }
-    button.active {
-      background: #3b82f6;
-      border-color: #3b82f6;
-      color: #fff;
-    }
-    button.my-teams-btn {
-      border-color: #f59e0b;
-      color: #fde68a;
-    }
-    button.my-teams-btn.active {
-      background: #d97706;
-      border-color: #f59e0b;
-      color: #fff;
-    }
-    .tabs button {
-      border: none;
-      background: transparent;
-      padding: 8px;
-    }
-    .tabs button.active { background: #3b82f6; }
 
-    /* Favorites drawer */
+    .league-btn.active {
+      background: var(--text);
+      color: #000000;
+    }
+
+    .league-btn.my-teams-btn {
+      color: var(--gold);
+      border-color: rgba(255, 214, 10, 0.3);
+    }
+
+    .league-btn.my-teams-btn.active {
+      background: var(--gold);
+      color: #000000;
+      border-color: var(--gold);
+    }
+
+    /* Main Content Area */
+    .main { padding: 14px 16px 0; }
+
+    /* iOS Segmented Controls */
+    .segmented-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--surface);
+      padding: 3px;
+      border-radius: 10px;
+      flex: 1;
+    }
+
+    .segmented.three-col {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .segmented button {
+      background: transparent;
+      color: var(--text-sec);
+      border: none;
+      padding: 7px 8px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .segmented button.active {
+      background: #3a3a3c;
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Date Switcher Bar */
+    .date-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .date-bar.hidden { display: none; }
+
+    .date-segmented {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: var(--surface);
+      padding: 3px;
+      border-radius: 10px;
+      flex: 1;
+    }
+
+    .date-segmented button {
+      background: transparent;
+      color: var(--text-sec);
+      border: none;
+      padding: 6px 6px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .date-segmented button.active {
+      background: #3a3a3c;
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .custom-date-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .custom-date-btn {
+      background: var(--surface);
+      color: var(--text-sec);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 7px 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .custom-date-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .custom-date-input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      color-scheme: dark;
+    }
+
+    /* College Filter Bar */
+    .college-filter {
+      display: none;
+      margin-bottom: 14px;
+    }
+    .college-filter.visible { display: block; }
+
+    /* Favorites Drawer */
     .fav-panel {
       display: none;
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
       padding: 14px;
       margin-bottom: 16px;
     }
     .fav-panel.open { display: block; }
     .fav-panel-title {
-      font-size: 0.85rem;
-      color: #94a3b8;
-      font-weight: 600;
+      font-size: 0.8rem;
+      color: var(--text-sec);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
       margin-bottom: 10px;
     }
     .fav-form { display: flex; gap: 8px; margin-bottom: 10px; }
     .fav-form select, .fav-form input {
-      background: #0f172a;
-      color: #f8fafc;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 8px 10px;
-      font-size: 0.9rem;
+      background: #000;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 11px;
+      font-size: 0.88rem;
     }
     .fav-form input { flex: 1; min-width: 0; }
+    .fav-form button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 0 14px;
+      font-weight: 600;
+      font-size: 0.86rem;
+      cursor: pointer;
+    }
     .fav-chips { display: flex; flex-wrap: wrap; gap: 6px; }
     .fav-chip {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: #0f172a;
-      border: 1px solid #f59e0b;
-      color: #fde68a;
-      padding: 4px 10px;
+      background: rgba(255, 214, 10, 0.12);
+      border: 1px solid rgba(255, 214, 10, 0.35);
+      color: var(--gold);
+      padding: 5px 10px;
       border-radius: 999px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
     }
-    .fav-chip-league {
-      font-size: 0.7rem;
-      color: #94a3b8;
-      text-transform: uppercase;
-    }
+    .fav-chip-league { font-size: 0.68rem; color: var(--text-sec); }
     .fav-chip button {
       background: transparent;
       border: none;
-      color: #fde68a;
+      color: var(--gold);
       padding: 0 2px;
-      font-size: 0.95rem;
+      font-size: 1rem;
       line-height: 1;
+      cursor: pointer;
     }
 
-    /* Game cards */
-    .game-card, .news-card {
-      background: #1e293b;
-      border-radius: 12px;
+    /* Apple Sports-Style Cards */
+    .game-card, .news-card, .standings-card {
+      background: var(--surface);
+      border-radius: 18px;
       padding: 14px 16px;
       margin-bottom: 12px;
-      border: 1px solid #334155;
+      border: 1px solid var(--border);
     }
+
     .game-card.clickable { cursor: pointer; }
-    .game-card.pinned {
-      border-color: #f59e0b;
-      box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.25);
-    }
+    .game-card.pinned { border-color: rgba(255, 214, 10, 0.45); }
+
     .status-row {
       display: flex;
       justify-content: space-between;
@@ -149,143 +326,277 @@
       gap: 8px;
       margin-bottom: 10px;
     }
-    .status-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .status-left { display: flex; align-items: center; gap: 7px; min-width: 0; }
     .league-pill, .source-pill {
-      background: #334155;
-      color: #e2e8f0;
-      font-size: 0.7rem;
+      background: var(--surface-2);
+      color: #e5e5ea;
+      font-size: 0.68rem;
       font-weight: 700;
-      padding: 2px 7px;
+      padding: 3px 7px;
       border-radius: 6px;
       letter-spacing: 0.03em;
       flex-shrink: 0;
     }
-    .source-pill { background: #1d4ed8; color: #dbeafe; }
-    .status { font-size: 0.8rem; color: #94a3b8; font-weight: 600; }
-    .status.live { color: #ef4444; }
-    .pinned-badge {
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: #fbbf24;
-      flex-shrink: 0;
+    .source-pill { background: rgba(10, 132, 255, 0.18); color: #64d2ff; }
+    .status { font-size: 0.78rem; color: var(--text-sec); font-weight: 600; }
+    .status.live { color: var(--live); }
+    .pinned-badge { font-size: 0.7rem; font-weight: 700; color: var(--gold); flex-shrink: 0; }
+
+    .event-title { font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 4px; }
+
+    .team-row, .leader-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      gap: 8px;
     }
+
+    .leader-row {
+      border-top: 1px solid var(--border);
+      font-size: 0.9rem;
+      padding: 8px 0;
+    }
+    .leader-row:first-of-type { border-top: none; }
+    .leader-row.pinned-leader {
+      background: rgba(255, 214, 10, 0.08);
+      margin-inline: -8px;
+      padding-inline: 8px;
+      border-radius: 8px;
+    }
+
+    .team-info {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .team-info img { width: 26px; height: 26px; object-fit: contain; flex-shrink: 0; }
+
+    .team-name {
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .team-row.loser .team-name,
+    .team-row.loser .score { color: var(--text-sec); }
+
+    .rank {
+      font-size: 0.76rem;
+      color: var(--text-sec);
+      font-weight: 700;
+      min-width: 16px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .record { font-size: 0.76rem; color: var(--text-dim); font-weight: 500; flex-shrink: 0; }
+
+    .score {
+      font-size: 1.3rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+      padding-left: 8px;
+    }
+
+    .pos {
+      font-weight: 700;
+      color: var(--text-sec);
+      width: 28px;
+      display: inline-block;
+      flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .star-btn {
+      background: transparent;
+      border: none;
+      padding: 2px;
+      font-size: 1rem;
+      line-height: 1;
+      color: #48484a;
+      cursor: pointer;
+    }
+    .star-btn.starred { color: var(--gold); }
+
+    /* Card Footer (Watch Links + Box Score Hint) */
     .card-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 8px;
       margin-top: 10px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(51, 65, 85, 0.6);
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
       flex-wrap: wrap;
     }
-    .watch-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      align-items: center;
-    }
+
+    .watch-list { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
     .watch-pill {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      font-size: 0.74rem;
+      gap: 4px;
+      font-size: 0.72rem;
       font-weight: 700;
-      padding: 4px 9px;
+      padding: 4px 10px;
       border-radius: 999px;
       text-decoration: none;
-      border: 1px solid #334155;
-      background: #0f172a;
-      color: #e2e8f0;
+      background: var(--surface-2);
+      color: #e5e5ea;
     }
-    .watch-pill.yttv {
-      border-color: #dc2626;
-      background: rgba(220, 38, 38, 0.14);
-      color: #fecaca;
-    }
-    .watch-pill.stream {
-      border-color: #3b82f6;
-      background: rgba(59, 130, 246, 0.14);
-      color: #bfdbfe;
-    }
-    .tap-hint {
-      font-size: 0.72rem;
-      color: #64748b;
-      margin-left: auto;
-    }
-    .event-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
-    .team-row, .leader-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 5px 0;
-      gap: 8px;
-    }
-    .leader-row {
-      border-top: 1px solid #334155;
-      font-size: 0.92rem;
-      padding: 7px 0;
-    }
-    .leader-row:first-of-type { border-top: none; }
-    .leader-row.pinned-leader {
-      background: rgba(245, 158, 11, 0.08);
-      margin-inline: -8px;
-      padding-inline: 8px;
-      border-radius: 6px;
-    }
-    .team-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
-      flex: 1;
-    }
-    .team-info img { width: 24px; height: 24px; object-fit: contain; flex-shrink: 0; }
-    .rank { font-size: 0.78rem; color: #94a3b8; font-weight: 700; min-width: 18px; }
-    .record { font-size: 0.78rem; color: #94a3b8; margin-left: 2px; }
-    .score { font-size: 1.15rem; font-weight: 700; }
-    .pos { font-weight: 700; color: #94a3b8; width: 28px; display: inline-block; flex-shrink: 0; }
-    .star-btn {
-      background: transparent;
-      border: none;
-      padding: 2px 4px;
-      font-size: 1.05rem;
-      line-height: 1;
-      color: #64748b;
-    }
-    .star-btn.starred { color: #fbbf24; }
+    .watch-pill.yttv { background: rgba(255, 69, 58, 0.16); color: #ff6961; }
+    .watch-pill.stream { background: rgba(10, 132, 255, 0.18); color: #64d2ff; }
 
-    /* Box score drawer */
+    .tap-hint { font-size: 0.74rem; font-weight: 600; color: var(--text-dim); margin-left: auto; }
+
+    /* Box Score Drawer */
     .box-drawer {
       display: none;
       margin-top: 12px;
       padding-top: 12px;
-      border-top: 1px solid #334155;
+      border-top: 1px solid var(--border);
       cursor: default;
     }
     .box-drawer.open { display: block; }
-    .box-subtabs { display: flex; gap: 6px; margin-bottom: 12px; }
-    .box-subtabs button {
-      padding: 5px 10px;
-      font-size: 0.78rem;
-      background: #0f172a;
-      border-color: #334155;
+    .box-subtabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      background: #000;
+      padding: 3px;
+      border-radius: 9px;
+      margin-bottom: 12px;
     }
-    .box-subtabs button.active { background: #3b82f6; border-color: #3b82f6; }
-    .stat-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
-    .stat-table th, .stat-table td { padding: 6px 4px; border-bottom: 1px solid #334155; }
-    .stat-table th { color: #94a3b8; font-weight: 600; font-size: 0.76rem; }
-    .stat-table td:first-child, .stat-table th:first-child { text-align: left; }
-    .stat-table td:nth-child(2), .stat-table th:nth-child(2) { text-align: center; color: #94a3b8; }
-    .stat-table td:last-child, .stat-table th:last-child { text-align: right; }
-    .leader-item { padding: 7px 0; border-bottom: 1px solid #334155; font-size: 0.85rem; }
-    .leader-item:last-child { border-bottom: none; }
-    .leader-cat { font-size: 0.74rem; color: #94a3b8; text-transform: uppercase; font-weight: 700; }
-    .play-item { padding: 7px 0; border-bottom: 1px solid #334155; font-size: 0.84rem; line-height: 1.35; }
-    .play-item:last-child { border-bottom: none; }
-    .play-clock { font-size: 0.74rem; color: #94a3b8; font-weight: 700; margin-bottom: 2px; }
+    .box-subtabs button {
+      background: transparent;
+      color: var(--text-sec);
+      border: none;
+      padding: 6px 8px;
+      border-radius: 7px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .box-subtabs button.active { background: var(--surface-2); color: var(--text); }
 
-    /* News styles */
+    .stat-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; font-variant-numeric: tabular-nums; }
+    .stat-table th, .stat-table td { padding: 7px 4px; border-bottom: 1px solid var(--border); }
+    .stat-table th { color: var(--text-sec); font-weight: 600; font-size: 0.74rem; }
+    .stat-table td:first-child, .stat-table th:first-child { text-align: left; font-weight: 600; }
+    .stat-table td:nth-child(2), .stat-table th:nth-child(2) { text-align: center; color: var(--text-sec); }
+    .stat-table td:last-child, .stat-table th:last-child { text-align: right; font-weight: 600; }
+    .leader-item { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.86rem; }
+    .leader-item:last-child { border-bottom: none; }
+    .leader-cat { font-size: 0.72rem; color: var(--text-sec); text-transform: uppercase; font-weight: 700; margin-bottom: 2px; }
+    .play-item { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.84rem; line-height: 1.4; }
+    .play-item:last-child { border-bottom: none; }
+    .play-clock { font-size: 0.72rem; color: var(--text-sec); font-weight: 700; margin-bottom: 2px; }
+
+    /* Standings Styles */
+    .standings-filter-bar {
+      margin-bottom: 12px;
+    }
+    .standings-select {
+      width: 100%;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color-scheme: dark;
+    }
+    .standings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .standings-title {
+      font-size: 0.96rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .standings-table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .standings-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .standings-table th {
+      color: var(--text-sec);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding: 0 4px 8px;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .standings-table th:first-child { text-align: left; }
+    .standings-table td {
+      padding: 8px 4px;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      color: #e5e5ea;
+    }
+    .standings-table tr:last-child td { border-bottom: none; }
+    .standings-table td:first-child {
+      text-align: left;
+      width: 100%;
+      max-width: 185px;
+    }
+    .standings-table tr.pinned-row td {
+      background: rgba(255, 214, 10, 0.1);
+      color: var(--gold);
+      font-weight: 700;
+    }
+    .standings-table tr.pinned-row td:first-child { border-radius: 8px 0 0 8px; }
+    .standings-table tr.pinned-row td:last-child { border-radius: 0 8px 8px 0; }
+    .st-team-cell {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+    }
+    .st-rank {
+      color: var(--text-dim);
+      font-size: 0.74rem;
+      font-weight: 700;
+      width: 18px;
+      flex-shrink: 0;
+      text-align: right;
+    }
+    .standings-table tr.pinned-row .st-rank { color: var(--gold); }
+    .st-logo {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    .st-name {
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* News Cards */
     .news-card {
       display: block;
       text-decoration: none;
@@ -295,46 +606,75 @@
     }
     .news-card img { width: 100%; max-height: 200px; object-fit: cover; display: block; }
     .news-body { padding: 14px 16px; }
-    .news-headline { font-size: 1.02rem; font-weight: 700; margin: 0 0 6px 0; line-height: 1.3; }
-    .news-desc { font-size: 0.88rem; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.4; }
-    .news-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.78rem; color: #94a3b8; }
-    .empty { color: #94a3b8; text-align: center; padding: 30px 12px; line-height: 1.5; }
-    .quiet-note { font-size: 0.8rem; color: #94a3b8; text-align: center; padding: 8px 0 4px; }
+    .news-headline { font-size: 1.02rem; font-weight: 700; margin: 0 0 6px 0; line-height: 1.3; letter-spacing: -0.01em; }
+    .news-desc { font-size: 0.86rem; color: #aeaeb2; margin: 0 0 10px 0; line-height: 1.4; }
+    .news-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.76rem; color: var(--text-sec); }
+
+    .empty { color: var(--text-sec); text-align: center; padding: 36px 16px; line-height: 1.5; font-size: 0.92rem; }
+    .quiet-note { font-size: 0.78rem; color: var(--text-dim); text-align: center; padding: 8px 0 4px; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Sports Hub</h1>
-    <div class="header-actions">
-      <button id="fav-toggle-btn">★ Pins</button>
-      <button id="refresh-btn">Refresh</button>
+  <div class="app-shell">
+    <div class="sticky-header">
+      <div class="top-bar">
+        <h1>Sports</h1>
+        <div class="header-actions">
+          <button class="icon-btn" id="fav-toggle-btn">★ Pins</button>
+          <button class="icon-btn" id="refresh-btn">↻</button>
+        </div>
+      </div>
+      <div class="controls" id="league-buttons"></div>
     </div>
-  </header>
 
-  <div class="controls" id="league-buttons"></div>
+    <div class="main">
+      <div class="fav-panel" id="fav-panel">
+        <div class="fav-panel-title" id="fav-panel-title">Pinned</div>
+        <form class="fav-form" id="fav-form">
+          <select id="fav-league-select" style="display:none;"></select>
+          <input type="text" id="fav-input" placeholder="Add team or player..." autocomplete="off" />
+          <button type="submit">Add</button>
+        </form>
+        <div class="fav-chips" id="fav-chips"></div>
+      </div>
 
-  <div class="fav-panel" id="fav-panel">
-    <div class="fav-panel-title" id="fav-panel-title">Pinned</div>
-    <form class="fav-form" id="fav-form">
-      <select id="fav-league-select" style="display:none;"></select>
-      <input type="text" id="fav-input" placeholder="Add team or player name..." autocomplete="off" />
-      <button type="submit" class="active">Add</button>
-    </form>
-    <div class="fav-chips" id="fav-chips"></div>
+      <div class="segmented-row">
+        <div class="segmented three-col" id="view-tabs">
+          <button data-view="scores" class="active">Scores</button>
+          <button data-view="standings">Standings</button>
+          <button data-view="news">News</button>
+        </div>
+      </div>
+
+      <div class="date-bar" id="date-bar">
+        <div class="date-segmented" id="date-tabs">
+          <button data-date-mode="yesterday">Yesterday</button>
+          <button data-date-mode="today" class="active">Today</button>
+          <button data-date-mode="tomorrow">Tomorrow</button>
+        </div>
+        <div class="custom-date-wrap">
+          <span class="custom-date-btn" id="custom-date-label">📅 Date</span>
+          <input type="date" class="custom-date-input" id="custom-date-input" aria-label="Pick a date" />
+        </div>
+      </div>
+
+      <div class="college-filter" id="college-filter">
+        <div class="segmented" id="college-filter-tabs">
+          <button data-filter="all" class="active" id="college-all-label">All FBS</button>
+          <button data-filter="top25">Top 25</button>
+        </div>
+      </div>
+
+      <div id="content">Loading...</div>
+    </div>
   </div>
-
-  <div class="tabs" id="view-tabs">
-    <button data-view="scores" class="active">Scores</button>
-    <button data-view="news">News</button>
-  </div>
-
-  <div id="content">Loading...</div>
 
   <script>
     const STORAGE_KEY = "sportsHubFavorites_v1";
     const LEAGUES = [
       {
         path: "football/college-football", label: "CFB", type: "team",
+        queryParams: "groups=80&limit=200", allLabel: "All FBS",
         rss: [
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/college-football/" },
           { source: "Yahoo Sports", url: "https://sports.yahoo.com/ncaaf/rss.xml" }
@@ -342,16 +682,10 @@
       },
       {
         path: "basketball/mens-college-basketball", label: "CBB", type: "team",
+        queryParams: "groups=50&limit=200", allLabel: "All D1",
         rss: [
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/college-basketball/" },
           { source: "Yahoo Sports", url: "https://sports.yahoo.com/ncaab/rss.xml" }
-        ]
-      },
-      {
-        path: "racing/f1", label: "F1", type: "leaderboard",
-        rss: [
-          { source: "BBC Sport", url: "https://feeds.bbci.co.uk/sport/formula1/rss.xml" },
-          { source: "Yahoo Sports", url: "https://sports.yahoo.com/f1/rss.xml" }
         ]
       },
       {
@@ -362,17 +696,31 @@
         ]
       },
       {
+        path: "soccer/eng.1", label: "EPL", type: "team",
+        rss: [
+          { source: "BBC Sport", url: "https://feeds.bbci.co.uk/sport/football/premier-league/rss.xml" },
+          { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/soccer/" }
+        ]
+      },
+      {
+        path: "soccer/uefa.champions", label: "UCL", type: "team",
+        rss: [
+          { source: "BBC Sport", url: "https://feeds.bbci.co.uk/sport/football/champions-league/rss.xml" },
+          { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/soccer/" }
+        ]
+      },
+      {
+        path: "racing/f1", label: "F1", type: "leaderboard",
+        rss: [
+          { source: "BBC Sport", url: "https://feeds.bbci.co.uk/sport/formula1/rss.xml" },
+          { source: "Yahoo Sports", url: "https://sports.yahoo.com/f1/rss.xml" }
+        ]
+      },
+      {
         path: "golf/pga", label: "PGA", type: "leaderboard",
         rss: [
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/golf/" },
           { source: "BBC Sport", url: "https://feeds.bbci.co.uk/sport/golf/rss.xml" }
-        ]
-      },
-      {
-        path: "baseball/mlb", label: "MLB", type: "team",
-        rss: [
-          { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/mlb/" },
-          { source: "Yahoo Sports", url: "https://sports.yahoo.com/mlb/rss.xml" }
         ]
       },
       {
@@ -388,6 +736,13 @@
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/nba/" },
           { source: "Yahoo Sports", url: "https://sports.yahoo.com/nba/rss.xml" }
         ]
+      },
+      {
+        path: "baseball/mlb", label: "MLB", type: "team",
+        rss: [
+          { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/mlb/" },
+          { source: "Yahoo Sports", url: "https://sports.yahoo.com/mlb/rss.xml" }
+        ]
       }
     ];
 
@@ -399,23 +754,23 @@
       "nfl net", "nfl network", "nba tv", "nbatv", "nhl net", "nhl network",
       "golf", "golf channel", "cbssn", "cbs sports network",
       "secn", "sec network", "accn", "acc network", "btn", "big ten network",
-      "ion", "pbs", "telemundo", "univision"
+      "ion", "pbs", "telemundo", "univision", "tudn"
     ];
 
     const STREAMING_APPS = [
-      { match: ["espn+", "espn plus", "secn+", "accnx"], url: "https://www.espn.com/watch/", label: "ESPN App" },
-      { match: ["peacock"], url: "https://www.peacocktv.com/watch/sports", label: "Peacock" },
-      { match: ["prime video", "amazon", "tnf"], url: "https://www.amazon.com/gp/video/sports", label: "Prime Video" },
-      { match: ["paramount+"], url: "https://www.paramountplus.com/live-tv/", label: "Paramount+" },
-      { match: ["apple tv", "appletv"], url: "https://tv.apple.com/sports", label: "Apple TV" },
-      { match: ["max", "hbo max"], url: "https://play.max.com/sports", label: "Max" },
-      { match: ["netflix"], url: "https://www.netflix.com/", label: "Netflix" },
-      { match: ["f1 tv", "f1tv"], url: "https://f1tv.formula1.com/", label: "F1 TV" },
-      { match: ["mlb.tv", "mlbtv"], url: "https://www.mlb.com/live-stream-games", label: "MLB.TV" },
-      { match: ["nfl+"], url: "https://www.nfl.com/plus/", label: "NFL+" },
-      { match: ["nba league pass"], url: "https://www.nba.com/watch/league-pass-stream", label: "NBA App" },
-      { match: ["hulu"], url: "https://www.hulu.com/hub/sports", label: "Hulu" },
-      { match: ["roku"], url: "https://therokuchannel.roku.com/", label: "Roku" }
+      { match: ["espn+", "espn plus", "secn+", "accnx"], url: "https://www.espn.com/watch/" },
+      { match: ["peacock"], url: "https://www.peacocktv.com/watch/sports" },
+      { match: ["paramount+"], url: "https://www.paramountplus.com/live-tv/" },
+      { match: ["prime video", "amazon", "tnf"], url: "https://www.amazon.com/gp/video/sports" },
+      { match: ["apple tv", "appletv"], url: "https://tv.apple.com/sports" },
+      { match: ["max", "hbo max"], url: "https://play.max.com/sports" },
+      { match: ["netflix"], url: "https://www.netflix.com/" },
+      { match: ["f1 tv", "f1tv"], url: "https://f1tv.formula1.com/" },
+      { match: ["mlb.tv", "mlbtv"], url: "https://www.mlb.com/live-stream-games" },
+      { match: ["nfl+"], url: "https://www.nfl.com/plus/" },
+      { match: ["nba league pass"], url: "https://www.nba.com/watch/league-pass-stream" },
+      { match: ["hulu"], url: "https://www.hulu.com/hub/sports" },
+      { match: ["roku"], url: "https://therokuchannel.roku.com/" }
     ];
 
     function resolveWatchLink(channelName) {
@@ -423,42 +778,22 @@
       const lower = clean.toLowerCase();
       if (!clean) return null;
 
-      // 1. Check streaming-only apps first (e.g. "ESPN+" before "ESPN")
       for (const app of STREAMING_APPS) {
         if (app.match.some(m => lower.includes(m))) {
-          return {
-            channel: clean,
-            url: app.url,
-            type: "stream",
-            text: `▶ ${clean}`
-          };
+          return { channel: clean, url: app.url, type: "stream", text: `▶ ${clean}` };
         }
       }
 
-      // 2. Check channels available on YouTube TV
       if (YTTV_CHANNELS.some(ch => lower === ch || lower.startsWith(ch + " "))) {
-        return {
-          channel: clean,
-          url: "https://tv.youtube.com/live",
-          type: "yttv",
-          text: `▶ ${clean} · YTTV`
-        };
+        return { channel: clean, url: "https://tv.youtube.com/live", type: "yttv", text: `▶ ${clean} · YTTV` };
       }
 
-      // 3. Fallback: show channel name without broken link
-      return {
-        channel: clean,
-        url: null,
-        type: "other",
-        text: `📺 ${clean}`
-      };
+      return { channel: clean, url: null, type: "other", text: clean };
     }
 
     function extractBroadcasts(comp) {
       const names = new Set();
-      (comp?.broadcasts || []).forEach(b => {
-        (b.names || []).forEach(n => names.add(n));
-      });
+      (comp?.broadcasts || []).forEach(b => (b.names || []).forEach(n => names.add(n)));
       (comp?.geoBroadcasts || []).forEach(gb => {
         if (gb.media?.shortName) names.add(gb.media.shortName);
       });
@@ -469,17 +804,8 @@
       const links = extractBroadcasts(comp);
       if (links.length === 0) return "";
       return links.slice(0, 3).map(item => {
-        if (!item.url) {
-          return `<span class="watch-pill">${escapeHtml(item.text)}</span>`;
-        }
-        return `
-          <a
-            class="watch-pill ${item.type}"
-            href="${escapeHtml(item.url)}"
-            target="_blank"
-            rel="noopener noreferrer"
-          >${escapeHtml(item.text)}</a>
-        `;
+        if (!item.url) return `<span class="watch-pill">${escapeHtml(item.text)}</span>`;
+        return `<a class="watch-pill ${item.type}" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.text)}</a>`;
       }).join("");
     }
 
@@ -491,8 +817,14 @@
     const favChipsEl = document.getElementById("fav-chips");
     const favInputEl = document.getElementById("fav-input");
     const favLeagueSelectEl = document.getElementById("fav-league-select");
+    const collegeFilterEl = document.getElementById("college-filter");
+    const collegeAllLabelEl = document.getElementById("college-all-label");
+    const dateBarEl = document.getElementById("date-bar");
+    const customDateInputEl = document.getElementById("custom-date-input");
+    const customDateLabelEl = document.getElementById("custom-date-label");
 
     const summaryCache = new Map();
+    const standingsCache = new Map();
 
     function escapeHtml(str) {
       return String(str ?? "")
@@ -514,10 +846,8 @@
     }
 
     let favorites = loadFavorites();
-
     function saveFavorites() {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites)); }
-      catch {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites)); } catch {}
     }
 
     function getLeagueFavs(leaguePath) { return favorites[leaguePath] || []; }
@@ -525,20 +855,77 @@
     function hasAnyFavorites() { return getActiveFavLeagues().length > 0; }
 
     let currentLeague = hasAnyFavorites() ? "my-teams" : LEAGUES[0].path;
-    let currentView = "scores";
+    let currentView = "scores"; // "scores" | "standings" | "news"
+    let collegeFilter = "all";
+    let dateMode = "today"; // "yesterday" | "today" | "tomorrow" | "custom"
+    let customDateStr = "";
+    let selectedStandingsGroup = "all";
     let lastEvents = [];
     let lastCombinedData = [];
 
+    /* ---------- DATE HELPERS ---------- */
+    function formatYYYYMMDD(dateObj) {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const d = String(dateObj.getDate()).padStart(2, "0");
+      return `${y}${m}${d}`;
+    }
+
+    function formatShortDate(yyyyMmDd) {
+      const [y, m, d] = yyyyMmDd.split("-").map(Number);
+      const dt = new Date(y, m - 1, d);
+      return dt.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    }
+
+    function getActiveDateParam() {
+      if (dateMode === "today") return "";
+      if (dateMode === "custom" && customDateStr) return customDateStr.replace(/-/g, "");
+      const d = new Date();
+      if (dateMode === "yesterday") d.setDate(d.getDate() - 1);
+      if (dateMode === "tomorrow") d.setDate(d.getDate() + 1);
+      return formatYYYYMMDD(d);
+    }
+
+    function getScoreboardUrl(league) {
+      const base = `https://site.api.espn.com/apis/site/v2/sports/${league.path}/scoreboard`;
+      const params = new URLSearchParams(league.queryParams || "");
+      const dateParam = getActiveDateParam();
+      if (dateParam) params.set("dates", dateParam);
+      const qs = params.toString();
+      return qs ? `${base}?${qs}` : base;
+    }
+
+    function updateDateUI() {
+      dateBarEl.classList.toggle("hidden", currentView !== "scores");
+      document.querySelectorAll("#date-tabs button").forEach(b => {
+        b.classList.toggle("active", b.dataset.dateMode === dateMode);
+      });
+      if (dateMode === "custom" && customDateStr) {
+        customDateLabelEl.classList.add("active");
+        customDateLabelEl.textContent = `📅 ${formatShortDate(customDateStr)}`;
+      } else {
+        customDateLabelEl.classList.remove("active");
+        customDateLabelEl.textContent = "📅 Date";
+      }
+    }
+
     function buildNavigation() {
-      const myTeamsBtn = `<button data-path="my-teams" class="my-teams-btn ${currentLeague === "my-teams" ? "active" : ""}">★ My Teams</button>`;
+      const myTeamsBtn = `<button data-path="my-teams" class="league-btn my-teams-btn ${currentLeague === "my-teams" ? "active" : ""}">★ My Teams</button>`;
       const otherBtns = LEAGUES.map(l =>
-        `<button data-path="${l.path}" class="${currentLeague === l.path ? "active" : ""}">${l.label}</button>`
+        `<button data-path="${l.path}" class="league-btn ${currentLeague === l.path ? "active" : ""}">${l.label}</button>`
       ).join("");
       leagueButtonsEl.innerHTML = myTeamsBtn + otherBtns;
 
       favLeagueSelectEl.innerHTML = LEAGUES.map(l =>
         `<option value="${l.path}">${l.label}</option>`
       ).join("");
+    }
+
+    function updateCollegeFilterUI() {
+      const league = leagueMap[currentLeague];
+      const show = Boolean(league?.allLabel && currentView === "scores");
+      collegeFilterEl.classList.toggle("visible", show);
+      if (show) collegeAllLabelEl.textContent = league.allLabel;
     }
 
     function matchesFav(fav, id, names) {
@@ -574,6 +961,8 @@
         } else if (lastEvents.length > 0) {
           renderCurrentScoreboard();
         }
+      } else if (currentView === "standings") {
+        loadCurrentView();
       }
     }
 
@@ -587,6 +976,8 @@
       if (currentView === "scores") {
         if (currentLeague === "my-teams") renderCombinedScoreboard();
         else if (lastEvents.length > 0) renderCurrentScoreboard();
+      } else if (currentView === "standings") {
+        loadCurrentView();
       }
     }
 
@@ -608,7 +999,7 @@
         });
         favChipsEl.innerHTML = allChips.length > 0
           ? allChips.join("")
-          : `<span style="font-size:0.82rem;color:#94a3b8;">No pins yet. Pick a league above and add a team or player, or tap ☆ on any scoreboard.</span>`;
+          : `<span style="font-size:0.82rem;color:#8e8e93;">No pins yet. Pick a league above or tap ☆ on any scoreboard.</span>`;
         return;
       }
 
@@ -617,7 +1008,7 @@
       favLeagueSelectEl.style.display = "none";
       const list = getLeagueFavs(currentLeague);
       if (list.length === 0) {
-        favChipsEl.innerHTML = `<span style="font-size:0.82rem;color:#94a3b8;">No pins yet. Tap ☆ on any team or player, or add one above.</span>`;
+        favChipsEl.innerHTML = `<span style="font-size:0.82rem;color:#8e8e93;">No pins yet. Tap ☆ on any team or player, or add one above.</span>`;
         return;
       }
       favChipsEl.innerHTML = list.map((fav, idx) => `
@@ -645,13 +1036,296 @@
       return 2;
     }
 
+    function isTop25Event(event) {
+      const comps = event.competitions?.[0]?.competitors || [];
+      return comps.some(c => {
+        const r = c?.curatedRank?.current;
+        return r && r >= 1 && r <= 25;
+      });
+    }
+
+    /* ---------- STANDINGS LOGIC ---------- */
+    const PREFERRED_STATS = {
+      "soccer/eng.1": [
+        { keys: ["gamesPlayed"], label: "GP" },
+        { keys: ["wins"], label: "W" },
+        { keys: ["ties"], label: "D" },
+        { keys: ["losses"], label: "L" },
+        { keys: ["pointDifferential"], label: "GD" },
+        { keys: ["points"], label: "PTS" }
+      ],
+      "soccer/uefa.champions": [
+        { keys: ["gamesPlayed"], label: "GP" },
+        { keys: ["wins"], label: "W" },
+        { keys: ["ties"], label: "D" },
+        { keys: ["losses"], label: "L" },
+        { keys: ["pointDifferential"], label: "GD" },
+        { keys: ["points"], label: "PTS" }
+      ],
+      "hockey/nhl": [
+        { keys: ["gamesPlayed"], label: "GP" },
+        { keys: ["wins"], label: "W" },
+        { keys: ["losses"], label: "L" },
+        { keys: ["otLosses", "OTLosses"], label: "OTL" },
+        { keys: ["points"], label: "PTS" }
+      ],
+      "football/nfl": [
+        { keys: ["wins"], label: "W" },
+        { keys: ["losses"], label: "L" },
+        { keys: ["ties"], label: "T" },
+        { keys: ["winPercent"], label: "PCT" },
+        { keys: ["pointDifferential", "differential"], label: "DIFF" }
+      ],
+      "basketball/nba": [
+        { keys: ["wins"], label: "W" },
+        { keys: ["losses"], label: "L" },
+        { keys: ["winPercent"], label: "PCT" },
+        { keys: ["gamesBehind"], label: "GB" },
+        { keys: ["streak"], label: "STRK" }
+      ],
+      "baseball/mlb": [
+        { keys: ["wins"], label: "W" },
+        { keys: ["losses"], label: "L" },
+        { keys: ["winPercent"], label: "PCT" },
+        { keys: ["gamesBehind"], label: "GB" },
+        { keys: ["streak"], label: "STRK" }
+      ],
+      "football/college-football": [
+        { keys: ["vs. Conf.", "conferenceRecord"], label: "CONF" },
+        { keys: ["overall"], label: "OVR" },
+        { keys: ["winPercent"], label: "PCT" }
+      ],
+      "basketball/mens-college-basketball": [
+        { keys: ["vs. Conf.", "conferenceRecord"], label: "CONF" },
+        { keys: ["overall"], label: "OVR" },
+        { keys: ["winPercent"], label: "PCT" }
+      ],
+      "racing/f1": [
+        { keys: ["championshipPts", "points"], label: "PTS" },
+        { keys: ["wins"], label: "W" },
+        { keys: ["poles"], label: "POLES" },
+        { keys: ["top5", "podiums"], label: "T5" }
+      ],
+      "golf/pga": [
+        { keys: ["cupPoints", "points", "fedexCupPoints"], label: "PTS" },
+        { keys: ["wins"], label: "W" },
+        { keys: ["topTen", "top10"], label: "T10" },
+        { keys: ["events"], label: "EVTS" }
+      ]
+    };
+
+    function extractStandingsGroups(node, parentTitle = "", out = []) {
+      if (!node) return out;
+      const title = node.name || node.shortName || parentTitle;
+
+      if (node.standings?.entries?.length) {
+        out.push({ title: title || "Standings", entries: node.standings.entries });
+      }
+      if (Array.isArray(node.children)) {
+        node.children.forEach(child => {
+          const nextTitle = child.name && title && child.name !== title && !title.includes(child.name)
+            ? (node.children.length > 1 && parentTitle ? `${title} · ${child.name}` : child.name)
+            : (child.name || title);
+          extractStandingsGroups(child, nextTitle, out);
+        });
+      }
+      return out;
+    }
+
+    function findStatObj(stats, keys) {
+      for (const k of keys) {
+        const lower = k.toLowerCase();
+        const found = stats.find(s =>
+          (s.name && s.name.toLowerCase() === lower) ||
+          (s.type && s.type.toLowerCase() === lower) ||
+          (s.shortDisplayName && s.shortDisplayName.toLowerCase() === lower) ||
+          (s.abbreviation && s.abbreviation.toLowerCase() === lower)
+        );
+        if (found) return found;
+      }
+      return null;
+    }
+
+    function pickStandingsColumns(entries, leaguePath) {
+      const sampleStats = entries[0]?.stats || [];
+      const prefs = PREFERRED_STATS[leaguePath] || [];
+      const matched = [];
+
+      prefs.forEach(col => {
+        if (findStatObj(sampleStats, col.keys)) matched.push(col);
+      });
+
+      if (matched.length >= 2) return matched;
+
+      // Fallback: pick first 4 useful stats dynamically
+      const skip = new Set(["rank", "playoffseed", "rankchange", "clincher"]);
+      return sampleStats
+        .filter(s => !skip.has((s.name || "").toLowerCase()) && s.displayValue !== undefined)
+        .slice(0, 4)
+        .map(s => ({
+          keys: [s.name || s.abbreviation || s.shortDisplayName],
+          label: s.shortDisplayName || s.abbreviation || s.name
+        }));
+    }
+
+    function getEntryMeta(entry) {
+      const entity = entry.team || entry.athlete || {};
+      const id = entity.id || "";
+      const name = entity.shortDisplayName || entity.displayName || entity.name || "TBD";
+      const fullName = entity.displayName || entity.name || name;
+      const abbr = entity.abbreviation || "";
+      const logo = entity.logos?.[0]?.href || entity.flag?.href || entity.headshot?.href || "";
+      return { id, name, fullName, abbr, logo };
+    }
+
+    function renderStandingsCard(group, leaguePath, showLeaguePill = false) {
+      const entries = group.entries || [];
+      if (entries.length === 0) return "";
+
+      const cols = pickStandingsColumns(entries, leaguePath);
+      const leagueLabel = leagueMap[leaguePath]?.label || "";
+
+      const rowsHtml = entries.map((entry, idx) => {
+        const stats = entry.stats || [];
+        const meta = getEntryMeta(entry);
+        const isFav = isFavorited(leaguePath, meta.id, [meta.name, meta.fullName, meta.abbr]);
+        const rankStat = findStatObj(stats, ["rank", "playoffSeed"]);
+        const rankDisplay = rankStat?.displayValue || (idx + 1);
+
+        const cellsHtml = cols.map(col => {
+          const st = findStatObj(stats, col.keys);
+          return `<td>${escapeHtml(st?.displayValue ?? "-")}</td>`;
+        }).join("");
+
+        return `
+          <tr class="${isFav ? "pinned-row" : ""}">
+            <td>
+              <div class="st-team-cell">
+                <span class="st-rank">${escapeHtml(rankDisplay)}</span>
+                ${meta.logo ? `<img class="st-logo" src="${escapeHtml(meta.logo)}" alt="" loading="lazy" />` : ""}
+                <span class="st-name">${isFav ? "★ " : ""}${escapeHtml(meta.name)}</span>
+              </div>
+            </td>
+            ${cellsHtml}
+          </tr>
+        `;
+      }).join("");
+
+      const headersHtml = cols.map(c => `<th>${escapeHtml(c.label)}</th>`).join("");
+
+      return `
+        <div class="standings-card">
+          <div class="standings-header">
+            <div class="standings-title">${escapeHtml(group.title)}</div>
+            ${showLeaguePill ? `<span class="league-pill">${escapeHtml(leagueLabel)}</span>` : ""}
+          </div>
+          <div class="standings-table-wrap">
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th>Team / Driver</th>
+                  ${headersHtml}
+                </tr>
+              </thead>
+              <tbody>${rowsHtml}</tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    async function fetchStandingsGroups(leaguePath) {
+      if (standingsCache.has(leaguePath)) return standingsCache.get(leaguePath);
+      const res = await fetch(`https://site.api.espn.com/apis/v2/sports/${leaguePath}/standings`);
+      const data = await res.json();
+      const groups = extractStandingsGroups(data);
+      standingsCache.set(leaguePath, groups);
+      return groups;
+    }
+
+    function renderLeagueStandings(groups, leaguePath) {
+      if (groups.length === 0) {
+        contentEl.innerHTML = `<div class="empty">Standings are not available for this league right now.</div>`;
+        return;
+      }
+
+      let filterHtml = "";
+      if (groups.length > 3) {
+        const options = [
+          `<option value="all" ${selectedStandingsGroup === "all" ? "selected" : ""}>All Conferences / Groups (${groups.length})</option>`,
+          ...groups.map((g, i) =>
+            `<option value="${i}" ${String(selectedStandingsGroup) === String(i) ? "selected" : ""}>${escapeHtml(g.title)}</option>`
+          )
+        ].join("");
+        filterHtml = `
+          <div class="standings-filter-bar">
+            <select class="standings-select" id="standings-group-select">${options}</select>
+          </div>
+        `;
+      }
+
+      const toRender = selectedStandingsGroup === "all" || groups.length <= 3
+        ? groups
+        : [groups[Number(selectedStandingsGroup)]].filter(Boolean);
+
+      contentEl.innerHTML = filterHtml + toRender.map(g => renderStandingsCard(g, leaguePath, false)).join("");
+    }
+
+    async function loadStandings() {
+      contentEl.innerHTML = `<div class="empty">Loading standings...</div>`;
+      try {
+        const groups = await fetchStandingsGroups(currentLeague);
+        renderLeagueStandings(groups, currentLeague);
+      } catch {
+        contentEl.innerHTML = `<div class="empty">Could not load standings right now. Try refreshing.</div>`;
+      }
+    }
+
+    async function loadCombinedStandings() {
+      const activeLeagues = getActiveFavLeagues();
+      if (activeLeagues.length === 0) {
+        contentEl.innerHTML = `<div class="empty">Pin a few teams or drivers first to see their conference and league tables here.</div>`;
+        return;
+      }
+
+      contentEl.innerHTML = `<div class="empty">Loading standings for your pinned teams...</div>`;
+      const results = await Promise.allSettled(
+        activeLeagues.map(async league => ({
+          league,
+          groups: await fetchStandingsGroups(league.path)
+        }))
+      );
+
+      const cardsHtml = [];
+      results.forEach(r => {
+        if (r.status !== "fulfilled") return;
+        const { league, groups } = r.value;
+        groups.forEach(group => {
+          const hasPinned = (group.entries || []).some(entry => {
+            const meta = getEntryMeta(entry);
+            return isFavorited(league.path, meta.id, [meta.name, meta.fullName, meta.abbr]);
+          });
+          if (hasPinned) {
+            cardsHtml.push(renderStandingsCard(group, league.path, true));
+          }
+        });
+      });
+
+      if (cardsHtml.length === 0) {
+        contentEl.innerHTML = `<div class="empty">No standings tables matched your pinned teams right now.</div>`;
+        return;
+      }
+
+      contentEl.innerHTML = cardsHtml.join("");
+    }
+
     /* ---------- BOX SCORE RENDERING ---------- */
     function renderBoxScoreHtml(data, activeSubtab = "stats") {
       const teams = data.boxscore?.teams || [];
       const awayTeam = teams[0];
       const homeTeam = teams[1];
 
-      let statsHtml = `<div class="empty" style="padding:12px 0;">Team stats not available yet.</div>`;
+      let statsHtml = `<div class="empty" style="padding:14px 0;">Team stats not available yet.</div>`;
       if (awayTeam && homeTeam && awayTeam.statistics?.length) {
         const homeStatMap = Object.fromEntries(
           (homeTeam.statistics || []).map(s => [s.name || s.label, s.displayValue])
@@ -677,10 +1351,9 @@
         `;
       }
 
-      let leadersHtml = `<div class="empty" style="padding:12px 0;">Game leaders not posted yet.</div>`;
-      const leaderGroups = data.leaders || [];
+      let leadersHtml = `<div class="empty" style="padding:14px 0;">Game leaders not posted yet.</div>`;
       const leaderItems = [];
-      leaderGroups.forEach(group => {
+      (data.leaders || []).forEach(group => {
         const teamAbbr = group.team?.abbreviation || "";
         (group.leaders || []).forEach(cat => {
           const top = cat.leaders?.[0];
@@ -695,8 +1368,8 @@
       });
       if (leaderItems.length > 0) leadersHtml = leaderItems.join("");
 
-      let playsHtml = `<div class="empty" style="padding:12px 0;">Play-by-play not available yet.</div>`;
-      const rawPlays = data.scoringPlays?.length ? data.scoringPlays : (data.plays || []);
+      let playsHtml = `<div class="empty" style="padding:14px 0;">Play-by-play not available yet.</div>`;
+      const rawPlays = data.scoringPlays?.length ? data.scoringPlays : (data.keyEvents?.length ? data.keyEvents : (data.plays || []));
       if (rawPlays.length > 0) {
         const recent = rawPlays.slice(-10).reverse();
         playsHtml = recent.map(p => {
@@ -707,7 +1380,7 @@
           return `
             <div class="play-item">
               <div class="play-clock">${escapeHtml([period, clock].filter(Boolean).join(" "))}${escapeHtml(scoreLine)}</div>
-              <div>${escapeHtml(p.text || p.shortText || "")}</div>
+              <div>${escapeHtml(p.text || p.shortText || p.type?.text || "")}</div>
             </div>
           `;
         }).join("");
@@ -719,7 +1392,7 @@
 
       return `
         <div class="box-subtabs">
-          <button type="button" data-box-tab="stats" class="${activeSubtab === "stats" ? "active" : ""}">Team Stats</button>
+          <button type="button" data-box-tab="stats" class="${activeSubtab === "stats" ? "active" : ""}">Stats</button>
           <button type="button" data-box-tab="leaders" class="${activeSubtab === "leaders" ? "active" : ""}">Leaders</button>
           <button type="button" data-box-tab="plays" class="${activeSubtab === "plays" ? "active" : ""}">Plays</button>
         </div>
@@ -746,16 +1419,14 @@
         return;
       }
 
-      drawer.innerHTML = `<div class="empty" style="padding:12px 0;">Loading box score...</div>`;
+      drawer.innerHTML = `<div class="empty" style="padding:14px 0;">Loading box score...</div>`;
       try {
-        const res = await fetch(
-          `https://site.api.espn.com/apis/site/v2/sports/${leaguePath}/summary?event=${eventId}`
-        );
+        const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${leaguePath}/summary?event=${eventId}`);
         const data = await res.json();
         summaryCache.set(cacheKey, data);
         drawer.innerHTML = renderBoxScoreHtml(data, "stats");
       } catch {
-        drawer.innerHTML = `<div class="empty" style="padding:12px 0;">Could not load box score.</div>`;
+        drawer.innerHTML = `<div class="empty" style="padding:14px 0;">Could not load box score.</div>`;
       }
     }
 
@@ -774,8 +1445,10 @@
       ]);
       const isPinned = Boolean(awayFav || homeFav);
 
+      const state = event.status?.type?.state || "post";
       const statusText = event.status?.type?.shortDetail || "";
-      const isLive = event.status?.type?.state === "in";
+      const isLive = state === "in";
+      const isFinal = state === "post";
       const leagueLabel = leagueMap[leaguePath]?.label || "";
       const watchHtml = renderWatchPills(comp);
 
@@ -785,8 +1458,9 @@
         const teamId = c?.team?.id || "";
         const shortName = c?.team?.shortDisplayName || "TBD";
         const fullName = c?.team?.displayName || shortName;
+        const isLoser = isFinal && c?.winner === false;
         return `
-          <div class="team-row">
+          <div class="team-row ${isLoser ? "loser" : ""}">
             <div class="team-info">
               <button
                 type="button"
@@ -797,9 +1471,9 @@
                 data-fav-full="${escapeHtml(fullName)}"
                 aria-label="Pin ${escapeHtml(shortName)}"
               >${starred ? "★" : "☆"}</button>
-              ${rankHtml}
               <img src="${c?.team?.logo || ""}" alt="" />
-              <span>${escapeHtml(shortName)}</span>
+              ${rankHtml}
+              <span class="team-name">${escapeHtml(shortName)}</span>
               <span class="record">${escapeHtml(c?.records?.[0]?.summary || "")}</span>
             </div>
             <div class="score">${escapeHtml(c?.score ?? "-")}</div>
@@ -809,7 +1483,7 @@
 
       return {
         isPinned,
-        state: event.status?.type?.state || "post",
+        state,
         html: `
           <div class="game-card clickable ${isPinned ? "pinned" : ""}" data-event-id="${escapeHtml(event.id)}" data-league="${leaguePath}">
             <div class="status-row">
@@ -823,7 +1497,7 @@
             ${renderTeam(home, homeFav)}
             <div class="card-footer">
               <div class="watch-list">${watchHtml}</div>
-              <div class="tap-hint">Box score ▾</div>
+              <div class="tap-hint">Details ▾</div>
             </div>
             <div class="box-drawer"></div>
           </div>
@@ -881,7 +1555,7 @@
                     aria-label="Pin ${escapeHtml(name)}"
                   >${starred ? "★" : "☆"}</button>
                   <span class="pos">${escapeHtml(pos)}</span>
-                  <span>${escapeHtml(name)}</span>
+                  <span class="team-name" style="font-size:0.92rem;">${escapeHtml(name)}</span>
                 </div>
                 <div class="score" style="font-size:0.95rem;">${escapeHtml(score)}</div>
               </div>
@@ -910,19 +1584,25 @@
     }
 
     function renderCurrentScoreboard() {
-      if (lastEvents.length === 0) {
-        contentEl.innerHTML = `<div class="empty">No active events scheduled right now.</div>`;
-        return;
-      }
-
       const league = leagueMap[currentLeague];
-      if (league.type === "leaderboard") {
-        contentEl.innerHTML = lastEvents.map(ev => renderLeaderboardCard(ev, currentLeague, false).html).join("");
+      let eventsToShow = lastEvents;
+
+      if (league?.allLabel && collegeFilter === "top25") {
+        eventsToShow = lastEvents.filter(isTop25Event);
+      }
+
+      if (eventsToShow.length === 0) {
+        contentEl.innerHTML = `<div class="empty">No events scheduled for this date.</div>`;
         return;
       }
 
-      const cards = lastEvents.map((ev, idx) => ({ ...renderTeamCard(ev, currentLeague, false), idx }));
-      cards.sort((a, b) => Number(b.isPinned) - Number(a.isPinned) || a.idx - b.idx);
+      if (league.type === "leaderboard") {
+        contentEl.innerHTML = eventsToShow.map(ev => renderLeaderboardCard(ev, currentLeague, false).html).join("");
+        return;
+      }
+
+      const cards = eventsToShow.map((ev, idx) => ({ ...renderTeamCard(ev, currentLeague, false), idx }));
+      cards.sort((a, b) => Number(b.isPinned) - Number(a.isPinned) || getStatePriority(a.state) - getStatePriority(b.state) || a.idx - b.idx);
       contentEl.innerHTML = cards.map(c => c.html).join("");
     }
 
@@ -932,7 +1612,7 @@
         contentEl.innerHTML = `
           <div class="empty">
             No teams or players pinned yet.<br/>
-            Switch to any league and tap <strong>☆</strong>, or tap <strong>★ Pins</strong> above to add your favorites.
+            Switch to any league and tap <strong>☆</strong>, or tap <strong>★ Pins</strong> above.
           </div>
         `;
         return;
@@ -959,20 +1639,21 @@
       matchedCards.sort((a, b) => getStatePriority(a.state) - getStatePriority(b.state));
 
       if (matchedCards.length === 0) {
-        contentEl.innerHTML = `<div class="empty">None of your pinned teams or players have an active event on the scoreboard right now.</div>`;
+        contentEl.innerHTML = `<div class="empty">None of your pinned teams or players have an event on this date.</div>`;
         return;
       }
 
       const quietHtml = quietLeagues.length > 0
-        ? `<div class="quiet-note">No current games for your pins in: ${quietLeagues.join(", ")}</div>`
+        ? `<div class="quiet-note">No games on this date for your pins in: ${quietLeagues.join(", ")}</div>`
         : "";
       contentEl.innerHTML = matchedCards.map(c => c.html).join("") + quietHtml;
     }
 
     async function loadScores() {
+      const league = leagueMap[currentLeague];
       contentEl.innerHTML = `<div class="empty">Loading scores...</div>`;
       try {
-        const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${currentLeague}/scoreboard`);
+        const res = await fetch(getScoreboardUrl(league));
         const data = await res.json();
         lastEvents = data.events || [];
         renderCurrentScoreboard();
@@ -992,7 +1673,7 @@
       contentEl.innerHTML = `<div class="empty">Loading your pinned teams...</div>`;
       const results = await Promise.allSettled(
         activeLeagues.map(async league => {
-          const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${league.path}/scoreboard`);
+          const res = await fetch(getScoreboardUrl(league));
           const data = await res.json();
           return { league, events: data.events || [] };
         })
@@ -1040,8 +1721,7 @@
 
     async function loadNews() {
       const league = leagueMap[currentLeague];
-      contentEl.innerHTML = `<div class="empty">Loading news from multiple sources...</div>`;
-
+      contentEl.innerHTML = `<div class="empty">Loading news...</div>`;
       const results = await Promise.allSettled(
         (league.rss || []).map(feed => fetchRssFeed(feed, league.label))
       );
@@ -1060,7 +1740,7 @@
       });
 
       if (articles.length === 0) {
-        contentEl.innerHTML = `<div class="empty">Could not load RSS feeds right now. Try refreshing in a moment.</div>`;
+        contentEl.innerHTML = `<div class="empty">Could not load RSS feeds right now. Try refreshing.</div>`;
         return;
       }
 
@@ -1071,12 +1751,11 @@
     async function loadCombinedNews() {
       const activeLeagues = getActiveFavLeagues();
       if (activeLeagues.length === 0) {
-        contentEl.innerHTML = `<div class="empty">Pin a few teams or players first to see a combined multi-source news feed here.</div>`;
+        contentEl.innerHTML = `<div class="empty">Pin a few teams or players first to see a combined news feed here.</div>`;
         return;
       }
 
-      contentEl.innerHTML = `<div class="empty">Loading multi-source news for your pinned teams...</div>`;
-
+      contentEl.innerHTML = `<div class="empty">Loading news for your pinned teams...</div>`;
       const jobs = [];
       activeLeagues.forEach(league => {
         (league.rss || []).forEach(feed => {
@@ -1092,7 +1771,6 @@
         if (r.status !== "fulfilled") return;
         const { league, items } = r.value;
         const favs = getLeagueFavs(league.path);
-
         items.forEach(item => {
           const key = item.link || item.title;
           if (seen.has(key)) return;
@@ -1109,7 +1787,7 @@
       });
 
       if (matched.length === 0) {
-        contentEl.innerHTML = `<div class="empty">No recent headlines across CBS, Yahoo, or BBC directly mention your pinned teams right now.</div>`;
+        contentEl.innerHTML = `<div class="empty">No recent headlines directly mention your pinned teams right now.</div>`;
         return;
       }
 
@@ -1119,35 +1797,68 @@
 
     function loadCurrentView() {
       renderFavChips();
+      updateDateUI();
+      updateCollegeFilterUI();
       if (currentLeague === "my-teams") {
         if (currentView === "scores") loadCombinedScores();
+        else if (currentView === "standings") loadCombinedStandings();
         else loadCombinedNews();
       } else {
         if (currentView === "scores") loadScores();
+        else if (currentView === "standings") loadStandings();
         else loadNews();
       }
     }
 
     /* ---------- EVENT LISTENERS ---------- */
     leagueButtonsEl.addEventListener("click", (e) => {
-      if (e.target.tagName !== "BUTTON") return;
+      const btn = e.target.closest("button");
+      if (!btn) return;
       document.querySelectorAll("#league-buttons button").forEach(b => b.classList.remove("active"));
-      e.target.classList.add("active");
-      currentLeague = e.target.dataset.path;
+      btn.classList.add("active");
+      currentLeague = btn.dataset.path;
+      selectedStandingsGroup = "all";
       lastEvents = [];
       loadCurrentView();
     });
 
     document.getElementById("view-tabs").addEventListener("click", (e) => {
-      if (e.target.tagName !== "BUTTON") return;
+      const btn = e.target.closest("button");
+      if (!btn) return;
       document.querySelectorAll("#view-tabs button").forEach(b => b.classList.remove("active"));
-      e.target.classList.add("active");
-      currentView = e.target.dataset.view;
+      btn.classList.add("active");
+      currentView = btn.dataset.view;
       loadCurrentView();
     });
 
-    document.getElementById("fav-toggle-btn").addEventListener("click", () => {
-      favPanelEl.classList.toggle("open");
+    document.getElementById("date-tabs").addEventListener("click", (e) => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+      dateMode = btn.dataset.dateMode;
+      customDateStr = "";
+      customDateInputEl.value = "";
+      loadCurrentView();
+    });
+
+    customDateInputEl.addEventListener("change", (e) => {
+      if (!e.target.value) return;
+      dateMode = "custom";
+      customDateStr = e.target.value;
+      loadCurrentView();
+    });
+
+    document.getElementById("college-filter-tabs").addEventListener("click", (e) => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+      document.querySelectorAll("#college-filter-tabs button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      collegeFilter = btn.dataset.filter;
+      renderCurrentScoreboard();
+    });
+
+    document.getElementById("fav-toggle-btn").addEventListener("click", (e) => {
+      const isOpen = favPanelEl.classList.toggle("open");
+      e.target.classList.toggle("active", isOpen);
       renderFavChips();
     });
 
@@ -1166,8 +1877,15 @@
       if (idx !== undefined && leaguePath) removeFavorite(leaguePath, Number(idx));
     });
 
+    contentEl.addEventListener("change", (e) => {
+      if (e.target.id === "standings-group-select") {
+        selectedStandingsGroup = e.target.value;
+        const cached = standingsCache.get(currentLeague);
+        if (cached) renderLeagueStandings(cached, currentLeague);
+      }
+    });
+
     contentEl.addEventListener("click", (e) => {
-      // Allow Watch links to open directly without toggling box score
       if (e.target.closest(".watch-pill")) return;
 
       const starBtn = e.target.closest(".star-btn");
@@ -1202,13 +1920,14 @@
 
     document.getElementById("refresh-btn").addEventListener("click", () => {
       summaryCache.clear();
+      standingsCache.clear();
       loadCurrentView();
     });
 
     buildNavigation();
     loadCurrentView();
     setInterval(() => {
-      if (currentView === "scores") {
+      if (currentView === "scores" && dateMode === "today") {
         if (currentLeague === "my-teams") loadCombinedScores();
         else loadScores();
       }
