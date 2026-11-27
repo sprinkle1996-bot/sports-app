@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-title" content="Sports" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Sports</title>
-  <link id="favicon-link" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%231c1c1e'/%3E%3Cstop offset='100%25' stop-color='%23000000'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='40' fill='url(%23g)'/%3E%3Ccircle cx='90' cy='90' r='56' fill='none' stroke='%230a84ff' stroke-width='10'/%3E%3Cpath d='M90 34v112M34 90h112' stroke='%23ffd60a' stroke-width='6' stroke-linecap='round' opacity='0.85'/%3E%3Ccircle cx='90' cy='90' r='16' fill='%23ffffff'/%3E%3C/svg%3E" />
+  <link id="favicon-link" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='38' fill='%231b5e20'/%3E%3Crect x='0' y='0' width='180' height='26' fill='%23144518'/%3E%3Crect x='0' y='154' width='180' height='26' fill='%23144518'/%3E%3Crect x='0' y='48' width='180' height='22' fill='%23216e27'/%3E%3Crect x='0' y='92' width='180' height='22' fill='%23216e27'/%3E%3Crect x='0' y='136' width='180' height='18' fill='%23216e27'/%3E%3Cg stroke='%23ffffff' stroke-width='3' opacity='0.85'%3E%3Cline x1='14' y1='26' x2='166' y2='26'/%3E%3Cline x1='14' y1='58' x2='166' y2='58'/%3E%3Cline x1='14' y1='90' x2='166' y2='90' stroke-width='4'/%3E%3Cline x1='14' y1='122' x2='166' y2='122'/%3E%3Cline x1='14' y1='154' x2='166' y2='154'/%3E%3Crect x='14' y='14' width='152' height='152' rx='8' fill='none' stroke-width='4'/%3E%3C/g%3E%3Cellipse cx='90' cy='90' rx='24' ry='14' fill='%237a3b14' stroke='%23ffffff' stroke-width='3'/%3E%3Cline x1='80' y1='90' x2='100' y2='90' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E" />
   <link id="apple-icon-link" rel="apple-touch-icon" sizes="180x180" href="" />
   <style>
     :root {
@@ -447,7 +447,7 @@
     .player-table td:first-child { text-align: left; font-weight: 600; color: #fff; max-width: 135px; overflow: hidden; text-overflow: ellipsis; }
     .player-pos { color: var(--text-dim); font-size: 0.68rem; font-weight: 600; margin-left: 4px; }
 
-    /* Highlights & Clips Tab */
+    /* Highlights & X Tab */
     .x-section-title {
       font-size: 0.72rem;
       font-weight: 800;
@@ -477,61 +477,44 @@
       text-decoration: none;
       cursor: pointer;
     }
+    .x-action-btn.x-primary {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.22);
+    }
     .x-action-btn.yt-btn {
       grid-column: 1 / -1;
       background: rgba(255, 69, 58, 0.14);
       border-color: rgba(255, 69, 58, 0.35);
       color: #ff6961;
     }
-    .clip-card {
-      display: block;
-      text-decoration: none;
-      color: inherit;
+    .x-embed-wrap {
+      margin-bottom: 14px;
+      background: #111113;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+    }
+    .x-embed-note { font-size: 0.72rem; color: var(--text-sec); margin: 6px 0 0; text-align: center; }
+    .video-card {
       background: #111113;
       border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
       margin-bottom: 10px;
     }
-    .clip-thumb-wrap {
-      position: relative;
+    .video-card video {
       width: 100%;
-      aspect-ratio: 16 / 9;
-      background: #000;
-      overflow: hidden;
-    }
-    .clip-thumb-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      max-height: 220px;
       display: block;
-      opacity: 0.88;
+      background: #000;
     }
-    .clip-play-badge {
-      position: absolute;
-      inset: 0;
-      margin: auto;
-      width: 48px;
-      height: 48px;
-      border-radius: 999px;
-      background: rgba(0, 0, 0, 0.72);
-      border: 2px solid rgba(255, 255, 255, 0.9);
-      color: #fff;
-      font-size: 1.15rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding-left: 3px;
+    .video-title {
+      padding: 8px 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #e5e5ea;
+      line-height: 1.3;
     }
-    .clip-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 11px;
-    }
-    .clip-title { font-size: 0.82rem; font-weight: 600; color: #e5e5ea; line-height: 1.3; }
-    .clip-badge { font-size: 0.7rem; font-weight: 700; color: #64d2ff; white-space: nowrap; flex-shrink: 0; }
 
     .stat-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; font-variant-numeric: tabular-nums; }
     .stat-table th, .stat-table td { padding: 7px 4px; border-bottom: 1px solid var(--border); }
@@ -654,40 +637,72 @@
   </div>
 
   <script>
-    /* ---------- GENERATE CRISP 180x180 PNG APP ICON FOR iOS ---------- */
-    (function generateAppleTouchIcon() {
+    /* ---------- GENERATE CRISP 180x180 FOOTBALL FIELD ICON FOR iOS ---------- */
+    (function generateFootballFieldIcon() {
       try {
         const canvas = document.createElement("canvas");
         canvas.width = 180;
         canvas.height = 180;
         const ctx = canvas.getContext("2d");
 
-        const grad = ctx.createLinearGradient(0, 0, 180, 180);
-        grad.addColorStop(0, "#1c1c1e");
-        grad.addColorStop(1, "#000000");
-        ctx.fillStyle = grad;
+        // Base turf green
+        ctx.fillStyle = "#1b5e20";
         ctx.fillRect(0, 0, 180, 180);
 
+        // Alternating mown turf stripes
+        ctx.fillStyle = "#216e27";
+        for (let y = 26; y < 154; y += 32) {
+          ctx.fillRect(0, y, 180, 16);
+        }
+
+        // Darker end zones
+        ctx.fillStyle = "#124216";
+        ctx.fillRect(0, 0, 180, 26);
+        ctx.fillRect(0, 154, 180, 26);
+
+        // Outer field border
+        ctx.strokeStyle = "rgba(255,255,255,0.9)";
+        ctx.lineWidth = 4;
+        ctx.strokeRect(14, 14, 152, 152);
+
+        // Yard lines
+        ctx.lineWidth = 2.5;
+        [26, 58, 90, 122, 154].forEach(y => {
+          ctx.beginPath();
+          ctx.moveTo(14, y);
+          ctx.lineTo(166, y);
+          ctx.stroke();
+        });
+
+        // Hash marks
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "rgba(255,255,255,0.65)";
+        for (let y = 34; y <= 146; y += 16) {
+          if (y === 58 || y === 90 || y === 122) continue;
+          ctx.beginPath();
+          ctx.moveTo(64, y); ctx.lineTo(72, y);
+          ctx.moveTo(108, y); ctx.lineTo(116, y);
+          ctx.stroke();
+        }
+
+        // Center football
         ctx.beginPath();
-        ctx.arc(90, 90, 56, 0, Math.PI * 2);
-        ctx.strokeStyle = "#0a84ff";
-        ctx.lineWidth = 10;
+        ctx.ellipse(90, 90, 25, 14, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "#7a3b14";
+        ctx.fill();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "#ffffff";
         ctx.stroke();
 
+        // Football laces
         ctx.beginPath();
-        ctx.moveTo(90, 34);
-        ctx.lineTo(90, 146);
-        ctx.moveTo(34, 90);
-        ctx.lineTo(146, 90);
-        ctx.strokeStyle = "rgba(255, 214, 10, 0.85)";
-        ctx.lineWidth = 6;
+        ctx.moveTo(79, 90); ctx.lineTo(101, 90);
+        [83, 88, 93, 98].forEach(x => {
+          ctx.moveTo(x, 86); ctx.lineTo(x, 94);
+        });
+        ctx.lineWidth = 2;
         ctx.lineCap = "round";
         ctx.stroke();
-
-        ctx.beginPath();
-        ctx.arc(90, 90, 16, 0, Math.PI * 2);
-        ctx.fillStyle = "#ffffff";
-        ctx.fill();
 
         const pngUrl = canvas.toDataURL("image/png");
         const link = document.getElementById("apple-icon-link");
@@ -879,6 +894,57 @@
       `;
     }
 
+    /* ---------- X (TWITTER) WIDGET LOADER ---------- */
+    let xWidgetLoaded = false;
+    function ensureXWidgetScript(container) {
+      if (window.twttr?.widgets) {
+        window.twttr.widgets.load(container);
+        return;
+      }
+      if (!xWidgetLoaded) {
+        xWidgetLoaded = true;
+        const s = document.createElement("script");
+        s.src = "https://platform.twitter.com/widgets.js";
+        s.async = true;
+        s.onload = () => { if (window.twttr?.widgets) window.twttr.widgets.load(container); };
+        document.body.appendChild(s);
+      }
+    }
+
+    function guessXHandle(team, leaguePath) {
+      const name = (team?.shortDisplayName || team?.name || "").toLowerCase();
+      const abbr = (team?.abbreviation || "").toLowerCase();
+      const map = {
+        "clemson": leaguePath.includes("basketball") ? "ClemsonMBB" : "ClemsonFB",
+        "south carolina": leaguePath.includes("basketball") ? "GamecockMBB" : "GamecockFB",
+        "capitals": "Capitals",
+        "commanders": "Commanders",
+        "cowboys": "dallascowboys",
+        "padres": "Padres",
+        "panthers": leaguePath.includes("hockey") ? "FlaPanthers" : "Panthers",
+        "chiefs": "Chiefs",
+        "eagles": "Eagles",
+        "ravens": "Ravens",
+        "bills": "BuffaloBills",
+        "lions": "Lions",
+        "49ers": "49ers",
+        "lakers": "Lakers",
+        "celtics": "celtics",
+        "warriors": "warriors",
+        "arsenal": "Arsenal",
+        "liverpool": "LFC",
+        "man city": "ManCity",
+        "chelsea": "ChelseaFC",
+        "man utd": "ManUtd",
+        "real madrid": "realmadrid",
+        "barcelona": "FCBarcelona"
+      };
+      for (const [k, handle] of Object.entries(map)) {
+        if (name.includes(k)) return handle;
+      }
+      return (team?.name || team?.shortDisplayName || abbr).replace(/[^a-zA-Z0-9]/g, "");
+    }
+
     const leagueMap = Object.fromEntries(LEAGUES.map(l => [l.path, l]));
     const leagueButtonsEl = document.getElementById("league-buttons");
     const contentEl = document.getElementById("content");
@@ -938,7 +1004,7 @@
     let lastNewsArticles = [];
     let lastCombinedStandings = [];
 
-    /* ---------- INSTANT DOM-LEVEL SWITCHERS (ZERO CACHE LOOKUP) ---------- */
+    /* ---------- INSTANT DOM-LEVEL SWITCHERS ---------- */
     window.__switchPlayerTeam = function(btn, selection) {
       const container = btn.closest(".players-root");
       if (!container) return;
@@ -966,6 +1032,20 @@
       if (summaryCache.has(cacheKey)) {
         drawer.innerHTML = renderBoxScoreHtml(summaryCache.get(cacheKey), leaguePath, activeTab);
       }
+    };
+
+    window.__loadXTimeline = function(btn, handle) {
+      const slot = btn.closest(".box-body")?.querySelector(".x-embed-slot");
+      if (!slot || !handle) return;
+      slot.innerHTML = `
+        <div class="x-embed-wrap">
+          <a class="twitter-timeline" data-theme="dark" data-height="420" href="https://x.com/${escapeHtml(handle)}">
+            Loading @${escapeHtml(handle)} on X...
+          </a>
+          <div class="x-embed-note">Signed in to X in Safari? Posts load right here. Otherwise tap the link above to open in the X app.</div>
+        </div>
+      `;
+      ensureXWidgetScript(slot);
     };
 
     /* ---------- DATE HELPERS ---------- */
@@ -1478,7 +1558,7 @@
       `;
     }
 
-    /* ---------- PLAYER STAT BREAKDOWNS (DOM-PRELOADED FOR INSTANT SWITCHING) ---------- */
+    /* ---------- PLAYER STAT BREAKDOWNS (INSTANT DOM SWITCHING) ---------- */
     function renderTeamPaneContent(teamObj) {
       const statGroups = (teamObj.statistics || []).filter(g => g.athletes && g.athletes.length > 0);
       const teamName = teamObj.team?.shortDisplayName || teamObj.team?.displayName || teamObj.team?.abbreviation || "Team";
@@ -1559,7 +1639,7 @@
       return `<div class="players-root">${toggleHtml}${panesHtml}</div>`;
     }
 
-    /* ---------- HIGHLIGHTS (ESPN CLIPS + YOUTUBE + X) ---------- */
+    /* ---------- HIGHLIGHTS: X FIRST -> AD-FREE DIRECT VIDEO -> YOUTUBE ---------- */
     function renderHighlightsHtml(data, leaguePath) {
       const headerComp = data.header?.competitions?.[0];
       const comps = headerComp?.competitors || [];
@@ -1568,45 +1648,42 @@
 
       const awayName = awayTeam.shortDisplayName || awayTeam.abbreviation || "Away";
       const homeName = homeTeam.shortDisplayName || homeTeam.abbreviation || "Home";
+      const awayHandle = guessXHandle(awayTeam, leaguePath);
+      const homeHandle = guessXHandle(homeTeam, leaguePath);
 
-      const ytQuery = `${awayName} vs ${homeName} highlights`;
-      const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(ytQuery)}`;
       const awayXUrl = `https://x.com/search?q=${encodeURIComponent(awayName + " highlights")}&f=video`;
       const homeXUrl = `https://x.com/search?q=${encodeURIComponent(homeName + " highlights")}&f=video`;
+      const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(awayName + " vs " + homeName + " highlights")}`;
 
-      const videos = (data.videos || []).slice(0, 5);
-      const clipsHtml = videos.length > 0
-        ? `
-          <div class="x-section-title">ESPN Game Clips</div>
-          ${videos.map(v => {
-            const webUrl = v.links?.web?.href || (v.id ? `https://www.espn.com/video/clip?id=${v.id}` : "");
-            const poster = v.thumbnail || "";
-            if (!webUrl) return "";
-            return `
-              <a class="clip-card" href="${escapeHtml(webUrl)}" target="_blank" rel="noopener noreferrer">
-                ${poster ? `
-                  <div class="clip-thumb-wrap">
-                    <img src="${escapeHtml(poster)}" alt="" loading="lazy" />
-                    <div class="clip-play-badge">▶</div>
-                  </div>
-                ` : ""}
-                <div class="clip-footer">
-                  <div class="clip-title">${escapeHtml(v.headline || v.title || "Watch Highlight")}</div>
-                  <span class="clip-badge">Watch ↗</span>
-                </div>
-              </a>
-            `;
-          }).join("")}
-        `
-        : "";
+      // Direct embedded video streams (bypasses espn.com website pre-roll ads)
+      const videos = (data.videos || []).slice(0, 4);
+      const directClipsHtml = videos.map(v => {
+        const src = v.links?.source || {};
+        const streamUrl = src.HD?.href || src.full?.href || src.mezzanine?.href || src.HLS?.HD?.href || src.HLS?.href || src.href || "";
+        if (!streamUrl) return "";
+        return `
+          <div class="video-card">
+            <video controls playsinline webkit-playsinline preload="metadata" poster="${escapeHtml(v.thumbnail || "")}" src="${escapeHtml(streamUrl)}"></video>
+            <div class="video-title">${escapeHtml(v.headline || v.title || "Highlight")}</div>
+          </div>
+        `;
+      }).filter(Boolean).join("");
 
       return `
-        ${clipsHtml}
-        <div class="x-section-title">Full Recaps & Team Videos</div>
+        <div class="x-section-title">1. Team X Feeds (In-App)</div>
+        <div class="x-btn-grid">
+          <button type="button" class="x-action-btn x-primary" onclick="event.stopPropagation(); window.__loadXTimeline(this, '${escapeHtml(awayHandle)}')">𝕏 @${escapeHtml(awayHandle)}</button>
+          <button type="button" class="x-action-btn x-primary" onclick="event.stopPropagation(); window.__loadXTimeline(this, '${escapeHtml(homeHandle)}')">𝕏 @${escapeHtml(homeHandle)}</button>
+          <a class="x-action-btn" href="${awayXUrl}" target="_blank" rel="noopener noreferrer">𝕏 ${escapeHtml(awayName)} Videos</a>
+          <a class="x-action-btn" href="${homeXUrl}" target="_blank" rel="noopener noreferrer">𝕏 ${escapeHtml(homeName)} Videos</a>
+        </div>
+        <div class="x-embed-slot"></div>
+
+        ${directClipsHtml ? `<div class="x-section-title">2. Direct In-App Clips (No Ads)</div>${directClipsHtml}` : ""}
+
+        <div class="x-section-title">Full Game Recaps</div>
         <div class="x-btn-grid">
           <a class="x-action-btn yt-btn" href="${ytUrl}" target="_blank" rel="noopener noreferrer">▶ YouTube: ${escapeHtml(awayName)} vs ${escapeHtml(homeName)}</a>
-          <a class="x-action-btn" href="${awayXUrl}" target="_blank" rel="noopener noreferrer">𝕏 ${escapeHtml(awayName)} Clips</a>
-          <a class="x-action-btn" href="${homeXUrl}" target="_blank" rel="noopener noreferrer">𝕏 ${escapeHtml(homeName)} Clips</a>
         </div>
       `;
     }
@@ -1671,7 +1748,7 @@
           <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'players')" class="${activeSubtab === "players" ? "active" : ""}">Players</button>
           <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'stats')" class="${activeSubtab === "stats" ? "active" : ""}">Team</button>
           <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'plays')" class="${activeSubtab === "plays" ? "active" : ""}">Plays</button>
-          <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'highlights')" class="${activeSubtab === "highlights" ? "active" : ""}">Clips</button>
+          <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'highlights')" class="${activeSubtab === "highlights" ? "active" : ""}">𝕏 Clips</button>
         </div>
         <div class="box-body">${body}</div>
       `;
@@ -2177,7 +2254,7 @@
     });
 
     contentEl.addEventListener("click", (e) => {
-      if (e.target.closest(".watch-pill") || e.target.closest("a.x-action-btn") || e.target.closest("a.clip-card")) return;
+      if (e.target.closest(".watch-pill") || e.target.closest("a.x-action-btn")) return;
 
       const starBtn = e.target.closest(".star-btn");
       if (starBtn) {
