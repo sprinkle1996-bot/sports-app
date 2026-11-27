@@ -378,7 +378,7 @@
       background: transparent;
       color: var(--text-sec);
       border: none;
-      padding: 6px 6px;
+      padding: 7px 6px;
       border-radius: 7px;
       font-size: 0.74rem;
       font-weight: 600;
@@ -414,7 +414,7 @@
       background: transparent;
       color: var(--text-sec);
       border: none;
-      padding: 7px 6px;
+      padding: 8px 6px;
       border-radius: 7px;
       font-size: 0.78rem;
       font-weight: 700;
@@ -424,6 +424,8 @@
       text-overflow: ellipsis;
     }
     .player-team-toggle button.active { background: var(--accent); color: #fff; }
+    .player-team-pane { display: none; }
+    .player-team-pane.visible { display: block; }
     .player-team-heading {
       font-size: 0.84rem;
       font-weight: 800;
@@ -432,7 +434,7 @@
       padding-bottom: 4px;
       border-bottom: 1px solid var(--border);
     }
-    .player-team-heading:first-of-type { margin-top: 0; }
+    .player-team-pane:first-of-type .player-team-heading { margin-top: 0; }
     .player-cat-block { margin-bottom: 14px; }
     .player-cat-block:last-child { margin-bottom: 0; }
     .player-cat-title { font-size: 0.7rem; font-weight: 800; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
@@ -445,7 +447,7 @@
     .player-table td:first-child { text-align: left; font-weight: 600; color: #fff; max-width: 135px; overflow: hidden; text-overflow: ellipsis; }
     .player-pos { color: var(--text-dim); font-size: 0.68rem; font-weight: 600; margin-left: 4px; }
 
-    /* Highlights & X Tab */
+    /* Highlights & Clips Tab */
     .x-section-title {
       font-size: 0.72rem;
       font-weight: 800;
@@ -469,54 +471,67 @@
       color: #fff;
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 9px 10px;
+      padding: 10px;
       font-size: 0.78rem;
       font-weight: 700;
       text-decoration: none;
       cursor: pointer;
     }
-    .x-embed-wrap {
-      margin-bottom: 12px;
-      background: #111113;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px;
+    .x-action-btn.yt-btn {
+      grid-column: 1 / -1;
+      background: rgba(255, 69, 58, 0.14);
+      border-color: rgba(255, 69, 58, 0.35);
+      color: #ff6961;
     }
-    .x-embed-note { font-size: 0.74rem; color: var(--text-sec); margin: 6px 0 0; text-align: center; }
-    .video-card {
+    .clip-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
       background: #111113;
       border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
       margin-bottom: 10px;
     }
-    .video-card video {
+    .clip-thumb-wrap {
+      position: relative;
       width: 100%;
-      max-height: 220px;
-      display: block;
+      aspect-ratio: 16 / 9;
       background: #000;
+      overflow: hidden;
     }
-    .video-footer {
+    .clip-thumb-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 0.88;
+    }
+    .clip-play-badge {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.72);
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      color: #fff;
+      font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-left: 3px;
+    }
+    .clip-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 8px;
-      padding: 8px 10px;
+      padding: 9px 11px;
     }
-    .video-title {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #e5e5ea;
-      line-height: 1.3;
-    }
-    .video-open-link {
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: #64d2ff;
-      text-decoration: none;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
+    .clip-title { font-size: 0.82rem; font-weight: 600; color: #e5e5ea; line-height: 1.3; }
+    .clip-badge { font-size: 0.7rem; font-weight: 700; color: #64d2ff; white-space: nowrap; flex-shrink: 0; }
 
     .stat-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; font-variant-numeric: tabular-nums; }
     .stat-table th, .stat-table td { padding: 7px 4px; border-bottom: 1px solid var(--border); }
@@ -864,57 +879,6 @@
       `;
     }
 
-    /* ---------- X (TWITTER) WIDGET LOADER ---------- */
-    let xWidgetLoaded = false;
-    function ensureXWidgetScript(container) {
-      if (window.twttr?.widgets) {
-        window.twttr.widgets.load(container);
-        return;
-      }
-      if (!xWidgetLoaded) {
-        xWidgetLoaded = true;
-        const s = document.createElement("script");
-        s.src = "https://platform.twitter.com/widgets.js";
-        s.async = true;
-        s.onload = () => { if (window.twttr?.widgets) window.twttr.widgets.load(container); };
-        document.body.appendChild(s);
-      }
-    }
-
-    function guessXHandle(team, leaguePath) {
-      const name = (team?.shortDisplayName || team?.name || "").toLowerCase();
-      const abbr = (team?.abbreviation || "").toLowerCase();
-      const map = {
-        "clemson": leaguePath.includes("basketball") ? "ClemsonMBB" : "ClemsonFB",
-        "south carolina": leaguePath.includes("basketball") ? "GamecockMBB" : "GamecockFB",
-        "capitals": "Capitals",
-        "commanders": "Commanders",
-        "cowboys": "dallascowboys",
-        "padres": "Padres",
-        "panthers": leaguePath.includes("hockey") ? "FlaPanthers" : "Panthers",
-        "chiefs": "Chiefs",
-        "eagles": "Eagles",
-        "ravens": "Ravens",
-        "bills": "BuffaloBills",
-        "lions": "Lions",
-        "49ers": "49ers",
-        "lakers": "Lakers",
-        "celtics": "celtics",
-        "warriors": "warriors",
-        "arsenal": "Arsenal",
-        "liverpool": "LFC",
-        "man city": "ManCity",
-        "chelsea": "ChelseaFC",
-        "man utd": "ManUtd",
-        "real madrid": "realmadrid",
-        "barcelona": "FCBarcelona"
-      };
-      for (const [k, handle] of Object.entries(map)) {
-        if (name.includes(k)) return handle;
-      }
-      return (team?.name || team?.shortDisplayName || abbr).replace(/[^a-zA-Z0-9]/g, "");
-    }
-
     const leagueMap = Object.fromEntries(LEAGUES.map(l => [l.path, l]));
     const leagueButtonsEl = document.getElementById("league-buttons");
     const contentEl = document.getElementById("content");
@@ -974,17 +938,22 @@
     let lastNewsArticles = [];
     let lastCombinedStandings = [];
 
-    /* ---------- DIRECT GLOBAL HANDLERS FOR BULLETPROOF MOBILE TAPS ---------- */
+    /* ---------- INSTANT DOM-LEVEL SWITCHERS (ZERO CACHE LOOKUP) ---------- */
     window.__switchPlayerTeam = function(btn, selection) {
-      const cardEl = btn.closest(".game-card");
-      if (!cardEl) return;
-      const drawer = cardEl.querySelector(".box-drawer");
-      const leaguePath = cardEl.dataset.league;
-      const cacheKey = `${leaguePath}:${cardEl.dataset.eventId}`;
-      cardEl.dataset.playerTeam = String(selection);
-      if (summaryCache.has(cacheKey)) {
-        drawer.innerHTML = renderBoxScoreHtml(summaryCache.get(cacheKey), leaguePath, "players", String(selection));
-      }
+      const container = btn.closest(".players-root");
+      if (!container) return;
+      const sel = String(selection);
+
+      container.querySelectorAll(".player-team-toggle button").forEach(b => {
+        b.classList.toggle("active", b.dataset.sel === sel);
+      });
+
+      container.querySelectorAll(".player-team-pane").forEach(pane => {
+        const show = sel === "all" || pane.dataset.paneIdx === sel;
+        pane.classList.toggle("visible", show);
+        const heading = pane.querySelector(".player-team-heading");
+        if (heading) heading.style.display = sel === "all" ? "block" : "none";
+      });
     };
 
     window.__switchBoxTab = function(btn, activeTab) {
@@ -993,25 +962,10 @@
       const drawer = cardEl.querySelector(".box-drawer");
       const leaguePath = cardEl.dataset.league;
       const cacheKey = `${leaguePath}:${cardEl.dataset.eventId}`;
-      const activeTeam = cardEl.dataset.playerTeam || "0";
       cardEl.dataset.boxTab = activeTab;
       if (summaryCache.has(cacheKey)) {
-        drawer.innerHTML = renderBoxScoreHtml(summaryCache.get(cacheKey), leaguePath, activeTab, activeTeam);
+        drawer.innerHTML = renderBoxScoreHtml(summaryCache.get(cacheKey), leaguePath, activeTab);
       }
-    };
-
-    window.__loadXTimeline = function(btn, handle) {
-      const slot = btn.closest(".box-body")?.querySelector(".x-embed-slot");
-      if (!slot || !handle) return;
-      slot.innerHTML = `
-        <div class="x-embed-wrap">
-          <a class="twitter-timeline" data-theme="dark" data-height="420" href="https://x.com/${escapeHtml(handle)}">
-            Loading @${escapeHtml(handle)} on X...
-          </a>
-          <div class="x-embed-note">If X asks you to sign in, tap the link above to open @${escapeHtml(handle)} in the X app.</div>
-        </div>
-      `;
-      ensureXWidgetScript(slot);
     };
 
     /* ---------- DATE HELPERS ---------- */
@@ -1524,11 +1478,11 @@
       `;
     }
 
-    /* ---------- PLAYER STAT BREAKDOWNS (AWAY / HOME / BOTH) ---------- */
-    function renderSingleTeamPlayers(teamObj, showHeading = false) {
+    /* ---------- PLAYER STAT BREAKDOWNS (DOM-PRELOADED FOR INSTANT SWITCHING) ---------- */
+    function renderTeamPaneContent(teamObj) {
       const statGroups = (teamObj.statistics || []).filter(g => g.athletes && g.athletes.length > 0);
       const teamName = teamObj.team?.shortDisplayName || teamObj.team?.displayName || teamObj.team?.abbreviation || "Team";
-      const heading = showHeading ? `<div class="player-team-heading">${escapeHtml(teamName)}</div>` : "";
+      const heading = `<div class="player-team-heading" style="display:none;">${escapeHtml(teamName)}</div>`;
 
       if (statGroups.length === 0) {
         return heading + `<div class="empty" style="padding:10px 0;">No player stats recorded yet.</div>`;
@@ -1539,7 +1493,7 @@
         const maxCols = Math.min(headers.length, 6);
         const colHeaders = headers.slice(0, maxCols);
 
-        const rowsHtml = group.athletes.slice(0, 12).map(a => {
+        const rowsHtml = group.athletes.slice(0, 14).map(a => {
           const name = a.athlete?.shortName || a.athlete?.displayName || "Player";
           const pos = a.athlete?.position?.abbreviation || "";
           const vals = (a.stats || []).slice(0, maxCols);
@@ -1572,40 +1526,40 @@
       return heading + groupsHtml;
     }
 
-    function renderPlayersHtml(data, activeSelection = "0") {
+    function renderPlayersHtml(data) {
       const playerTeams = data.boxscore?.players || [];
       if (playerTeams.length === 0) {
         return `<div class="empty" style="padding:14px 0;">Player stats are not available yet.</div>`;
       }
 
-      const sel = String(activeSelection);
       const toggleHtml = `
         <div class="player-team-toggle">
           ${playerTeams.map((pt, idx) => `
             <button
               type="button"
+              data-sel="${idx}"
               onclick="event.stopPropagation(); window.__switchPlayerTeam(this, '${idx}')"
-              class="${sel === String(idx) ? "active" : ""}"
+              class="${idx === 0 ? "active" : ""}"
             >${escapeHtml(pt.team?.abbreviation || pt.team?.shortDisplayName || `Team ${idx + 1}`)}</button>
           `).join("")}
           <button
             type="button"
+            data-sel="all"
             onclick="event.stopPropagation(); window.__switchPlayerTeam(this, 'all')"
-            class="${sel === "all" ? "active" : ""}"
           >Both</button>
         </div>
       `;
 
-      if (sel === "all") {
-        return toggleHtml + playerTeams.map(pt => renderSingleTeamPlayers(pt, true)).join("");
-      }
+      const panesHtml = playerTeams.map((pt, idx) => `
+        <div class="player-team-pane ${idx === 0 ? "visible" : ""}" data-pane-idx="${idx}">
+          ${renderTeamPaneContent(pt)}
+        </div>
+      `).join("");
 
-      const idx = Number(sel);
-      const chosen = playerTeams[idx] || playerTeams[0];
-      return toggleHtml + renderSingleTeamPlayers(chosen, false);
+      return `<div class="players-root">${toggleHtml}${panesHtml}</div>`;
     }
 
-    /* ---------- HIGHLIGHTS & TEAM X FEEDS ---------- */
+    /* ---------- HIGHLIGHTS (ESPN CLIPS + YOUTUBE + X) ---------- */
     function renderHighlightsHtml(data, leaguePath) {
       const headerComp = data.header?.competitions?.[0];
       const comps = headerComp?.competitors || [];
@@ -1614,54 +1568,51 @@
 
       const awayName = awayTeam.shortDisplayName || awayTeam.abbreviation || "Away";
       const homeName = homeTeam.shortDisplayName || homeTeam.abbreviation || "Home";
-      const awayHandle = guessXHandle(awayTeam, leaguePath);
-      const homeHandle = guessXHandle(homeTeam, leaguePath);
 
-      const awaySearchUrl = `https://x.com/search?q=${encodeURIComponent(awayName + " highlights")}&f=video`;
-      const homeSearchUrl = `https://x.com/search?q=${encodeURIComponent(homeName + " highlights")}&f=video`;
+      const ytQuery = `${awayName} vs ${homeName} highlights`;
+      const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(ytQuery)}`;
+      const awayXUrl = `https://x.com/search?q=${encodeURIComponent(awayName + " highlights")}&f=video`;
+      const homeXUrl = `https://x.com/search?q=${encodeURIComponent(homeName + " highlights")}&f=video`;
 
-      const videos = (data.videos || []).slice(0, 4);
-      const videosHtml = videos.length > 0
+      const videos = (data.videos || []).slice(0, 5);
+      const clipsHtml = videos.length > 0
         ? `
-          <div class="x-section-title">Game Highlights</div>
+          <div class="x-section-title">ESPN Game Clips</div>
           ${videos.map(v => {
-            const src = v.links?.source || {};
-            const videoUrl = src.HD?.href || src.full?.href || src.mezzanine?.href || src.HLS?.HD?.href || src.HLS?.href || src.href || "";
-            const webUrl = v.links?.web?.href || videoUrl;
+            const webUrl = v.links?.web?.href || (v.id ? `https://www.espn.com/video/clip?id=${v.id}` : "");
             const poster = v.thumbnail || "";
-            if (!videoUrl && !webUrl) return "";
+            if (!webUrl) return "";
             return `
-              <div class="video-card">
-                ${videoUrl ? `<video controls playsinline webkit-playsinline preload="metadata" poster="${escapeHtml(poster)}" src="${escapeHtml(videoUrl)}"></video>` : ""}
-                <div class="video-footer">
-                  <div class="video-title">${escapeHtml(v.headline || v.title || "Highlight")}</div>
-                  ${webUrl ? `<a class="video-open-link" href="${escapeHtml(webUrl)}" target="_blank" rel="noopener noreferrer">Open ↗</a>` : ""}
+              <a class="clip-card" href="${escapeHtml(webUrl)}" target="_blank" rel="noopener noreferrer">
+                ${poster ? `
+                  <div class="clip-thumb-wrap">
+                    <img src="${escapeHtml(poster)}" alt="" loading="lazy" />
+                    <div class="clip-play-badge">▶</div>
+                  </div>
+                ` : ""}
+                <div class="clip-footer">
+                  <div class="clip-title">${escapeHtml(v.headline || v.title || "Watch Highlight")}</div>
+                  <span class="clip-badge">Watch ↗</span>
                 </div>
-              </div>
+              </a>
             `;
           }).join("")}
         `
         : "";
 
       return `
-        ${videosHtml}
-        <div class="x-section-title">Team Highlights on X</div>
+        ${clipsHtml}
+        <div class="x-section-title">Full Recaps & Team Videos</div>
         <div class="x-btn-grid">
-          <a class="x-action-btn" href="${awaySearchUrl}" target="_blank" rel="noopener noreferrer">𝕏 ${escapeHtml(awayName)} Videos</a>
-          <a class="x-action-btn" href="${homeSearchUrl}" target="_blank" rel="noopener noreferrer">𝕏 ${escapeHtml(homeName)} Videos</a>
+          <a class="x-action-btn yt-btn" href="${ytUrl}" target="_blank" rel="noopener noreferrer">▶ YouTube: ${escapeHtml(awayName)} vs ${escapeHtml(homeName)}</a>
+          <a class="x-action-btn" href="${awayXUrl}" target="_blank" rel="noopener noreferrer">𝕏 ${escapeHtml(awayName)} Clips</a>
+          <a class="x-action-btn" href="${homeXUrl}" target="_blank" rel="noopener noreferrer">𝕏 ${escapeHtml(homeName)} Clips</a>
         </div>
-
-        <div class="x-section-title">View Team X Page In-App</div>
-        <div class="x-btn-grid">
-          <button type="button" class="x-action-btn" onclick="event.stopPropagation(); window.__loadXTimeline(this, '${escapeHtml(awayHandle)}')">𝕏 @${escapeHtml(awayHandle)}</button>
-          <button type="button" class="x-action-btn" onclick="event.stopPropagation(); window.__loadXTimeline(this, '${escapeHtml(homeHandle)}')">𝕏 @${escapeHtml(homeHandle)}</button>
-        </div>
-        <div class="x-embed-slot"></div>
       `;
     }
 
     /* ---------- BOX SCORE DRAWER ---------- */
-    function renderBoxScoreHtml(data, leaguePath, activeSubtab = "stats", activePlayerTeam = "0") {
+    function renderBoxScoreHtml(data, leaguePath, activeSubtab = "stats") {
       const isFootball = leaguePath === "football/nfl" || leaguePath === "football/college-football";
       const teams = data.boxscore?.teams || [];
       const awayTeam = teams[0];
@@ -1672,7 +1623,7 @@
       if (activeSubtab === "field" && isFootball) {
         body = renderFieldHtml(data);
       } else if (activeSubtab === "players") {
-        body = renderPlayersHtml(data, activePlayerTeam);
+        body = renderPlayersHtml(data);
       } else if (activeSubtab === "highlights") {
         body = renderHighlightsHtml(data, leaguePath);
       } else if (activeSubtab === "stats") {
@@ -1720,7 +1671,7 @@
           <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'players')" class="${activeSubtab === "players" ? "active" : ""}">Players</button>
           <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'stats')" class="${activeSubtab === "stats" ? "active" : ""}">Team</button>
           <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'plays')" class="${activeSubtab === "plays" ? "active" : ""}">Plays</button>
-          <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'highlights')" class="${activeSubtab === "highlights" ? "active" : ""}">𝕏 Clips</button>
+          <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'highlights')" class="${activeSubtab === "highlights" ? "active" : ""}">Clips</button>
         </div>
         <div class="box-body">${body}</div>
       `;
@@ -1742,10 +1693,9 @@
       const cacheKey = `${leaguePath}:${eventId}`;
 
       cardEl.dataset.boxTab = defaultTab;
-      cardEl.dataset.playerTeam = "0";
 
       if (summaryCache.has(cacheKey)) {
-        drawer.innerHTML = renderBoxScoreHtml(summaryCache.get(cacheKey), leaguePath, defaultTab, "0");
+        drawer.innerHTML = renderBoxScoreHtml(summaryCache.get(cacheKey), leaguePath, defaultTab);
         return;
       }
 
@@ -1754,7 +1704,7 @@
         const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${leaguePath}/summary?event=${eventId}`);
         const data = await res.json();
         summaryCache.set(cacheKey, data);
-        drawer.innerHTML = renderBoxScoreHtml(data, leaguePath, defaultTab, "0");
+        drawer.innerHTML = renderBoxScoreHtml(data, leaguePath, defaultTab);
       } catch {
         drawer.innerHTML = `<div class="empty" style="padding:14px 0;">Could not load game details.</div>`;
       }
@@ -2227,7 +2177,7 @@
     });
 
     contentEl.addEventListener("click", (e) => {
-      if (e.target.closest(".watch-pill") || e.target.closest("a.x-action-btn") || e.target.closest(".video-open-link")) return;
+      if (e.target.closest(".watch-pill") || e.target.closest("a.x-action-btn") || e.target.closest("a.clip-card")) return;
 
       const starBtn = e.target.closest(".star-btn");
       if (starBtn) {
