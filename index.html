@@ -130,6 +130,53 @@
     /* Main Content Area */
     .main { padding: 14px 16px 0; }
 
+    /* Search Bar */
+    .search-wrap {
+      position: relative;
+      margin-bottom: 12px;
+    }
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-sec);
+      font-size: 0.85rem;
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 9px 34px 9px 34px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .search-input::placeholder { color: var(--text-sec); }
+    .search-input:focus { border-color: rgba(10, 132, 255, 0.65); }
+    .search-clear {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--surface-2);
+      color: var(--text-sec);
+      border: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      line-height: 1;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .search-clear.visible { display: flex; }
+
     /* iOS Segmented Controls */
     .segmented-row {
       display: flex;
@@ -434,22 +481,23 @@
       align-items: center;
       gap: 8px;
       margin-top: 8px;
-      padding: 6px 10px;
+      padding: 7px 10px;
       border-radius: 10px;
       background: rgba(255, 255, 255, 0.04);
       font-size: 0.74rem;
       font-weight: 600;
-      color: #aeaeb2;
+      color: #d1d1d6;
       font-variant-numeric: tabular-nums;
       flex-wrap: wrap;
     }
     .odds-label {
       color: var(--green);
-      font-size: 0.68rem;
+      font-size: 0.66rem;
       font-weight: 800;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
     }
+    .odds-sep { color: var(--text-dim); }
 
     /* Card Footer (Watch Links + Box Score Hint) */
     .card-footer {
@@ -644,6 +692,18 @@
         </div>
       </div>
 
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input
+          type="search"
+          class="search-input"
+          id="search-input"
+          placeholder="Search teams, players, or headlines..."
+          autocomplete="off"
+        />
+        <button type="button" class="search-clear" id="search-clear" aria-label="Clear search">×</button>
+      </div>
+
       <div class="date-bar" id="date-bar">
         <div class="date-segmented" id="date-tabs">
           <button data-date-mode="yesterday">Yesterday</button>
@@ -676,21 +736,18 @@
         canvas.height = 180;
         const ctx = canvas.getContext("2d");
 
-        // Dark gradient background
         const grad = ctx.createLinearGradient(0, 0, 180, 180);
         grad.addColorStop(0, "#1c1c1e");
         grad.addColorStop(1, "#000000");
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, 180, 180);
 
-        // Outer blue ring
         ctx.beginPath();
         ctx.arc(90, 90, 56, 0, Math.PI * 2);
         ctx.strokeStyle = "#0a84ff";
         ctx.lineWidth = 10;
         ctx.stroke();
 
-        // Gold crosshairs
         ctx.beginPath();
         ctx.moveTo(90, 34);
         ctx.lineTo(90, 146);
@@ -701,7 +758,6 @@
         ctx.lineCap = "round";
         ctx.stroke();
 
-        // Center white dot
         ctx.beginPath();
         ctx.arc(90, 90, 16, 0, Math.PI * 2);
         ctx.fillStyle = "#ffffff";
@@ -789,6 +845,14 @@
       }
     ];
 
+    /* ---------- GAMBLING AD & PROMO FILTER FOR NEWS ---------- */
+    const GAMBLING_AD_REGEX = /\b(draftkings|fanduel|betmgm|caesars\s*sportsbook|bet365|espn\s*bet|fanatics\s*sportsbook|hard\s*rock\s*bet|betrivers|prizepicks|underdog\s*fantasy|sleeper\s*promo|sportsbook|promo\s*code|bonus\s*bets?|no\s*sweat|deposit\s*match|sign[\s-]?up\s*bonus|bet\s*\$\d+|get\s*\$\d+|best\s*bets?|player\s*props?|prop\s*bets?|same\s*game\s*parlay|parlay\s*picks?|ats\s*picks?|against\s*the\s*spread|moneyline\s*picks?|over\/under\s*picks?|how\s*to\s*bet|betting\s*odds|betting\s*picks?|odds,\s*picks|picks,\s*odds|free\s*picks|wager|gambling)\b/i;
+
+    function isGamblingAd(article) {
+      const text = `${article.title || ""} ${article.description || ""} ${article.link || ""}`;
+      return GAMBLING_AD_REGEX.test(text);
+    }
+
     /* ---------- HOW TO WATCH MAPPING ---------- */
     const YTTV_CHANNELS = [
       "abc", "cbs", "nbc", "fox", "cw", "the cw",
@@ -852,7 +916,14 @@
       }).join("");
     }
 
-    function renderOddsStrip(comp, state) {
+    function formatMoneyline(val) {
+      if (val === undefined || val === null || val === "") return "";
+      const num = Number(val);
+      if (Number.isNaN(num)) return String(val);
+      return num > 0 ? `+${num}` : `${num}`;
+    }
+
+    function renderOddsStrip(comp, state, away, home) {
       if (state === "post") return "";
       const odds = comp?.odds?.[0];
       if (!odds) return "";
@@ -860,15 +931,24 @@
       const parts = [];
       if (odds.details && odds.details !== "EVEN") parts.push(odds.details);
       else if (odds.details === "EVEN") parts.push("PK");
+
       if (odds.overUnder !== undefined && odds.overUnder !== null) {
         parts.push(`O/U ${odds.overUnder}`);
+      }
+
+      const awayML = formatMoneyline(odds.awayTeamOdds?.moneyLine);
+      const homeML = formatMoneyline(odds.homeTeamOdds?.moneyLine);
+      if (awayML && homeML) {
+        const awayAbbr = away?.team?.abbreviation || "Away";
+        const homeAbbr = home?.team?.abbreviation || "Home";
+        parts.push(`ML ${awayAbbr} ${awayML} / ${homeAbbr} ${homeML}`);
       }
 
       if (parts.length === 0) return "";
       return `
         <div class="odds-strip">
-          <span class="odds-label">Line</span>
-          <span>${escapeHtml(parts.join(" · "))}</span>
+          <span class="odds-label">Odds</span>
+          <span>${parts.map(escapeHtml).join(' <span class="odds-sep">·</span> ')}</span>
         </div>
       `;
     }
@@ -886,6 +966,8 @@
     const dateBarEl = document.getElementById("date-bar");
     const customDateInputEl = document.getElementById("custom-date-input");
     const customDateLabelEl = document.getElementById("custom-date-label");
+    const searchInputEl = document.getElementById("search-input");
+    const searchClearEl = document.getElementById("search-clear");
 
     const summaryCache = new Map();
     const standingsCache = new Map();
@@ -924,8 +1006,11 @@
     let dateMode = "today";
     let customDateStr = "";
     let selectedStandingsGroup = "all";
+    let searchQuery = "";
     let lastEvents = [];
     let lastCombinedData = [];
+    let lastNewsArticles = [];
+    let lastCombinedStandings = [];
 
     /* ---------- DATE HELPERS ---------- */
     function formatYYYYMMDD(dateObj) {
@@ -990,6 +1075,11 @@
       const show = Boolean(league?.allLabel && currentView === "scores");
       collegeFilterEl.classList.toggle("visible", show);
       if (show) collegeAllLabelEl.textContent = league.allLabel;
+    }
+
+    function matchesSearch(text) {
+      if (!searchQuery) return true;
+      return String(text || "").toLowerCase().includes(searchQuery);
     }
 
     function matchesFav(fav, id, names) {
@@ -1242,10 +1332,20 @@
     }
 
     function renderStandingsCard(group, leaguePath, showLeaguePill = false) {
-      const entries = group.entries || [];
+      const allEntries = group.entries || [];
+      if (allEntries.length === 0) return "";
+
+      const titleMatches = matchesSearch(group.title);
+      const entries = searchQuery && !titleMatches
+        ? allEntries.filter(entry => {
+            const m = getEntryMeta(entry);
+            return matchesSearch(`${m.name} ${m.fullName} ${m.abbr}`);
+          })
+        : allEntries;
+
       if (entries.length === 0) return "";
 
-      const cols = pickStandingsColumns(entries, leaguePath);
+      const cols = pickStandingsColumns(allEntries, leaguePath);
       const leagueLabel = leagueMap[leaguePath]?.label || "";
 
       const rowsHtml = entries.map((entry, idx) => {
@@ -1253,7 +1353,7 @@
         const meta = getEntryMeta(entry);
         const isFav = isFavorited(leaguePath, meta.id, [meta.name, meta.fullName, meta.abbr]);
         const rankStat = findStatObj(stats, ["rank", "playoffSeed"]);
-        const rankDisplay = rankStat?.displayValue || (idx + 1);
+        const rankDisplay = rankStat?.displayValue || (allEntries.indexOf(entry) + 1);
 
         const cellsHtml = cols.map(col => {
           const st = findStatObj(stats, col.keys);
@@ -1313,7 +1413,7 @@
       }
 
       let filterHtml = "";
-      if (groups.length > 3) {
+      if (groups.length > 3 && !searchQuery) {
         const options = [
           `<option value="all" ${selectedStandingsGroup === "all" ? "selected" : ""}>All Conferences / Groups (${groups.length})</option>`,
           ...groups.map((g, i) =>
@@ -1327,11 +1427,16 @@
         `;
       }
 
-      const toRender = selectedStandingsGroup === "all" || groups.length <= 3
+      const toRender = searchQuery || selectedStandingsGroup === "all" || groups.length <= 3
         ? groups
         : [groups[Number(selectedStandingsGroup)]].filter(Boolean);
 
-      contentEl.innerHTML = filterHtml + toRender.map(g => renderStandingsCard(g, leaguePath, false)).join("");
+      const cards = toRender.map(g => renderStandingsCard(g, leaguePath, false)).filter(Boolean);
+      if (cards.length === 0) {
+        contentEl.innerHTML = filterHtml + `<div class="empty">No standings matched "${escapeHtml(searchQuery)}".</div>`;
+        return;
+      }
+      contentEl.innerHTML = filterHtml + cards.join("");
     }
 
     async function loadStandings() {
@@ -1344,9 +1449,35 @@
       }
     }
 
+    function renderCombinedStandingsList() {
+      const cardsHtml = [];
+      lastCombinedStandings.forEach(({ league, groups }) => {
+        groups.forEach(group => {
+          const hasPinned = (group.entries || []).some(entry => {
+            const meta = getEntryMeta(entry);
+            return isFavorited(league.path, meta.id, [meta.name, meta.fullName, meta.abbr]);
+          });
+          if (hasPinned) {
+            const html = renderStandingsCard(group, league.path, true);
+            if (html) cardsHtml.push(html);
+          }
+        });
+      });
+
+      if (cardsHtml.length === 0) {
+        contentEl.innerHTML = searchQuery
+          ? `<div class="empty">No pinned standings matched "${escapeHtml(searchQuery)}".</div>`
+          : `<div class="empty">No standings tables matched your pinned teams right now.</div>`;
+        return;
+      }
+
+      contentEl.innerHTML = cardsHtml.join("");
+    }
+
     async function loadCombinedStandings() {
       const activeLeagues = getActiveFavLeagues();
       if (activeLeagues.length === 0) {
+        lastCombinedStandings = [];
         contentEl.innerHTML = `<div class="empty">Pin a few teams or drivers first to see their conference and league tables here.</div>`;
         return;
       }
@@ -1359,25 +1490,8 @@
         }))
       );
 
-      const cardsHtml = [];
-      results.forEach(r => {
-        if (r.status !== "fulfilled") return;
-        const { league, groups } = r.value;
-        groups.forEach(group => {
-          const hasPinned = (group.entries || []).some(entry => {
-            const meta = getEntryMeta(entry);
-            return isFavorited(league.path, meta.id, [meta.name, meta.fullName, meta.abbr]);
-          });
-          if (hasPinned) cardsHtml.push(renderStandingsCard(group, league.path, true));
-        });
-      });
-
-      if (cardsHtml.length === 0) {
-        contentEl.innerHTML = `<div class="empty">No standings tables matched your pinned teams right now.</div>`;
-        return;
-      }
-
-      contentEl.innerHTML = cardsHtml.join("");
+      lastCombinedStandings = results.filter(r => r.status === "fulfilled").map(r => r.value);
+      renderCombinedStandingsList();
     }
 
     /* ---------- BOX SCORE RENDERING ---------- */
@@ -1498,6 +1612,15 @@
       const away = competitors.find(c => c.homeAway === "away") || competitors[0];
       const home = competitors.find(c => c.homeAway === "home") || competitors[1];
 
+      if (searchQuery) {
+        const blob = [
+          event.name,
+          away?.team?.displayName, away?.team?.shortDisplayName, away?.team?.abbreviation,
+          home?.team?.displayName, home?.team?.shortDisplayName, home?.team?.abbreviation
+        ].filter(Boolean).join(" ");
+        if (!matchesSearch(blob)) return { isPinned: false, state: "post", html: "" };
+      }
+
       const awayFav = away && isFavorited(leaguePath, away.team?.id, [
         away.team?.shortDisplayName, away.team?.displayName, away.team?.abbreviation
       ]);
@@ -1512,7 +1635,7 @@
       const isFinal = state === "post";
       const leagueLabel = leagueMap[leaguePath]?.label || "";
       const watchHtml = renderWatchPills(comp);
-      const oddsHtml = renderOddsStrip(comp, state);
+      const oddsHtml = renderOddsStrip(comp, state, away, home);
 
       const renderTeam = (c, starred) => {
         const rankNum = c?.curatedRank?.current;
@@ -1586,6 +1709,7 @@
         .slice()
         .sort((a, b) => (a.order ?? a.sortOrder ?? 999) - (b.order ?? b.sortOrder ?? 999));
 
+      const eventMatches = matchesSearch(event.name || event.shortName || "");
       const pinnedItems = [];
       const regularItems = [];
 
@@ -1593,12 +1717,14 @@
         const id = c.athlete?.id || "";
         const name = c.athlete?.displayName || c.athlete?.shortName || "TBD";
         const starred = isFavorited(leaguePath, id, [name, c.athlete?.shortName]);
+        if (searchQuery && !eventMatches && !matchesSearch(name)) return;
         const item = { c, idx, id, name, starred };
         if (starred) pinnedItems.push(item);
-        else if (!onlyPinned && regularItems.length < maxRows) regularItems.push(item);
+        else if (!onlyPinned && (searchQuery || regularItems.length < maxRows)) regularItems.push(item);
       });
 
       if (onlyPinned && pinnedItems.length === 0) return { isPinned: false, state, html: "" };
+      if (searchQuery && pinnedItems.length === 0 && regularItems.length === 0) return { isPinned: false, state, html: "" };
 
       const displayList = onlyPinned ? pinnedItems : [...pinnedItems, ...regularItems];
       const rowsHtml = displayList.length > 0
@@ -1660,11 +1786,20 @@
       }
 
       if (league.type === "leaderboard") {
-        contentEl.innerHTML = eventsToShow.map(ev => renderLeaderboardCard(ev, currentLeague, false).html).join("");
+        const html = eventsToShow.map(ev => renderLeaderboardCard(ev, currentLeague, false).html).filter(Boolean).join("");
+        contentEl.innerHTML = html || `<div class="empty">No results matched "${escapeHtml(searchQuery)}".</div>`;
         return;
       }
 
-      const cards = eventsToShow.map((ev, idx) => ({ ...renderTeamCard(ev, currentLeague, false), idx }));
+      const cards = eventsToShow
+        .map((ev, idx) => ({ ...renderTeamCard(ev, currentLeague, false), idx }))
+        .filter(c => c.html);
+
+      if (cards.length === 0) {
+        contentEl.innerHTML = `<div class="empty">No games matched "${escapeHtml(searchQuery)}".</div>`;
+        return;
+      }
+
       cards.sort((a, b) => Number(b.isPinned) - Number(a.isPinned) || getStatePriority(a.state) - getStatePriority(b.state) || a.idx - b.idx);
       contentEl.innerHTML = cards.map(c => c.html).join("");
     }
@@ -1702,11 +1837,13 @@
       matchedCards.sort((a, b) => getStatePriority(a.state) - getStatePriority(b.state));
 
       if (matchedCards.length === 0) {
-        contentEl.innerHTML = `<div class="empty">None of your pinned teams or players have an event on this date.</div>`;
+        contentEl.innerHTML = searchQuery
+          ? `<div class="empty">No pinned games matched "${escapeHtml(searchQuery)}".</div>`
+          : `<div class="empty">None of your pinned teams or players have an event on this date.</div>`;
         return;
       }
 
-      const quietHtml = quietLeagues.length > 0
+      const quietHtml = !searchQuery && quietLeagues.length > 0
         ? `<div class="quiet-note">No games on this date for your pins in: ${quietLeagues.join(", ")}</div>`
         : "";
       contentEl.innerHTML = matchedCards.map(c => c.html).join("") + quietHtml;
@@ -1746,22 +1883,24 @@
       renderCombinedScoreboard();
     }
 
-    /* ---------- MULTI-SOURCE RSS NEWS ---------- */
+    /* ---------- MULTI-SOURCE RSS NEWS (GAMBLING ADS FILTERED) ---------- */
     async function fetchRssFeed(feed, leagueLabel) {
       const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`;
       const res = await fetch(apiUrl);
       const data = await res.json();
       if (data.status !== "ok" || !Array.isArray(data.items)) return [];
 
-      return data.items.map(item => ({
-        title: stripHtml(item.title),
-        description: stripHtml(item.description).slice(0, 180),
-        link: item.link,
-        pubDate: item.pubDate,
-        image: item.thumbnail || item.enclosure?.link || "",
-        source: feed.source,
-        leagueLabel
-      }));
+      return data.items
+        .map(item => ({
+          title: stripHtml(item.title),
+          description: stripHtml(item.description).slice(0, 180),
+          link: item.link,
+          pubDate: item.pubDate,
+          image: item.thumbnail || item.enclosure?.link || "",
+          source: feed.source,
+          leagueLabel
+        }))
+        .filter(item => !isGamblingAd(item));
     }
 
     function renderNewsCard(article, showLeaguePill = false) {
@@ -1780,6 +1919,21 @@
           </div>
         </a>
       `;
+    }
+
+    function renderNewsList(showLeaguePill) {
+      const filtered = searchQuery
+        ? lastNewsArticles.filter(a => matchesSearch(`${a.title} ${a.description} ${a.source} ${a.leagueLabel}`))
+        : lastNewsArticles;
+
+      if (filtered.length === 0) {
+        contentEl.innerHTML = searchQuery
+          ? `<div class="empty">No headlines matched "${escapeHtml(searchQuery)}".</div>`
+          : `<div class="empty">No clean news stories available right now.</div>`;
+        return;
+      }
+
+      contentEl.innerHTML = filtered.slice(0, 30).map(a => renderNewsCard(a, showLeaguePill)).join("");
     }
 
     async function loadNews() {
@@ -1802,18 +1956,15 @@
         });
       });
 
-      if (articles.length === 0) {
-        contentEl.innerHTML = `<div class="empty">Could not load RSS feeds right now. Try refreshing.</div>`;
-        return;
-      }
-
       articles.sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
-      contentEl.innerHTML = articles.slice(0, 25).map(a => renderNewsCard(a, false)).join("");
+      lastNewsArticles = articles;
+      renderNewsList(false);
     }
 
     async function loadCombinedNews() {
       const activeLeagues = getActiveFavLeagues();
       if (activeLeagues.length === 0) {
+        lastNewsArticles = [];
         contentEl.innerHTML = `<div class="empty">Pin a few teams or players first to see a combined news feed here.</div>`;
         return;
       }
@@ -1849,13 +2000,24 @@
         });
       });
 
-      if (matched.length === 0) {
-        contentEl.innerHTML = `<div class="empty">No recent headlines directly mention your pinned teams right now.</div>`;
-        return;
-      }
-
       matched.sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
-      contentEl.innerHTML = matched.slice(0, 30).map(a => renderNewsCard(a, true)).join("");
+      lastNewsArticles = matched;
+      renderNewsList(true);
+    }
+
+    function applySearchToCurrentView() {
+      if (currentView === "scores") {
+        if (currentLeague === "my-teams") renderCombinedScoreboard();
+        else renderCurrentScoreboard();
+      } else if (currentView === "standings") {
+        if (currentLeague === "my-teams") renderCombinedStandingsList();
+        else {
+          const cached = standingsCache.get(currentLeague);
+          if (cached) renderLeagueStandings(cached, currentLeague);
+        }
+      } else {
+        renderNewsList(currentLeague === "my-teams");
+      }
     }
 
     function loadCurrentView() {
@@ -1874,6 +2036,19 @@
     }
 
     /* ---------- EVENT LISTENERS ---------- */
+    searchInputEl.addEventListener("input", (e) => {
+      searchQuery = e.target.value.trim().toLowerCase();
+      searchClearEl.classList.toggle("visible", searchQuery.length > 0);
+      applySearchToCurrentView();
+    });
+
+    searchClearEl.addEventListener("click", () => {
+      searchInputEl.value = "";
+      searchQuery = "";
+      searchClearEl.classList.remove("visible");
+      applySearchToCurrentView();
+    });
+
     leagueButtonsEl.addEventListener("click", (e) => {
       const btn = e.target.closest("button");
       if (!btn) return;
