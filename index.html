@@ -169,11 +169,49 @@
       color: #fbbf24;
       flex-shrink: 0;
     }
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(51, 65, 85, 0.6);
+      flex-wrap: wrap;
+    }
+    .watch-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .watch-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 999px;
+      text-decoration: none;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+    .watch-pill.yttv {
+      border-color: #dc2626;
+      background: rgba(220, 38, 38, 0.14);
+      color: #fecaca;
+    }
+    .watch-pill.stream {
+      border-color: #3b82f6;
+      background: rgba(59, 130, 246, 0.14);
+      color: #bfdbfe;
+    }
     .tap-hint {
       font-size: 0.72rem;
       color: #64748b;
-      margin-top: 8px;
-      text-align: right;
+      margin-left: auto;
     }
     .event-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
     .team-row, .leader-row {
@@ -226,47 +264,24 @@
       cursor: default;
     }
     .box-drawer.open { display: block; }
-    .box-subtabs {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 12px;
-    }
+    .box-subtabs { display: flex; gap: 6px; margin-bottom: 12px; }
     .box-subtabs button {
       padding: 5px 10px;
       font-size: 0.78rem;
       background: #0f172a;
       border-color: #334155;
     }
-    .box-subtabs button.active {
-      background: #3b82f6;
-      border-color: #3b82f6;
-    }
-    .stat-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.84rem;
-    }
-    .stat-table th, .stat-table td {
-      padding: 6px 4px;
-      border-bottom: 1px solid #334155;
-    }
+    .box-subtabs button.active { background: #3b82f6; border-color: #3b82f6; }
+    .stat-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    .stat-table th, .stat-table td { padding: 6px 4px; border-bottom: 1px solid #334155; }
     .stat-table th { color: #94a3b8; font-weight: 600; font-size: 0.76rem; }
     .stat-table td:first-child, .stat-table th:first-child { text-align: left; }
     .stat-table td:nth-child(2), .stat-table th:nth-child(2) { text-align: center; color: #94a3b8; }
     .stat-table td:last-child, .stat-table th:last-child { text-align: right; }
-    .leader-item {
-      padding: 7px 0;
-      border-bottom: 1px solid #334155;
-      font-size: 0.85rem;
-    }
+    .leader-item { padding: 7px 0; border-bottom: 1px solid #334155; font-size: 0.85rem; }
     .leader-item:last-child { border-bottom: none; }
     .leader-cat { font-size: 0.74rem; color: #94a3b8; text-transform: uppercase; font-weight: 700; }
-    .play-item {
-      padding: 7px 0;
-      border-bottom: 1px solid #334155;
-      font-size: 0.84rem;
-      line-height: 1.35;
-    }
+    .play-item { padding: 7px 0; border-bottom: 1px solid #334155; font-size: 0.84rem; line-height: 1.35; }
     .play-item:last-child { border-bottom: none; }
     .play-clock { font-size: 0.74rem; color: #94a3b8; font-weight: 700; margin-bottom: 2px; }
 
@@ -278,33 +293,11 @@
       padding: 0;
       overflow: hidden;
     }
-    .news-card img {
-      width: 100%;
-      max-height: 200px;
-      object-fit: cover;
-      display: block;
-    }
+    .news-card img { width: 100%; max-height: 200px; object-fit: cover; display: block; }
     .news-body { padding: 14px 16px; }
-    .news-headline {
-      font-size: 1.02rem;
-      font-weight: 700;
-      margin: 0 0 6px 0;
-      line-height: 1.3;
-    }
-    .news-desc {
-      font-size: 0.88rem;
-      color: #cbd5e1;
-      margin: 0 0 10px 0;
-      line-height: 1.4;
-    }
-    .news-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      font-size: 0.78rem;
-      color: #94a3b8;
-    }
+    .news-headline { font-size: 1.02rem; font-weight: 700; margin: 0 0 6px 0; line-height: 1.3; }
+    .news-desc { font-size: 0.88rem; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.4; }
+    .news-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.78rem; color: #94a3b8; }
     .empty { color: #94a3b8; text-align: center; padding: 30px 12px; line-height: 1.5; }
     .quiet-note { font-size: 0.8rem; color: #94a3b8; text-align: center; padding: 8px 0 4px; }
   </style>
@@ -398,6 +391,98 @@
       }
     ];
 
+    /* ---------- HOW TO WATCH MAPPING ---------- */
+    const YTTV_CHANNELS = [
+      "abc", "cbs", "nbc", "fox", "cw", "the cw",
+      "espn", "espn2", "espnu", "espnews", "espn deportes",
+      "fs1", "fs2", "tnt", "tbs", "trutv", "usa", "usa net", "cnbc",
+      "nfl net", "nfl network", "nba tv", "nbatv", "nhl net", "nhl network",
+      "golf", "golf channel", "cbssn", "cbs sports network",
+      "secn", "sec network", "accn", "acc network", "btn", "big ten network",
+      "ion", "pbs", "telemundo", "univision"
+    ];
+
+    const STREAMING_APPS = [
+      { match: ["espn+", "espn plus", "secn+", "accnx"], url: "https://www.espn.com/watch/", label: "ESPN App" },
+      { match: ["peacock"], url: "https://www.peacocktv.com/watch/sports", label: "Peacock" },
+      { match: ["prime video", "amazon", "tnf"], url: "https://www.amazon.com/gp/video/sports", label: "Prime Video" },
+      { match: ["paramount+"], url: "https://www.paramountplus.com/live-tv/", label: "Paramount+" },
+      { match: ["apple tv", "appletv"], url: "https://tv.apple.com/sports", label: "Apple TV" },
+      { match: ["max", "hbo max"], url: "https://play.max.com/sports", label: "Max" },
+      { match: ["netflix"], url: "https://www.netflix.com/", label: "Netflix" },
+      { match: ["f1 tv", "f1tv"], url: "https://f1tv.formula1.com/", label: "F1 TV" },
+      { match: ["mlb.tv", "mlbtv"], url: "https://www.mlb.com/live-stream-games", label: "MLB.TV" },
+      { match: ["nfl+"], url: "https://www.nfl.com/plus/", label: "NFL+" },
+      { match: ["nba league pass"], url: "https://www.nba.com/watch/league-pass-stream", label: "NBA App" },
+      { match: ["hulu"], url: "https://www.hulu.com/hub/sports", label: "Hulu" },
+      { match: ["roku"], url: "https://therokuchannel.roku.com/", label: "Roku" }
+    ];
+
+    function resolveWatchLink(channelName) {
+      const clean = (channelName || "").trim();
+      const lower = clean.toLowerCase();
+      if (!clean) return null;
+
+      // 1. Check streaming-only apps first (e.g. "ESPN+" before "ESPN")
+      for (const app of STREAMING_APPS) {
+        if (app.match.some(m => lower.includes(m))) {
+          return {
+            channel: clean,
+            url: app.url,
+            type: "stream",
+            text: `▶ ${clean}`
+          };
+        }
+      }
+
+      // 2. Check channels available on YouTube TV
+      if (YTTV_CHANNELS.some(ch => lower === ch || lower.startsWith(ch + " "))) {
+        return {
+          channel: clean,
+          url: "https://tv.youtube.com/live",
+          type: "yttv",
+          text: `▶ ${clean} · YTTV`
+        };
+      }
+
+      // 3. Fallback: show channel name without broken link
+      return {
+        channel: clean,
+        url: null,
+        type: "other",
+        text: `📺 ${clean}`
+      };
+    }
+
+    function extractBroadcasts(comp) {
+      const names = new Set();
+      (comp?.broadcasts || []).forEach(b => {
+        (b.names || []).forEach(n => names.add(n));
+      });
+      (comp?.geoBroadcasts || []).forEach(gb => {
+        if (gb.media?.shortName) names.add(gb.media.shortName);
+      });
+      return Array.from(names).map(resolveWatchLink).filter(Boolean);
+    }
+
+    function renderWatchPills(comp) {
+      const links = extractBroadcasts(comp);
+      if (links.length === 0) return "";
+      return links.slice(0, 3).map(item => {
+        if (!item.url) {
+          return `<span class="watch-pill">${escapeHtml(item.text)}</span>`;
+        }
+        return `
+          <a
+            class="watch-pill ${item.type}"
+            href="${escapeHtml(item.url)}"
+            target="_blank"
+            rel="noopener noreferrer"
+          >${escapeHtml(item.text)}</a>
+        `;
+      }).join("");
+    }
+
     const leagueMap = Object.fromEntries(LEAGUES.map(l => [l.path, l]));
     const leagueButtonsEl = document.getElementById("league-buttons");
     const contentEl = document.getElementById("content");
@@ -424,19 +509,15 @@
     }
 
     function loadFavorites() {
-      try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-      } catch {
-        return {};
-      }
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+      catch { return {}; }
     }
 
     let favorites = loadFavorites();
 
     function saveFavorites() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
-      } catch {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites)); }
+      catch {}
     }
 
     function getLeagueFavs(leaguePath) { return favorites[leaguePath] || []; }
@@ -570,7 +651,6 @@
       const awayTeam = teams[0];
       const homeTeam = teams[1];
 
-      // 1. Team Stats
       let statsHtml = `<div class="empty" style="padding:12px 0;">Team stats not available yet.</div>`;
       if (awayTeam && homeTeam && awayTeam.statistics?.length) {
         const homeStatMap = Object.fromEntries(
@@ -597,7 +677,6 @@
         `;
       }
 
-      // 2. Game Leaders
       let leadersHtml = `<div class="empty" style="padding:12px 0;">Game leaders not posted yet.</div>`;
       const leaderGroups = data.leaders || [];
       const leaderItems = [];
@@ -616,7 +695,6 @@
       });
       if (leaderItems.length > 0) leadersHtml = leaderItems.join("");
 
-      // 3. Recent Plays / Scoring Plays
       let playsHtml = `<div class="empty" style="padding:12px 0;">Play-by-play not available yet.</div>`;
       const rawPlays = data.scoringPlays?.length ? data.scoringPlays : (data.plays || []);
       if (rawPlays.length > 0) {
@@ -699,6 +777,7 @@
       const statusText = event.status?.type?.shortDetail || "";
       const isLive = event.status?.type?.state === "in";
       const leagueLabel = leagueMap[leaguePath]?.label || "";
+      const watchHtml = renderWatchPills(comp);
 
       const renderTeam = (c, starred) => {
         const rankNum = c?.curatedRank?.current;
@@ -742,7 +821,10 @@
             </div>
             ${renderTeam(away, awayFav)}
             ${renderTeam(home, homeFav)}
-            <div class="tap-hint">Tap for box score ▾</div>
+            <div class="card-footer">
+              <div class="watch-list">${watchHtml}</div>
+              <div class="tap-hint">Box score ▾</div>
+            </div>
             <div class="box-drawer"></div>
           </div>
         `
@@ -762,6 +844,7 @@
       const state = comp?.status?.type?.state || event.status?.type?.state || "post";
       const statusText = comp?.status?.type?.shortDetail || event.status?.type?.shortDetail || "";
       const isLive = state === "in";
+      const watchHtml = renderWatchPills(comp);
       const allSorted = (comp?.competitors || [])
         .slice()
         .sort((a, b) => (a.order ?? a.sortOrder ?? 999) - (b.order ?? b.sortOrder ?? 999));
@@ -820,6 +903,7 @@
               ${pinnedItems.length > 0 && !onlyPinned ? `<span class="pinned-badge">★ ${pinnedItems.length} PINNED</span>` : ""}
             </div>
             ${rowsHtml}
+            ${watchHtml ? `<div class="card-footer"><div class="watch-list">${watchHtml}</div></div>` : ""}
           </div>
         `
       };
@@ -1083,6 +1167,9 @@
     });
 
     contentEl.addEventListener("click", (e) => {
+      // Allow Watch links to open directly without toggling box score
+      if (e.target.closest(".watch-pill")) return;
+
       const starBtn = e.target.closest(".star-btn");
       if (starBtn) {
         e.stopPropagation();
