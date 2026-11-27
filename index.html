@@ -5,8 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#000000" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Sports" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Sports</title>
+  <link id="favicon-link" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%231c1c1e'/%3E%3Cstop offset='100%25' stop-color='%23000000'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='40' fill='url(%23g)'/%3E%3Ccircle cx='90' cy='90' r='56' fill='none' stroke='%230a84ff' stroke-width='10'/%3E%3Cpath d='M90 34v112M34 90h112' stroke='%23ffd60a' stroke-width='6' stroke-linecap='round' opacity='0.85'/%3E%3Ccircle cx='90' cy='90' r='16' fill='%23ffffff'/%3E%3C/svg%3E" />
+  <link id="apple-icon-link" rel="apple-touch-icon" sizes="180x180" href="" />
   <style>
     :root {
       --bg: #000000;
@@ -425,6 +428,29 @@
     }
     .star-btn.starred { color: var(--gold); }
 
+    /* Betting Odds Strip */
+    .odds-strip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: #aeaeb2;
+      font-variant-numeric: tabular-nums;
+      flex-wrap: wrap;
+    }
+    .odds-label {
+      color: var(--green);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
     /* Card Footer (Watch Links + Box Score Hint) */
     .card-footer {
       display: flex;
@@ -500,9 +526,7 @@
     .play-clock { font-size: 0.72rem; color: var(--text-sec); font-weight: 700; margin-bottom: 2px; }
 
     /* Standings Styles */
-    .standings-filter-bar {
-      margin-bottom: 12px;
-    }
+    .standings-filter-bar { margin-bottom: 12px; }
     .standings-select {
       width: 100%;
       background: var(--surface);
@@ -521,15 +545,8 @@
       gap: 8px;
       margin-bottom: 10px;
     }
-    .standings-title {
-      font-size: 0.96rem;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-    }
-    .standings-table-wrap {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
+    .standings-title { font-size: 0.96rem; font-weight: 700; letter-spacing: -0.01em; }
+    .standings-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .standings-table {
       width: 100%;
       border-collapse: collapse;
@@ -556,11 +573,7 @@
       color: #e5e5ea;
     }
     .standings-table tr:last-child td { border-bottom: none; }
-    .standings-table td:first-child {
-      text-align: left;
-      width: 100%;
-      max-width: 185px;
-    }
+    .standings-table td:first-child { text-align: left; width: 100%; max-width: 185px; }
     .standings-table tr.pinned-row td {
       background: rgba(255, 214, 10, 0.1);
       color: var(--gold);
@@ -568,12 +581,7 @@
     }
     .standings-table tr.pinned-row td:first-child { border-radius: 8px 0 0 8px; }
     .standings-table tr.pinned-row td:last-child { border-radius: 0 8px 8px 0; }
-    .st-team-cell {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      min-width: 0;
-    }
+    .st-team-cell { display: flex; align-items: center; gap: 7px; min-width: 0; }
     .st-rank {
       color: var(--text-dim);
       font-size: 0.74rem;
@@ -583,18 +591,8 @@
       text-align: right;
     }
     .standings-table tr.pinned-row .st-rank { color: var(--gold); }
-    .st-logo {
-      width: 20px;
-      height: 20px;
-      object-fit: contain;
-      flex-shrink: 0;
-    }
-    .st-name {
-      font-weight: 600;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+    .st-logo { width: 20px; height: 20px; object-fit: contain; flex-shrink: 0; }
+    .st-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     /* News Cards */
     .news-card {
@@ -670,6 +668,51 @@
   </div>
 
   <script>
+    /* ---------- GENERATE CRISP 180x180 PNG APP ICON FOR iOS ---------- */
+    (function generateAppleTouchIcon() {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = 180;
+        canvas.height = 180;
+        const ctx = canvas.getContext("2d");
+
+        // Dark gradient background
+        const grad = ctx.createLinearGradient(0, 0, 180, 180);
+        grad.addColorStop(0, "#1c1c1e");
+        grad.addColorStop(1, "#000000");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 180, 180);
+
+        // Outer blue ring
+        ctx.beginPath();
+        ctx.arc(90, 90, 56, 0, Math.PI * 2);
+        ctx.strokeStyle = "#0a84ff";
+        ctx.lineWidth = 10;
+        ctx.stroke();
+
+        // Gold crosshairs
+        ctx.beginPath();
+        ctx.moveTo(90, 34);
+        ctx.lineTo(90, 146);
+        ctx.moveTo(34, 90);
+        ctx.lineTo(146, 90);
+        ctx.strokeStyle = "rgba(255, 214, 10, 0.85)";
+        ctx.lineWidth = 6;
+        ctx.lineCap = "round";
+        ctx.stroke();
+
+        // Center white dot
+        ctx.beginPath();
+        ctx.arc(90, 90, 16, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+
+        const pngUrl = canvas.toDataURL("image/png");
+        const link = document.getElementById("apple-icon-link");
+        if (link) link.href = pngUrl;
+      } catch {}
+    })();
+
     const STORAGE_KEY = "sportsHubFavorites_v1";
     const LEAGUES = [
       {
@@ -809,6 +852,27 @@
       }).join("");
     }
 
+    function renderOddsStrip(comp, state) {
+      if (state === "post") return "";
+      const odds = comp?.odds?.[0];
+      if (!odds) return "";
+
+      const parts = [];
+      if (odds.details && odds.details !== "EVEN") parts.push(odds.details);
+      else if (odds.details === "EVEN") parts.push("PK");
+      if (odds.overUnder !== undefined && odds.overUnder !== null) {
+        parts.push(`O/U ${odds.overUnder}`);
+      }
+
+      if (parts.length === 0) return "";
+      return `
+        <div class="odds-strip">
+          <span class="odds-label">Line</span>
+          <span>${escapeHtml(parts.join(" · "))}</span>
+        </div>
+      `;
+    }
+
     const leagueMap = Object.fromEntries(LEAGUES.map(l => [l.path, l]));
     const leagueButtonsEl = document.getElementById("league-buttons");
     const contentEl = document.getElementById("content");
@@ -855,9 +919,9 @@
     function hasAnyFavorites() { return getActiveFavLeagues().length > 0; }
 
     let currentLeague = hasAnyFavorites() ? "my-teams" : LEAGUES[0].path;
-    let currentView = "scores"; // "scores" | "standings" | "news"
+    let currentView = "scores";
     let collegeFilter = "all";
-    let dateMode = "today"; // "yesterday" | "today" | "tomorrow" | "custom"
+    let dateMode = "today";
     let customDateStr = "";
     let selectedStandingsGroup = "all";
     let lastEvents = [];
@@ -1157,7 +1221,6 @@
 
       if (matched.length >= 2) return matched;
 
-      // Fallback: pick first 4 useful stats dynamically
       const skip = new Set(["rank", "playoffseed", "rankchange", "clincher"]);
       return sampleStats
         .filter(s => !skip.has((s.name || "").toLowerCase()) && s.displayValue !== undefined)
@@ -1305,9 +1368,7 @@
             const meta = getEntryMeta(entry);
             return isFavorited(league.path, meta.id, [meta.name, meta.fullName, meta.abbr]);
           });
-          if (hasPinned) {
-            cardsHtml.push(renderStandingsCard(group, league.path, true));
-          }
+          if (hasPinned) cardsHtml.push(renderStandingsCard(group, league.path, true));
         });
       });
 
@@ -1451,6 +1512,7 @@
       const isFinal = state === "post";
       const leagueLabel = leagueMap[leaguePath]?.label || "";
       const watchHtml = renderWatchPills(comp);
+      const oddsHtml = renderOddsStrip(comp, state);
 
       const renderTeam = (c, starred) => {
         const rankNum = c?.curatedRank?.current;
@@ -1495,6 +1557,7 @@
             </div>
             ${renderTeam(away, awayFav)}
             ${renderTeam(home, homeFav)}
+            ${oddsHtml}
             <div class="card-footer">
               <div class="watch-list">${watchHtml}</div>
               <div class="tap-hint">Details ▾</div>
