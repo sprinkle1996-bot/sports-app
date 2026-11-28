@@ -352,10 +352,7 @@
     }
     .watch-pill.yttv { background: rgba(255, 69, 58, 0.16); color: #ff6961; }
     .watch-pill.stream { background: rgba(10, 132, 255, 0.18); color: #64d2ff; }
-    .reddit-pill {
-      background: rgba(255, 87, 0, 0.15);
-      color: #ff8c52;
-    }
+    .reddit-pill { background: rgba(255, 87, 0, 0.15); color: #ff8c52; }
     .tap-hint { font-size: 0.74rem; font-weight: 600; color: var(--text-dim); margin-left: auto; }
 
     /* Box Score Drawer */
@@ -385,12 +382,59 @@
       border: none;
       padding: 7px 6px;
       border-radius: 7px;
-      font-size: 0.74rem;
+      font-size: 0.73rem;
       font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
     }
     .box-subtabs button.active { background: var(--surface-2); color: var(--text); }
+
+    /* In-App Recap Reader */
+    .recap-card {
+      background: #111113;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .recap-hero {
+      width: 100%;
+      max-height: 210px;
+      object-fit: cover;
+      display: block;
+    }
+    .recap-inner {
+      padding: 14px;
+    }
+    .recap-headline {
+      font-size: 1.08rem;
+      font-weight: 800;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      margin: 0 0 6px;
+      color: #ffffff;
+    }
+    .recap-meta {
+      font-size: 0.74rem;
+      color: var(--text-sec);
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .recap-story {
+      font-size: 0.88rem;
+      line-height: 1.58;
+      color: #e5e5ea;
+    }
+    .recap-story p { margin: 0 0 12px; }
+    .recap-story p:last-child { margin-bottom: 0; }
+    .recap-story h2, .recap-story h3 {
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 14px 0 6px;
+    }
+    .recap-story a { color: #64d2ff; text-decoration: none; }
+    .recap-story ul { padding-left: 18px; margin: 0 0 12px; }
 
     /* Football Field Visualizer */
     .field-card { background: #111113; border: 1px solid var(--border); border-radius: 14px; padding: 12px; }
@@ -453,20 +497,8 @@
     .player-pos { color: var(--text-dim); font-size: 0.68rem; font-weight: 600; margin-left: 4px; }
 
     /* Highlights & X Tab */
-    .x-section-title {
-      font-size: 0.72rem;
-      font-weight: 800;
-      color: var(--text-sec);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin: 0 0 8px;
-    }
-    .x-btn-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
+    .x-section-title { font-size: 0.72rem; font-weight: 800; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 8px; }
+    .x-btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
     .x-action-btn {
       display: flex;
       align-items: center;
@@ -482,44 +514,13 @@
       text-decoration: none;
       cursor: pointer;
     }
-    .x-action-btn.x-primary {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.22);
-    }
-    .x-action-btn.yt-btn {
-      grid-column: 1 / -1;
-      background: rgba(255, 69, 58, 0.14);
-      border-color: rgba(255, 69, 58, 0.35);
-      color: #ff6961;
-    }
-    .x-embed-wrap {
-      margin-bottom: 14px;
-      background: #111113;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px;
-    }
+    .x-action-btn.x-primary { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.22); }
+    .x-action-btn.yt-btn { grid-column: 1 / -1; background: rgba(255, 69, 58, 0.14); border-color: rgba(255, 69, 58, 0.35); color: #ff6961; }
+    .x-embed-wrap { margin-bottom: 14px; background: #111113; border: 1px solid var(--border); border-radius: 12px; padding: 10px; }
     .x-embed-note { font-size: 0.72rem; color: var(--text-sec); margin: 6px 0 0; text-align: center; }
-    .video-card {
-      background: #111113;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      margin-bottom: 10px;
-    }
-    .video-card video {
-      width: 100%;
-      max-height: 220px;
-      display: block;
-      background: #000;
-    }
-    .video-title {
-      padding: 8px 10px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #e5e5ea;
-      line-height: 1.3;
-    }
+    .video-card { background: #111113; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 10px; }
+    .video-card video { width: 100%; max-height: 220px; display: block; background: #000; }
+    .video-title { padding: 8px 10px; font-size: 0.8rem; font-weight: 600; color: #e5e5ea; line-height: 1.3; }
 
     .stat-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; font-variant-numeric: tabular-nums; }
     .stat-table th, .stat-table td { padding: 7px 4px; border-bottom: 1px solid var(--border); }
@@ -654,9 +655,7 @@
         ctx.fillRect(0, 0, 180, 180);
 
         ctx.fillStyle = "#216e27";
-        for (let y = 26; y < 154; y += 32) {
-          ctx.fillRect(0, y, 180, 16);
-        }
+        for (let y = 26; y < 154; y += 32) ctx.fillRect(0, y, 180, 16);
 
         ctx.fillStyle = "#124216";
         ctx.fillRect(0, 0, 180, 26);
@@ -668,10 +667,7 @@
 
         ctx.lineWidth = 2.5;
         [26, 58, 90, 122, 154].forEach(y => {
-          ctx.beginPath();
-          ctx.moveTo(14, y);
-          ctx.lineTo(166, y);
-          ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(14, y); ctx.lineTo(166, y); ctx.stroke();
         });
 
         ctx.lineWidth = 2;
@@ -694,9 +690,7 @@
 
         ctx.beginPath();
         ctx.moveTo(79, 90); ctx.lineTo(101, 90);
-        [83, 88, 93, 98].forEach(x => {
-          ctx.moveTo(x, 86); ctx.lineTo(x, 94);
-        });
+        [83, 88, 93, 98].forEach(x => { ctx.moveTo(x, 86); ctx.lineTo(x, 94); });
         ctx.lineWidth = 2;
         ctx.lineCap = "round";
         ctx.stroke();
@@ -804,18 +798,15 @@
       let postQuery = "";
 
       if (leaguePath.startsWith("soccer/")) {
-        liveLabel = "Match Thread";
-        postLabel = "Post-Match";
+        liveLabel = "Match Thread"; postLabel = "Post-Match";
         liveQuery = `Match Thread ${awayName} ${homeName}`;
         postQuery = `Post Match Thread ${awayName} ${homeName}`;
       } else if (leaguePath === "racing/f1") {
-        liveLabel = "Race Thread";
-        postLabel = "Post-Race";
+        liveLabel = "Race Thread"; postLabel = "Post-Race";
         liveQuery = `Race Discussion ${eventName}`;
         postQuery = `Post-Race Discussion ${eventName}`;
       } else if (leaguePath === "golf/pga") {
-        liveLabel = "Event Thread";
-        postLabel = "Post-Round";
+        liveLabel = "Event Thread"; postLabel = "Post-Round";
         liveQuery = `${eventName} Discussion`;
         postQuery = `${eventName} Post`;
       } else {
@@ -1019,6 +1010,17 @@
       const tmp = document.createElement("div");
       tmp.innerHTML = html || "";
       return (tmp.textContent || tmp.innerText || "").trim();
+    }
+
+    function sanitizeRecapHtml(rawHtml) {
+      const wrap = document.createElement("div");
+      wrap.innerHTML = rawHtml || "";
+      wrap.querySelectorAll("script, style, iframe, aside, figure, img, video, audio, form, button").forEach(el => el.remove());
+      wrap.querySelectorAll("a").forEach(a => {
+        a.setAttribute("target", "_blank");
+        a.setAttribute("rel", "noopener noreferrer");
+      });
+      return wrap.innerHTML.trim();
     }
 
     function loadFavorites() {
@@ -1499,6 +1501,36 @@
       renderCombinedStandingsList();
     }
 
+    /* ---------- IN-APP GAME RECAP READER ---------- */
+    function renderRecapHtml(data) {
+      const article = data.article;
+      const storyHtml = sanitizeRecapHtml(article?.story || "");
+
+      if (!article || (!storyHtml && !article.description)) {
+        const state = data.header?.competitions?.[0]?.status?.type?.state || "";
+        const msg = state === "post"
+          ? "Game recap article has not been published yet. Try refreshing in a few minutes."
+          : "The full game recap will appear here right after the game finishes.";
+        return `<div class="empty" style="padding:18px 8px;">${msg}</div>`;
+      }
+
+      const heroImg = article.images?.[0]?.url || "";
+      const byline = article.byline || article.source || "Game Recap";
+      const timeStr = formatTimeAgo(article.published || article.lastModified);
+      const metaLine = [byline, timeStr].filter(Boolean).join(" · ");
+
+      return `
+        <div class="recap-card">
+          ${heroImg ? `<img class="recap-hero" src="${escapeHtml(heroImg)}" alt="" loading="lazy" />` : ""}
+          <div class="recap-inner">
+            <h3 class="recap-headline">${escapeHtml(article.headline || "Game Recap")}</h3>
+            <div class="recap-meta">${escapeHtml(metaLine)}</div>
+            <div class="recap-story">${storyHtml || `<p>${escapeHtml(article.description || "")}</p>`}</div>
+          </div>
+        </div>
+      `;
+    }
+
     /* ---------- FOOTBALL FIELD & DRIVE VISUALIZER ---------- */
     function renderFieldHtml(data) {
       const drives = data.drives || {};
@@ -1741,6 +1773,8 @@
 
       if (activeSubtab === "field" && isFootball) {
         body = renderFieldHtml(data);
+      } else if (activeSubtab === "recap") {
+        body = renderRecapHtml(data);
       } else if (activeSubtab === "players") {
         body = renderPlayersHtml(data);
       } else if (activeSubtab === "highlights") {
@@ -1787,6 +1821,7 @@
       return `
         <div class="box-subtabs">
           ${isFootball ? `<button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'field')" class="${activeSubtab === "field" ? "active" : ""}">Field</button>` : ""}
+          <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'recap')" class="${activeSubtab === "recap" ? "active" : ""}">Recap</button>
           <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'players')" class="${activeSubtab === "players" ? "active" : ""}">Players</button>
           <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'stats')" class="${activeSubtab === "stats" ? "active" : ""}">Team</button>
           <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'plays')" class="${activeSubtab === "plays" ? "active" : ""}">Plays</button>
@@ -1808,7 +1843,8 @@
       const leaguePath = cardEl.dataset.league;
       const eventId = cardEl.dataset.eventId;
       const isFootball = leaguePath === "football/nfl" || leaguePath === "football/college-football";
-      const defaultTab = isFootball ? "field" : "players";
+      const isFinal = cardEl.dataset.state === "post";
+      const defaultTab = isFinal ? "recap" : (isFootball ? "field" : "players");
       const cacheKey = `${leaguePath}:${eventId}`;
 
       cardEl.dataset.boxTab = defaultTab;
@@ -1899,7 +1935,7 @@
         isPinned,
         state,
         html: `
-          <div class="game-card clickable ${isPinned ? "pinned" : ""}" data-event-id="${escapeHtml(event.id)}" data-league="${leaguePath}">
+          <div class="game-card clickable ${isPinned ? "pinned" : ""}" data-event-id="${escapeHtml(event.id)}" data-league="${leaguePath}" data-state="${state}">
             <div class="status-row">
               <div class="status-left">
                 ${showLeaguePill ? `<span class="league-pill">${leagueLabel}</span>` : ""}
@@ -1912,7 +1948,7 @@
             ${oddsHtml}
             <div class="card-footer">
               <div class="watch-list">${watchHtml}${redditHtml}</div>
-              <div class="tap-hint">Details ▾</div>
+              <div class="tap-hint">${isFinal ? "Recap & Stats ▾" : "Details ▾"}</div>
             </div>
             <div class="box-drawer"></div>
           </div>
@@ -2302,7 +2338,7 @@
     });
 
     contentEl.addEventListener("click", (e) => {
-      if (e.target.closest(".watch-pill") || e.target.closest(".reddit-pill") || e.target.closest("a.x-action-btn")) return;
+      if (e.target.closest(".watch-pill") || e.target.closest(".reddit-pill") || e.target.closest("a.x-action-btn") || e.target.closest(".recap-story a")) return;
 
       const starBtn = e.target.closest(".star-btn");
       if (starBtn) {
@@ -2339,4 +2375,3 @@
   </script>
 </body>
 </html>
-
