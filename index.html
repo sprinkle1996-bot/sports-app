@@ -1,3 +1,16 @@
+Here is your updated index.html with one-tap Reddit Game Thread and Post Game Thread links added to every matchup and event card on the dashboard.
+Subreddit mapping included:
+ * CFB: r/CFB (Game Thread / Post Game)
+ * CBB: r/CollegeBasketball (Game Thread / Post Game)
+ * NFL: r/nfl (Game Thread / Post Game)
+ * EPL & UCL: r/soccer (Match Thread / Post-Match)
+ * NBA: r/nba (Game Thread / Post Game)
+ * MLB: r/baseball (Game Thread / Post Game)
+ * NHL: r/hockey (Game Thread / Post Game)
+ * F1: r/formula1 (Race Thread / Post-Race)
+ * PGA: r/golf (Event Thread / Post-Round)
+Each pill opens a pre-filtered, newest-first search inside that specific subreddit (restricted to the past week) so the right thread is at the top—and launches straight into the Reddit app if you have it installed.
+Replace your index.html on GitHub with this complete code:
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,6 +36,7 @@
       --gold: #ffd60a;
       --live: #ff453a;
       --green: #30d158;
+      --reddit: #ff5700;
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -337,7 +351,7 @@
       flex-wrap: wrap;
     }
     .watch-list { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-    .watch-pill {
+    .watch-pill, .reddit-pill {
       display: inline-flex;
       align-items: center;
       gap: 4px;
@@ -351,6 +365,10 @@
     }
     .watch-pill.yttv { background: rgba(255, 69, 58, 0.16); color: #ff6961; }
     .watch-pill.stream { background: rgba(10, 132, 255, 0.18); color: #64d2ff; }
+    .reddit-pill {
+      background: rgba(255, 87, 0, 0.15);
+      color: #ff8c52;
+    }
     .tap-hint { font-size: 0.74rem; font-weight: 600; color: var(--text-dim); margin-left: auto; }
 
     /* Box Score Drawer */
@@ -645,27 +663,22 @@
         canvas.height = 180;
         const ctx = canvas.getContext("2d");
 
-        // Base turf green
         ctx.fillStyle = "#1b5e20";
         ctx.fillRect(0, 0, 180, 180);
 
-        // Alternating mown turf stripes
         ctx.fillStyle = "#216e27";
         for (let y = 26; y < 154; y += 32) {
           ctx.fillRect(0, y, 180, 16);
         }
 
-        // Darker end zones
         ctx.fillStyle = "#124216";
         ctx.fillRect(0, 0, 180, 26);
         ctx.fillRect(0, 154, 180, 26);
 
-        // Outer field border
         ctx.strokeStyle = "rgba(255,255,255,0.9)";
         ctx.lineWidth = 4;
         ctx.strokeRect(14, 14, 152, 152);
 
-        // Yard lines
         ctx.lineWidth = 2.5;
         [26, 58, 90, 122, 154].forEach(y => {
           ctx.beginPath();
@@ -674,7 +687,6 @@
           ctx.stroke();
         });
 
-        // Hash marks
         ctx.lineWidth = 2;
         ctx.strokeStyle = "rgba(255,255,255,0.65)";
         for (let y = 34; y <= 146; y += 16) {
@@ -685,7 +697,6 @@
           ctx.stroke();
         }
 
-        // Center football
         ctx.beginPath();
         ctx.ellipse(90, 90, 25, 14, 0, 0, Math.PI * 2);
         ctx.fillStyle = "#7a3b14";
@@ -694,7 +705,6 @@
         ctx.strokeStyle = "#ffffff";
         ctx.stroke();
 
-        // Football laces
         ctx.beginPath();
         ctx.moveTo(79, 90); ctx.lineTo(101, 90);
         [83, 88, 93, 98].forEach(x => {
@@ -714,7 +724,7 @@
     const LEAGUES = [
       {
         path: "football/college-football", label: "CFB", type: "team",
-        queryParams: "groups=80&limit=200", allLabel: "All FBS",
+        subreddit: "CFB", queryParams: "groups=80&limit=200", allLabel: "All FBS",
         rss: [
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/college-football/" },
           { source: "Yahoo Sports", url: "https://sports.yahoo.com/ncaaf/rss.xml" }
@@ -722,7 +732,7 @@
       },
       {
         path: "basketball/mens-college-basketball", label: "CBB", type: "team",
-        queryParams: "groups=50&limit=200", allLabel: "All D1",
+        subreddit: "CollegeBasketball", queryParams: "groups=50&limit=200", allLabel: "All D1",
         rss: [
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/college-basketball/" },
           { source: "Yahoo Sports", url: "https://sports.yahoo.com/ncaab/rss.xml" }
@@ -730,6 +740,7 @@
       },
       {
         path: "football/nfl", label: "NFL", type: "team",
+        subreddit: "nfl",
         rss: [
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/nfl/" },
           { source: "Yahoo Sports", url: "https://sports.yahoo.com/nfl/rss.xml" }
@@ -737,6 +748,7 @@
       },
       {
         path: "soccer/eng.1", label: "EPL", type: "team",
+        subreddit: "soccer",
         rss: [
           { source: "BBC Sport", url: "https://feeds.bbci.co.uk/sport/football/premier-league/rss.xml" },
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/soccer/" }
@@ -744,6 +756,7 @@
       },
       {
         path: "soccer/uefa.champions", label: "UCL", type: "team",
+        subreddit: "soccer",
         rss: [
           { source: "BBC Sport", url: "https://feeds.bbci.co.uk/sport/football/champions-league/rss.xml" },
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/soccer/" }
@@ -751,6 +764,7 @@
       },
       {
         path: "racing/f1", label: "F1", type: "leaderboard",
+        subreddit: "formula1",
         rss: [
           { source: "BBC Sport", url: "https://feeds.bbci.co.uk/sport/formula1/rss.xml" },
           { source: "Yahoo Sports", url: "https://sports.yahoo.com/f1/rss.xml" }
@@ -758,6 +772,7 @@
       },
       {
         path: "golf/pga", label: "PGA", type: "leaderboard",
+        subreddit: "golf",
         rss: [
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/golf/" },
           { source: "BBC Sport", url: "https://feeds.bbci.co.uk/sport/golf/rss.xml" }
@@ -765,6 +780,7 @@
       },
       {
         path: "hockey/nhl", label: "NHL", type: "team",
+        subreddit: "hockey",
         rss: [
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/nhl/" },
           { source: "Yahoo Sports", url: "https://sports.yahoo.com/nhl/rss.xml" }
@@ -772,6 +788,7 @@
       },
       {
         path: "basketball/nba", label: "NBA", type: "team",
+        subreddit: "nba",
         rss: [
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/nba/" },
           { source: "Yahoo Sports", url: "https://sports.yahoo.com/nba/rss.xml" }
@@ -779,12 +796,51 @@
       },
       {
         path: "baseball/mlb", label: "MLB", type: "team",
+        subreddit: "baseball",
         rss: [
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/mlb/" },
           { source: "Yahoo Sports", url: "https://sports.yahoo.com/mlb/rss.xml" }
         ]
       }
     ];
+
+    /* ---------- REDDIT GAME & POST-GAME THREAD LINKS ---------- */
+    function renderRedditPills(leaguePath, awayName, homeName, eventName = "") {
+      const league = leagueMap[leaguePath];
+      if (!league?.subreddit) return "";
+      const sub = league.subreddit;
+      const base = `https://www.reddit.com/r/${sub}/search/?restrict_sr=1&sort=new&t=week&q=`;
+
+      let liveLabel = "Game Thread";
+      let postLabel = "Post Game";
+      let liveQuery = "";
+      let postQuery = "";
+
+      if (leaguePath.startsWith("soccer/")) {
+        liveLabel = "Match Thread";
+        postLabel = "Post-Match";
+        liveQuery = `Match Thread ${awayName} ${homeName}`;
+        postQuery = `Post Match Thread ${awayName} ${homeName}`;
+      } else if (leaguePath === "racing/f1") {
+        liveLabel = "Race Thread";
+        postLabel = "Post-Race";
+        liveQuery = `Race Discussion ${eventName}`;
+        postQuery = `Post-Race Discussion ${eventName}`;
+      } else if (leaguePath === "golf/pga") {
+        liveLabel = "Event Thread";
+        postLabel = "Post-Round";
+        liveQuery = `${eventName} Discussion`;
+        postQuery = `${eventName} Post`;
+      } else {
+        liveQuery = `Game Thread ${awayName} ${homeName}`;
+        postQuery = `Post Game Thread ${awayName} ${homeName}`;
+      }
+
+      return `
+        <a class="reddit-pill" href="${base}${encodeURIComponent(liveQuery)}" target="_blank" rel="noopener noreferrer">💬 ${liveLabel}</a>
+        <a class="reddit-pill" href="${base}${encodeURIComponent(postQuery)}" target="_blank" rel="noopener noreferrer">💬 ${postLabel}</a>
+      `;
+    }
 
     /* ---------- GAMBLING AD & PROMO FILTER ---------- */
     const GAMBLING_AD_REGEX = /\b(draftkings|fanduel|betmgm|caesars\s*sportsbook|bet365|espn\s*bet|fanatics\s*sportsbook|hard\s*rock\s*bet|betrivers|prizepicks|underdog\s*fantasy|sleeper\s*promo|sportsbook|promo\s*code|bonus\s*bets?|no\s*sweat|deposit\s*match|sign[\s-]?up\s*bonus|bet\s*\$\d+|get\s*\$\d+|best\s*bets?|player\s*props?|prop\s*bets?|same\s*game\s*parlay|parlay\s*picks?|ats\s*picks?|against\s*the\s*spread|moneyline\s*picks?|over\/under\s*picks?|how\s*to\s*bet|betting\s*odds|betting\s*picks?|odds,\s*picks|picks,\s*odds|free\s*picks|wager|gambling)\b/i;
@@ -1655,7 +1711,6 @@
       const homeXUrl = `https://x.com/search?q=${encodeURIComponent(homeName + " highlights")}&f=video`;
       const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(awayName + " vs " + homeName + " highlights")}`;
 
-      // Direct embedded video streams (bypasses espn.com website pre-roll ads)
       const videos = (data.videos || []).slice(0, 4);
       const directClipsHtml = videos.map(v => {
         const src = v.links?.source || {};
@@ -1817,6 +1872,11 @@
       const isFinal = state === "post";
       const leagueLabel = leagueMap[leaguePath]?.label || "";
       const watchHtml = renderWatchPills(comp);
+      const redditHtml = renderRedditPills(
+        leaguePath,
+        away?.team?.shortDisplayName || away?.team?.abbreviation || "",
+        home?.team?.shortDisplayName || home?.team?.abbreviation || ""
+      );
       const oddsHtml = renderOddsStrip(comp, state, away, home);
 
       const renderTeam = (c, starred) => {
@@ -1864,7 +1924,7 @@
             ${renderTeam(home, homeFav)}
             ${oddsHtml}
             <div class="card-footer">
-              <div class="watch-list">${watchHtml}</div>
+              <div class="watch-list">${watchHtml}${redditHtml}</div>
               <div class="tap-hint">Details ▾</div>
             </div>
             <div class="box-drawer"></div>
@@ -1884,6 +1944,7 @@
       const statusText = comp?.status?.type?.shortDetail || event.status?.type?.shortDetail || "";
       const isLive = state === "in";
       const watchHtml = renderWatchPills(comp);
+      const redditHtml = renderRedditPills(leaguePath, "", "", event.shortName || event.name || "");
       const allSorted = (comp?.competitors || []).slice().sort((a, b) => (a.order ?? a.sortOrder ?? 999) - (b.order ?? b.sortOrder ?? 999));
 
       const eventMatches = matchesSearch(event.name || event.shortName || "");
@@ -1935,7 +1996,7 @@
               ${pinnedItems.length > 0 && !onlyPinned ? `<span class="pinned-badge">★ ${pinnedItems.length} PINNED</span>` : ""}
             </div>
             ${rowsHtml}
-            ${watchHtml ? `<div class="card-footer"><div class="watch-list">${watchHtml}</div></div>` : ""}
+            ${(watchHtml || redditHtml) ? `<div class="card-footer"><div class="watch-list">${watchHtml}${redditHtml}</div></div>` : ""}
           </div>
         `
       };
@@ -2254,7 +2315,7 @@
     });
 
     contentEl.addEventListener("click", (e) => {
-      if (e.target.closest(".watch-pill") || e.target.closest("a.x-action-btn")) return;
+      if (e.target.closest(".watch-pill") || e.target.closest(".reddit-pill") || e.target.closest("a.x-action-btn")) return;
 
       const starBtn = e.target.closest(".star-btn");
       if (starBtn) {
@@ -2291,3 +2352,4 @@
   </script>
 </body>
 </html>
+
