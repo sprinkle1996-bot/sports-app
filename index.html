@@ -222,6 +222,10 @@
     .status-filter.hidden { display: none; }
     .status-filter .live-dot { color: var(--live); }
 
+    /* Standings / Playoff Bracket Toggle */
+    .standings-mode-bar { display: none; margin-bottom: 12px; }
+    .standings-mode-bar.visible { display: block; }
+
     .college-filter { display: none; margin-bottom: 14px; }
     .college-filter.visible { display: block; }
 
@@ -273,7 +277,7 @@
     .fav-chip button { background: transparent; border: none; color: var(--gold); padding: 0 2px; font-size: 1rem; line-height: 1; cursor: pointer; }
 
     /* Cards */
-    .game-card, .news-card, .standings-card {
+    .game-card, .news-card, .standings-card, .bracket-card {
       background: var(--surface);
       border-radius: 18px;
       padding: 14px 16px;
@@ -397,6 +401,95 @@
       white-space: nowrap;
     }
     .box-subtabs button.active { background: var(--surface-2); color: var(--text); }
+
+    /* Playoff Bracket Styles */
+    .bracket-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .bracket-title { font-size: 1rem; font-weight: 800; letter-spacing: -0.01em; }
+    .bracket-sub { font-size: 0.72rem; color: var(--text-sec); font-weight: 600; }
+    .bracket-section-label {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--text-sec);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 12px 0 8px;
+    }
+    .bracket-section-label:first-of-type { margin-top: 0; }
+    .bracket-byes {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .bracket-bye-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: #111113;
+      border: 1px solid rgba(48, 209, 88, 0.35);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+    .bracket-bye-pill.pinned {
+      border-color: rgba(255, 214, 10, 0.55);
+      background: rgba(255, 214, 10, 0.1);
+      color: var(--gold);
+    }
+    .bracket-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    @media (min-width: 520px) {
+      .bracket-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .bracket-matchup {
+      background: #111113;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .bracket-team {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.84rem;
+    }
+    .bracket-team:last-child { border-bottom: none; }
+    .bracket-team.pinned {
+      background: rgba(255, 214, 10, 0.1);
+      color: var(--gold);
+      font-weight: 700;
+    }
+    .bracket-team-left {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+    }
+    .bracket-seed {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--text-sec);
+      min-width: 16px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .bracket-team.pinned .bracket-seed,
+    .bracket-bye-pill.pinned .bracket-seed { color: var(--gold); }
+    .bracket-logo { width: 20px; height: 20px; object-fit: contain; flex-shrink: 0; }
+    .bracket-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bracket-rec { font-size: 0.72rem; color: var(--text-dim); font-variant-numeric: tabular-nums; flex-shrink: 0; }
 
     /* In-App Recap Reader */
     .recap-card { background: #111113; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
@@ -655,6 +748,13 @@
         </div>
       </div>
 
+      <div class="standings-mode-bar" id="standings-mode-bar">
+        <div class="segmented" id="standings-mode-tabs">
+          <button data-st-mode="tables" class="active">Tables</button>
+          <button data-st-mode="bracket">🏆 Playoff Bracket</button>
+        </div>
+      </div>
+
       <div class="college-filter" id="college-filter">
         <div class="segmented" id="college-filter-tabs">
           <button data-filter="all" class="active" id="college-all-label">All FBS</button>
@@ -726,6 +826,15 @@
     })();
 
     const STORAGE_KEY = "sportsHubFavorites_v1";
+    const PLAYOFF_LEAGUES = new Set([
+      "football/college-football",
+      "football/nfl",
+      "basketball/nba",
+      "hockey/nhl",
+      "baseball/mlb",
+      "soccer/uefa.champions"
+    ]);
+
     const LEAGUES = [
       {
         path: "football/college-football", label: "CFB", type: "team",
@@ -1055,12 +1164,15 @@
     const statusAllBtnEl = document.getElementById("status-all-btn");
     const statusLiveBtnEl = document.getElementById("status-live-btn");
     const statusFinalBtnEl = document.getElementById("status-final-btn");
+    const standingsModeBarEl = document.getElementById("standings-mode-bar");
     const searchInputEl = document.getElementById("search-input");
     const searchClearEl = document.getElementById("search-clear");
     const refreshBtnEl = document.getElementById("refresh-btn");
 
     const summaryCache = new Map();
     const standingsCache = new Map();
+    const standingsRawCache = new Map();
+    const cfbRankingsCache = new Map();
     const ytChannelCache = new Map();
     const openDrawers = new Map();
 
@@ -1106,7 +1218,8 @@
     let currentLeague = hasAnyFavorites() ? "my-teams" : LEAGUES[0].path;
     let currentView = "scores";
     let collegeFilter = "all";
-    let statusFilter = "all"; // "all" | "live" | "final"
+    let statusFilter = "all";
+    let standingsMode = "tables"; // "tables" | "bracket"
     let dateMode = "today";
     let customDateStr = "";
     let selectedStandingsGroup = "all";
@@ -1253,7 +1366,7 @@
       ensureXWidgetScript(slot);
     };
 
-    /* ---------- DATE & STATUS FILTER HELPERS ---------- */
+    /* ---------- DATE, STATUS & STANDINGS MODE HELPERS ---------- */
     function formatYYYYMMDD(dateObj) {
       const y = dateObj.getFullYear();
       const m = String(dateObj.getMonth() + 1).padStart(2, "0");
@@ -1288,12 +1401,21 @@
     function updateDateUI() {
       dateBarEl.classList.toggle("hidden", currentView !== "scores");
       statusFilterEl.classList.toggle("hidden", currentView !== "scores");
+
+      const showBracketToggle = currentView === "standings" && PLAYOFF_LEAGUES.has(currentLeague);
+      standingsModeBarEl.classList.toggle("visible", showBracketToggle);
+      if (!showBracketToggle) standingsMode = "tables";
+
       document.querySelectorAll("#date-tabs button").forEach(b => {
         b.classList.toggle("active", b.dataset.dateMode === dateMode);
       });
       document.querySelectorAll("#status-filter-tabs button").forEach(b => {
         b.classList.toggle("active", b.dataset.status === statusFilter);
       });
+      document.querySelectorAll("#standings-mode-tabs button").forEach(b => {
+        b.classList.toggle("active", b.dataset.stMode === standingsMode);
+      });
+
       if (dateMode === "custom" && customDateStr) {
         customDateLabelEl.classList.add("active");
         customDateLabelEl.textContent = `📅 ${formatShortDate(customDateStr)}`;
@@ -1458,7 +1580,7 @@
       });
     }
 
-    /* ---------- STANDINGS LOGIC ---------- */
+    /* ---------- STANDINGS & PLAYOFF BRACKET LOGIC ---------- */
     const PREFERRED_STATS = {
       "soccer/eng.1": [
         { keys: ["gamesPlayed"], label: "GP" }, { keys: ["wins"], label: "W" },
@@ -1620,9 +1742,242 @@
       if (!forceFresh && standingsCache.has(leaguePath)) return standingsCache.get(leaguePath);
       const res = await fetch(`https://site.api.espn.com/apis/v2/sports/${leaguePath}/standings`);
       const data = await res.json();
+      standingsRawCache.set(leaguePath, data);
       const groups = extractStandingsGroups(data);
       standingsCache.set(leaguePath, groups);
       return groups;
+    }
+
+    /* ---------- PLAYOFF BRACKET BUILDER ---------- */
+    function collectNodeEntries(node, out = []) {
+      if (!node) return out;
+      if (node.standings?.entries?.length) out.push(...node.standings.entries);
+      if (Array.isArray(node.children)) node.children.forEach(c => collectNodeEntries(c, out));
+      return out;
+    }
+
+    function toBracketTeam(entry, leaguePath, fallbackSeed) {
+      const meta = getEntryMeta(entry);
+      const stats = entry.stats || [];
+      const seedObj = findStatObj(stats, ["playoffSeed", "rank"]);
+      const seed = seedObj?.value ? Number(seedObj.value) : (Number(seedObj?.displayValue) || fallbackSeed);
+      const recObj = findStatObj(stats, ["overall", "summary"]);
+      let record = recObj?.displayValue || "";
+      if (!record) {
+        const w = findStatObj(stats, ["wins"])?.displayValue;
+        const l = findStatObj(stats, ["losses"])?.displayValue;
+        const t = findStatObj(stats, ["ties", "otLosses", "OTLosses"])?.displayValue;
+        if (w !== undefined && l !== undefined) record = t && t !== "0" ? `${w}-${l}-${t}` : `${w}-${l}`;
+      }
+      const isFav = isFavorited(leaguePath, meta.id, [meta.name, meta.fullName, meta.abbr]);
+      return { ...meta, seed, record, isFav };
+    }
+
+    function renderBracketMatchup(t1, t2) {
+      const renderRow = (t) => t ? `
+        <div class="bracket-team ${t.isFav ? "pinned" : ""}">
+          <div class="bracket-team-left">
+            <span class="bracket-seed">${escapeHtml(t.seed)}</span>
+            ${t.logo ? `<img class="bracket-logo" src="${escapeHtml(t.logo)}" alt="" loading="lazy" />` : ""}
+            <span class="bracket-name">${t.isFav ? "★ " : ""}${escapeHtml(t.name)}</span>
+          </div>
+          <span class="bracket-rec">${escapeHtml(t.record)}</span>
+        </div>
+      ` : `<div class="bracket-team"><span class="bracket-name" style="color:var(--text-dim);">TBD</span></div>`;
+
+      return `<div class="bracket-matchup">${renderRow(t1)}${renderRow(t2)}</div>`;
+    }
+
+    function renderByePills(teams) {
+      return `
+        <div class="bracket-byes">
+          ${teams.map(t => `
+            <div class="bracket-bye-pill ${t.isFav ? "pinned" : ""}">
+              <span class="bracket-seed">#${escapeHtml(t.seed)}</span>
+              ${t.logo ? `<img class="bracket-logo" src="${escapeHtml(t.logo)}" alt="" loading="lazy" />` : ""}
+              <span class="bracket-name">${t.isFav ? "★ " : ""}${escapeHtml(t.name)}</span>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    async function renderPlayoffBracket(leaguePath, forceFresh = false) {
+      contentEl.innerHTML = `<div class="empty">Building current playoff bracket...</div>`;
+
+      // 1. CFB 12-Team Playoff (from CFP / AP Rankings)
+      if (leaguePath === "football/college-football") {
+        try {
+          let data = cfbRankingsCache.get(leaguePath);
+          if (!data || forceFresh) {
+            const res = await fetch("https://site.api.espn.com/apis/site/v2/sports/football/college-football/rankings");
+            data = await res.json();
+            cfbRankingsCache.set(leaguePath, data);
+          }
+          const polls = data.rankings || [];
+          const poll = polls.find(p => (p.name || "").toLowerCase().includes("playoff"))
+            || polls.find(p => (p.name || "").toLowerCase().includes("ap"))
+            || polls[0];
+          const ranks = (poll?.ranks || []).slice(0, 12);
+          if (ranks.length < 12) {
+            contentEl.innerHTML = `<div class="empty">CFP rankings are not posted yet.</div>`;
+            return;
+          }
+          const teams = ranks.map((r, i) => {
+            const t = r.team || {};
+            const name = t.nickname || t.location || t.name || "TBD";
+            const isFav = isFavorited(leaguePath, t.id, [name, t.name, t.abbreviation]);
+            return {
+              seed: r.current || (i + 1),
+              name,
+              logo: t.logo || "",
+              record: r.recordSummary || "",
+              isFav
+            };
+          });
+          contentEl.innerHTML = `
+            <div class="bracket-card">
+              <div class="bracket-header">
+                <div class="bracket-title">12-Team College Football Playoff</div>
+                <div class="bracket-sub">${escapeHtml(poll.shortName || poll.name || "Projected")}</div>
+              </div>
+              <div class="bracket-section-label">First-Round Byes (Seeds 1–4)</div>
+              ${renderByePills(teams.slice(0, 4))}
+              <div class="bracket-section-label">First Round Matchups</div>
+              <div class="bracket-grid">
+                ${renderBracketMatchup(teams[4], teams[11])}
+                ${renderBracketMatchup(teams[5], teams[10])}
+                ${renderBracketMatchup(teams[6], teams[9])}
+                ${renderBracketMatchup(teams[7], teams[8])}
+              </div>
+            </div>
+          `;
+        } catch {
+          contentEl.innerHTML = `<div class="empty">Could not load CFB playoff rankings right now.</div>`;
+        }
+        return;
+      }
+
+      // 2. Pro Leagues & UCL (from Standings API)
+      try {
+        await fetchStandingsGroups(leaguePath, forceFresh);
+        const raw = standingsRawCache.get(leaguePath);
+        if (!raw) {
+          contentEl.innerHTML = `<div class="empty">Playoff seeding is not available right now.</div>`;
+          return;
+        }
+
+        // UCL League Phase -> Round of 16 + Knockout Play-offs
+        if (leaguePath === "soccer/uefa.champions") {
+          const allEntries = collectNodeEntries(raw);
+          const teams = allEntries.map((e, i) => toBracketTeam(e, leaguePath, i + 1)).sort((a, b) => a.seed - b.seed);
+          if (teams.length < 24) {
+            contentEl.innerHTML = `<div class="empty">UCL knockout seeding is not available yet.</div>`;
+            return;
+          }
+          const matchups = [];
+          for (let i = 0; i < 8; i++) matchups.push(renderBracketMatchup(teams[8 + i], teams[23 - i]));
+          contentEl.innerHTML = `
+            <div class="bracket-card">
+              <div class="bracket-header">
+                <div class="bracket-title">Champions League Knockout Picture</div>
+                <div class="bracket-sub">Live Seeding</div>
+              </div>
+              <div class="bracket-section-label">Direct to Round of 16 (Top 8)</div>
+              ${renderByePills(teams.slice(0, 8))}
+              <div class="bracket-section-label">Knockout Play-off Round (Seeds 9–24)</div>
+              <div class="bracket-grid">${matchups.join("")}</div>
+            </div>
+          `;
+          return;
+        }
+
+        // Conference-based Pro Leagues (NFL, NBA, NHL, MLB)
+        const confNodes = raw.children || [];
+        const cardsHtml = confNodes.map(conf => {
+          const seenIds = new Set();
+          const entries = collectNodeEntries(conf).filter(e => {
+            const id = e.team?.id || e.team?.name;
+            if (!id || seenIds.has(id)) return false;
+            seenIds.add(id);
+            return true;
+          });
+          const seeded = entries
+            .map((e, i) => toBracketTeam(e, leaguePath, i + 1))
+            .filter(t => t.seed > 0)
+            .sort((a, b) => a.seed - b.seed);
+
+          if (seeded.length < 6) return "";
+
+          let bodyHtml = "";
+          if (leaguePath === "football/nfl") {
+            bodyHtml = `
+              <div class="bracket-section-label">First-Round Bye</div>
+              ${renderByePills([seeded[0]])}
+              <div class="bracket-section-label">Wild Card Round</div>
+              <div class="bracket-grid">
+                ${renderBracketMatchup(seeded[1], seeded[6])}
+                ${renderBracketMatchup(seeded[2], seeded[5])}
+                ${renderBracketMatchup(seeded[3], seeded[4])}
+              </div>
+            `;
+          } else if (leaguePath === "baseball/mlb") {
+            bodyHtml = `
+              <div class="bracket-section-label">Division Series Byes</div>
+              ${renderByePills([seeded[0], seeded[1]])}
+              <div class="bracket-section-label">Wild Card Series</div>
+              <div class="bracket-grid">
+                ${renderBracketMatchup(seeded[2], seeded[5])}
+                ${renderBracketMatchup(seeded[3], seeded[4])}
+              </div>
+            `;
+          } else if (leaguePath === "basketball/nba") {
+            bodyHtml = `
+              <div class="bracket-section-label">First Round (Projected)</div>
+              <div class="bracket-grid">
+                ${renderBracketMatchup(seeded[0], seeded[7])}
+                ${renderBracketMatchup(seeded[3], seeded[4])}
+                ${renderBracketMatchup(seeded[2], seeded[5])}
+                ${renderBracketMatchup(seeded[1], seeded[6])}
+              </div>
+              ${seeded.length >= 10 ? `
+                <div class="bracket-section-label">Play-In Tournament (Seeds 7–10)</div>
+                <div class="bracket-grid">
+                  ${renderBracketMatchup(seeded[6], seeded[7])}
+                  ${renderBracketMatchup(seeded[8], seeded[9])}
+                </div>
+              ` : ""}
+            `;
+          } else {
+            // NHL
+            bodyHtml = `
+              <div class="bracket-section-label">First Round (Seeds 1–8)</div>
+              <div class="bracket-grid">
+                ${renderBracketMatchup(seeded[0], seeded[7])}
+                ${renderBracketMatchup(seeded[1], seeded[6])}
+                ${renderBracketMatchup(seeded[2], seeded[5])}
+                ${renderBracketMatchup(seeded[3], seeded[4])}
+              </div>
+            `;
+          }
+
+          return `
+            <div class="bracket-card">
+              <div class="bracket-header">
+                <div class="bracket-title">${escapeHtml(conf.name || conf.shortName || "Conference")}</div>
+                <div class="bracket-sub">Live Bracket</div>
+              </div>
+              ${bodyHtml}
+            </div>
+          `;
+        }).filter(Boolean);
+
+        contentEl.innerHTML = cardsHtml.length
+          ? cardsHtml.join("")
+          : `<div class="empty">Playoff bracket data is not available for this league yet.</div>`;
+      } catch {
+        contentEl.innerHTML = `<div class="empty">Could not load playoff bracket right now.</div>`;
+      }
     }
 
     function renderLeagueStandings(groups, leaguePath) {
@@ -1645,6 +2000,10 @@
     }
 
     async function loadStandings(silent = false) {
+      if (standingsMode === "bracket" && PLAYOFF_LEAGUES.has(currentLeague)) {
+        await renderPlayoffBracket(currentLeague, silent);
+        return;
+      }
       if (!silent) contentEl.innerHTML = `<div class="empty">Loading standings...</div>`;
       try { renderLeagueStandings(await fetchStandingsGroups(currentLeague, silent), currentLeague); }
       catch { if (!silent) contentEl.innerHTML = `<div class="empty">Could not load standings right now. Try refreshing.</div>`; }
@@ -1998,7 +2357,7 @@
       `;
     }
 
-    /* ---------- BOX SCORE DRAWER ---------- */
+    /* ---------- BOX SCORE DRAWER (PLAYS = 2ND TAB, RECAP BESIDE CLIPS) ---------- */
     function renderBoxScoreHtml(data, leaguePath, activeSubtab = "stats", activePlayerTeam = "0") {
       const isFootball = leaguePath === "football/nfl" || leaguePath === "football/college-football";
       const teams = data.boxscore?.teams || [];
@@ -2054,13 +2413,22 @@
         }
       }
 
+      const leadingTabs = isFootball
+        ? `
+          <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'field')" class="${activeSubtab === "field" ? "active" : ""}">Field</button>
+          <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'plays')" class="${activeSubtab === "plays" ? "active" : ""}">Plays</button>
+          <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'players')" class="${activeSubtab === "players" ? "active" : ""}">Players</button>
+        `
+        : `
+          <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'players')" class="${activeSubtab === "players" ? "active" : ""}">Players</button>
+          <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'plays')" class="${activeSubtab === "plays" ? "active" : ""}">Plays</button>
+        `;
+
       return `
         <div class="box-subtabs">
-          ${isFootball ? `<button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'field')" class="${activeSubtab === "field" ? "active" : ""}">Field</button>` : ""}
-          <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'recap')" class="${activeSubtab === "recap" ? "active" : ""}">Recap</button>
-          <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'players')" class="${activeSubtab === "players" ? "active" : ""}">Players</button>
+          ${leadingTabs}
           <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'stats')" class="${activeSubtab === "stats" ? "active" : ""}">Team</button>
-          <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'plays')" class="${activeSubtab === "plays" ? "active" : ""}">Plays</button>
+          <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'recap')" class="${activeSubtab === "recap" ? "active" : ""}">Recap</button>
           <button type="button" onclick="event.stopPropagation(); window.__switchBoxTab(this, 'highlights')" class="${activeSubtab === "highlights" ? "active" : ""}">𝕏 Clips</button>
         </div>
         <div class="box-body">${body}</div>
@@ -2534,6 +2902,7 @@
         if (currentLeague === "my-teams") renderCombinedScoreboard();
         else renderCurrentScoreboard();
       } else if (currentView === "standings") {
+        if (standingsMode === "bracket") return;
         if (currentLeague === "my-teams") renderCombinedStandingsList();
         else {
           const cached = standingsCache.get(currentLeague);
@@ -2592,6 +2961,14 @@
       btn.classList.add("active");
       currentView = btn.dataset.view;
       loadCurrentView(false);
+    });
+
+    document.getElementById("standings-mode-tabs").addEventListener("click", (e) => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+      standingsMode = btn.dataset.stMode;
+      updateDateUI();
+      loadStandings(false);
     });
 
     document.getElementById("date-tabs").addEventListener("click", (e) => {
