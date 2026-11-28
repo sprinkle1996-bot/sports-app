@@ -548,12 +548,7 @@
       border-bottom: 1px solid var(--border);
       background: #141416;
     }
-    .player-modal-id {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
-    }
+    .player-modal-id { display: flex; align-items: center; gap: 12px; min-width: 0; }
     .player-modal-avatar {
       width: 48px;
       height: 48px;
@@ -563,20 +558,8 @@
       border: 1px solid var(--border);
       flex-shrink: 0;
     }
-    .player-modal-name {
-      font-size: 1.08rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .player-modal-sub {
-      font-size: 0.78rem;
-      color: var(--text-sec);
-      font-weight: 600;
-      margin-top: 2px;
-    }
+    .player-modal-name { font-size: 1.08rem; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .player-modal-sub { font-size: 0.78rem; color: var(--text-sec); font-weight: 600; margin-top: 2px; }
     .player-modal-close {
       background: var(--surface-2);
       color: var(--text);
@@ -589,46 +572,13 @@
       cursor: pointer;
       flex-shrink: 0;
     }
-    .player-modal-body {
-      padding: 14px 16px 18px;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    .pstat-section-title {
-      font-size: 0.72rem;
-      font-weight: 800;
-      color: var(--text-sec);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin: 14px 0 8px;
-    }
+    .player-modal-body { padding: 14px 16px 18px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .pstat-section-title { font-size: 0.72rem; font-weight: 800; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.05em; margin: 14px 0 8px; }
     .pstat-section-title:first-child { margin-top: 0; }
-    .pstat-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-    .pstat-tile {
-      background: #111113;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 8px;
-      text-align: center;
-    }
-    .pstat-val {
-      font-size: 1.05rem;
-      font-weight: 800;
-      color: #ffffff;
-      font-variant-numeric: tabular-nums;
-    }
-    .pstat-lbl {
-      font-size: 0.68rem;
-      font-weight: 700;
-      color: var(--text-sec);
-      margin-top: 3px;
-      text-transform: uppercase;
-    }
+    .pstat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; margin-bottom: 10px; }
+    .pstat-tile { background: #111113; border: 1px solid var(--border); border-radius: 12px; padding: 10px 8px; text-align: center; }
+    .pstat-val { font-size: 1.05rem; font-weight: 800; color: #ffffff; font-variant-numeric: tabular-nums; }
+    .pstat-lbl { font-size: 0.68rem; font-weight: 700; color: var(--text-sec); margin-top: 3px; text-transform: uppercase; }
 
     /* Highlights, X & YouTube Auto-Embeds */
     .x-section-title { font-size: 0.72rem; font-weight: 800; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.04em; margin: 12px 0 8px; }
@@ -1322,7 +1272,6 @@
     function renderPlayerSeasonStatsHtml(overviewData, statsData) {
       const blocks = [];
 
-      // 1. Primary: ESPN Athlete Overview (Regular Season + Career splits)
       const ovStats = overviewData?.statistics;
       const ovLabels = ovStats?.labels || ovStats?.names || [];
       const ovSplits = ovStats?.splits || [];
@@ -1349,7 +1298,6 @@
         });
       }
 
-      // 2. Fallback / Supplement: ESPN Full Stats Categories (latest season row per category)
       if (blocks.length === 0 && Array.isArray(statsData?.categories)) {
         statsData.categories.forEach(cat => {
           const labels = cat.labels || cat.names || [];
@@ -1578,25 +1526,48 @@
       return `${y}${m}${d}`;
     }
 
+    function formatLocalDateKey(dateObj) {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const d = String(dateObj.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function getSelectedDateObj() {
+      if (dateMode === "custom" && customDateStr) {
+        const [y, m, d] = customDateStr.split("-").map(Number);
+        return new Date(y, m - 1, d);
+      }
+      const d = new Date();
+      if (dateMode === "yesterday") d.setDate(d.getDate() - 1);
+      if (dateMode === "tomorrow") d.setDate(d.getDate() + 1);
+      return d;
+    }
+
+    function isEventOnSelectedDate(event, league) {
+      // Multi-day leaderboard events (F1, PGA) span multiple days
+      if (league?.type === "leaderboard") return true;
+      if (!event?.date) return true;
+      const eventDate = new Date(event.date);
+      if (Number.isNaN(eventDate.getTime())) return true;
+      return formatLocalDateKey(eventDate) === formatLocalDateKey(getSelectedDateObj());
+    }
+
     function formatShortDate(yyyyMmDd) {
       const [y, m, d] = yyyyMmDd.split("-").map(Number);
       const dt = new Date(y, m - 1, d);
       return dt.toLocaleDateString(undefined, { month: "short", day: "numeric" });
     }
 
-    function getActiveDateParam() {
-      if (dateMode === "today") return "";
-      if (dateMode === "custom" && customDateStr) return customDateStr.replace(/-/g, "");
-      const d = new Date();
-      if (dateMode === "yesterday") d.setDate(d.getDate() - 1);
-      if (dateMode === "tomorrow") d.setDate(d.getDate() + 1);
-      return formatYYYYMMDD(d);
+    function getActiveDateParam(league) {
+      if (league?.type === "leaderboard" && dateMode === "today") return "";
+      return formatYYYYMMDD(getSelectedDateObj());
     }
 
     function getScoreboardUrl(league) {
       const base = `https://site.api.espn.com/apis/site/v2/sports/${league.path}/scoreboard`;
       const params = new URLSearchParams(league.queryParams || "");
-      const dateParam = getActiveDateParam();
+      const dateParam = getActiveDateParam(league);
       if (dateParam) params.set("dates", dateParam);
       const qs = params.toString();
       return qs ? `${base}?${qs}` : base;
@@ -2881,8 +2852,8 @@
 
     function renderCurrentScoreboard() {
       const league = leagueMap[currentLeague];
-      let eventsToShow = lastEvents;
-      if (league?.allLabel && collegeFilter === "top25") eventsToShow = lastEvents.filter(isTop25Event);
+      let eventsToShow = lastEvents.filter(ev => isEventOnSelectedDate(ev, league));
+      if (league?.allLabel && collegeFilter === "top25") eventsToShow = eventsToShow.filter(isTop25Event);
 
       if (eventsToShow.length === 0) {
         updateStatusCounts([]);
@@ -2928,7 +2899,7 @@
       lastCombinedData.forEach(({ league, events }) => {
         if (getLeagueFavs(league.path).length === 0) return;
         let foundInLeague = false;
-        events.forEach(ev => {
+        events.filter(ev => isEventOnSelectedDate(ev, league)).forEach(ev => {
           const card = league.type === "leaderboard" ? renderLeaderboardCard(ev, league.path, true) : renderTeamCard(ev, league.path, true);
           if (card.isPinned && card.html) {
             matchedCards.push(card);
