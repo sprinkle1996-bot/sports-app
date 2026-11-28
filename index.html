@@ -217,6 +217,11 @@
     .custom-date-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
     .custom-date-input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; color-scheme: dark; }
 
+    /* Live / Final Status Filter Bar */
+    .status-filter { margin-bottom: 12px; }
+    .status-filter.hidden { display: none; }
+    .status-filter .live-dot { color: var(--live); }
+
     .college-filter { display: none; margin-bottom: 14px; }
     .college-filter.visible { display: block; }
 
@@ -518,26 +523,9 @@
       padding-left: 3px;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
     }
-    .yt-iframe-wrap {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      background: #000;
-    }
-    .yt-iframe-wrap iframe {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-    }
-    .yt-meta-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-    }
+    .yt-iframe-wrap { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; }
+    .yt-iframe-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .yt-meta-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 10px; }
     .yt-channel-badge {
       font-size: 0.68rem;
       font-weight: 700;
@@ -548,12 +536,7 @@
       white-space: nowrap;
       flex-shrink: 0;
     }
-    .yt-status-note {
-      font-size: 0.78rem;
-      color: var(--text-sec);
-      text-align: center;
-      padding: 10px 4px;
-    }
+    .yt-status-note { font-size: 0.78rem; color: var(--text-sec); text-align: center; padding: 10px 4px; }
 
     .stat-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; font-variant-numeric: tabular-nums; }
     .stat-table th, .stat-table td { padding: 7px 4px; border-bottom: 1px solid var(--border); }
@@ -661,6 +644,14 @@
         <div class="custom-date-wrap">
           <span class="custom-date-btn" id="custom-date-label">📅 Date</span>
           <input type="date" class="custom-date-input" id="custom-date-input" aria-label="Pick a date" />
+        </div>
+      </div>
+
+      <div class="status-filter" id="status-filter">
+        <div class="segmented three-col" id="status-filter-tabs">
+          <button data-status="all" class="active" id="status-all-btn">All</button>
+          <button data-status="live" id="status-live-btn"><span class="live-dot">●</span> Live</button>
+          <button data-status="final" id="status-final-btn">Final</button>
         </div>
       </div>
 
@@ -1060,6 +1051,10 @@
     const dateBarEl = document.getElementById("date-bar");
     const customDateInputEl = document.getElementById("custom-date-input");
     const customDateLabelEl = document.getElementById("custom-date-label");
+    const statusFilterEl = document.getElementById("status-filter");
+    const statusAllBtnEl = document.getElementById("status-all-btn");
+    const statusLiveBtnEl = document.getElementById("status-live-btn");
+    const statusFinalBtnEl = document.getElementById("status-final-btn");
     const searchInputEl = document.getElementById("search-input");
     const searchClearEl = document.getElementById("search-clear");
     const refreshBtnEl = document.getElementById("refresh-btn");
@@ -1111,6 +1106,7 @@
     let currentLeague = hasAnyFavorites() ? "my-teams" : LEAGUES[0].path;
     let currentView = "scores";
     let collegeFilter = "all";
+    let statusFilter = "all"; // "all" | "live" | "final"
     let dateMode = "today";
     let customDateStr = "";
     let selectedStandingsGroup = "all";
@@ -1257,7 +1253,7 @@
       ensureXWidgetScript(slot);
     };
 
-    /* ---------- DATE HELPERS ---------- */
+    /* ---------- DATE & STATUS FILTER HELPERS ---------- */
     function formatYYYYMMDD(dateObj) {
       const y = dateObj.getFullYear();
       const m = String(dateObj.getMonth() + 1).padStart(2, "0");
@@ -1291,8 +1287,12 @@
 
     function updateDateUI() {
       dateBarEl.classList.toggle("hidden", currentView !== "scores");
+      statusFilterEl.classList.toggle("hidden", currentView !== "scores");
       document.querySelectorAll("#date-tabs button").forEach(b => {
         b.classList.toggle("active", b.dataset.dateMode === dateMode);
+      });
+      document.querySelectorAll("#status-filter-tabs button").forEach(b => {
+        b.classList.toggle("active", b.dataset.status === statusFilter);
       });
       if (dateMode === "custom" && customDateStr) {
         customDateLabelEl.classList.add("active");
@@ -1301,6 +1301,21 @@
         customDateLabelEl.classList.remove("active");
         customDateLabelEl.textContent = "📅 Date";
       }
+    }
+
+    function updateStatusCounts(cards) {
+      const total = cards.length;
+      const liveCount = cards.filter(c => c.state === "in").length;
+      const finalCount = cards.filter(c => c.state === "post").length;
+      statusAllBtnEl.textContent = total > 0 ? `All (${total})` : "All";
+      statusLiveBtnEl.innerHTML = `<span class="live-dot">●</span> Live${liveCount > 0 ? ` (${liveCount})` : ""}`;
+      statusFinalBtnEl.textContent = finalCount > 0 ? `Final (${finalCount})` : "Final";
+    }
+
+    function filterCardsByStatus(cards) {
+      if (statusFilter === "live") return cards.filter(c => c.state === "in");
+      if (statusFilter === "final") return cards.filter(c => c.state === "post");
+      return cards;
     }
 
     function buildNavigation() {
@@ -2281,36 +2296,51 @@
       });
     }
 
+    function getEmptyStatusMessage() {
+      if (statusFilter === "live") return "No games are currently live right now.";
+      if (statusFilter === "final") return "No finished games for this date yet.";
+      return searchQuery ? `No games matched "${escapeHtml(searchQuery)}".` : "No events scheduled for this date.";
+    }
+
     function renderCurrentScoreboard() {
       const league = leagueMap[currentLeague];
       let eventsToShow = lastEvents;
       if (league?.allLabel && collegeFilter === "top25") eventsToShow = lastEvents.filter(isTop25Event);
 
       if (eventsToShow.length === 0) {
+        updateStatusCounts([]);
         contentEl.innerHTML = `<div class="empty">No events scheduled for this date.</div>`;
         return;
       }
 
       if (league.type === "leaderboard") {
-        const html = eventsToShow.map(ev => renderLeaderboardCard(ev, currentLeague, false).html).filter(Boolean).join("");
-        contentEl.innerHTML = html || `<div class="empty">No results matched "${escapeHtml(searchQuery)}".</div>`;
+        const allCards = eventsToShow.map(ev => renderLeaderboardCard(ev, currentLeague, false)).filter(c => c.html);
+        updateStatusCounts(allCards);
+        const filtered = filterCardsByStatus(allCards);
+        contentEl.innerHTML = filtered.length
+          ? filtered.map(c => c.html).join("")
+          : `<div class="empty">${getEmptyStatusMessage()}</div>`;
         return;
       }
 
-      const cards = eventsToShow.map((ev, idx) => ({ ...renderTeamCard(ev, currentLeague, false), idx })).filter(c => c.html);
-      if (cards.length === 0) {
-        contentEl.innerHTML = `<div class="empty">No games matched "${escapeHtml(searchQuery)}".</div>`;
+      const allCards = eventsToShow.map((ev, idx) => ({ ...renderTeamCard(ev, currentLeague, false), idx })).filter(c => c.html);
+      updateStatusCounts(allCards);
+      const filtered = filterCardsByStatus(allCards);
+
+      if (filtered.length === 0) {
+        contentEl.innerHTML = `<div class="empty">${getEmptyStatusMessage()}</div>`;
         return;
       }
 
-      cards.sort((a, b) => Number(b.isPinned) - Number(a.isPinned) || getStatePriority(a.state) - getStatePriority(b.state) || a.idx - b.idx);
-      contentEl.innerHTML = cards.map(c => c.html).join("");
+      filtered.sort((a, b) => Number(b.isPinned) - Number(a.isPinned) || getStatePriority(a.state) - getStatePriority(b.state) || a.idx - b.idx);
+      contentEl.innerHTML = filtered.map(c => c.html).join("");
       hydrateAllOpenYouTubeSlots();
     }
 
     function renderCombinedScoreboard() {
       const activeLeagues = getActiveFavLeagues();
       if (activeLeagues.length === 0) {
+        updateStatusCounts([]);
         contentEl.innerHTML = `<div class="empty">No teams or players pinned yet.<br/>Switch to any league and tap <strong>☆</strong>, or tap <strong>★ Pins</strong> above.</div>`;
         return;
       }
@@ -2331,18 +2361,25 @@
         if (!foundInLeague) quietLeagues.push(league.label);
       });
 
-      matchedCards.sort((a, b) => getStatePriority(a.state) - getStatePriority(b.state));
+      updateStatusCounts(matchedCards);
+      const filtered = filterCardsByStatus(matchedCards);
+      filtered.sort((a, b) => getStatePriority(a.state) - getStatePriority(b.state));
 
-      if (matchedCards.length === 0) {
-        contentEl.innerHTML = searchQuery
-          ? `<div class="empty">No pinned games matched "${escapeHtml(searchQuery)}".</div>`
-          : `<div class="empty">None of your pinned teams or players have an event on this date.</div>`;
+      if (filtered.length === 0) {
+        const msg = statusFilter === "live"
+          ? "None of your pinned teams are currently live."
+          : statusFilter === "final"
+            ? "None of your pinned teams have finished yet on this date."
+            : searchQuery
+              ? `No pinned games matched "${escapeHtml(searchQuery)}".`
+              : "None of your pinned teams or players have an event on this date.";
+        contentEl.innerHTML = `<div class="empty">${msg}</div>`;
         return;
       }
 
-      const quietHtml = !searchQuery && quietLeagues.length > 0
+      const quietHtml = !searchQuery && statusFilter === "all" && quietLeagues.length > 0
         ? `<div class="quiet-note">No games on this date for your pins in: ${quietLeagues.join(", ")}</div>` : "";
-      contentEl.innerHTML = matchedCards.map(c => c.html).join("") + quietHtml;
+      contentEl.innerHTML = filtered.map(c => c.html).join("") + quietHtml;
       hydrateAllOpenYouTubeSlots();
     }
 
@@ -2563,6 +2600,7 @@
       dateMode = btn.dataset.dateMode;
       customDateStr = "";
       customDateInputEl.value = "";
+      statusFilter = "all";
       openDrawers.clear();
       loadCurrentView(false);
     });
@@ -2571,8 +2609,20 @@
       if (!e.target.value) return;
       dateMode = "custom";
       customDateStr = e.target.value;
+      statusFilter = "all";
       openDrawers.clear();
       loadCurrentView(false);
+    });
+
+    document.getElementById("status-filter-tabs").addEventListener("click", (e) => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+      statusFilter = btn.dataset.status;
+      document.querySelectorAll("#status-filter-tabs button").forEach(b => {
+        b.classList.toggle("active", b.dataset.status === statusFilter);
+      });
+      if (currentLeague === "my-teams") renderCombinedScoreboard();
+      else renderCurrentScoreboard();
     });
 
     document.getElementById("college-filter-tabs").addEventListener("click", (e) => {
