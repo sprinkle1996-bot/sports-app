@@ -72,6 +72,9 @@
       cursor: pointer;
     }
     .icon-btn.active { background: var(--text); color: #000; border-color: var(--text); }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .icon-btn.spinning { opacity: 0.6; pointer-events: none; }
+    .icon-btn.spinning span { display: inline-block; animation: spin 0.7s linear infinite; }
 
     /* Horizontal League Pills */
     .controls {
@@ -300,6 +303,7 @@
     .team-info { display: flex; align-items: center; gap: 9px; min-width: 0; flex: 1; }
     .team-info img { width: 26px; height: 26px; object-fit: contain; flex-shrink: 0; }
     .team-name { font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .poss-ball { font-size: 0.82rem; line-height: 1; flex-shrink: 0; }
     .team-row.loser .team-name, .team-row.loser .score { color: var(--text-sec); }
     .rank { font-size: 0.76rem; color: var(--text-sec); font-weight: 700; min-width: 16px; font-variant-numeric: tabular-nums; }
     .record { font-size: 0.76rem; color: var(--text-dim); font-weight: 500; flex-shrink: 0; }
@@ -548,7 +552,7 @@
         <h1>Sports</h1>
         <div class="header-actions">
           <button class="icon-btn" id="fav-toggle-btn">★ Pins</button>
-          <button class="icon-btn" id="refresh-btn">↻</button>
+          <button class="icon-btn" id="refresh-btn"><span>↻</span></button>
         </div>
       </div>
       <div class="controls" id="league-buttons"></div>
@@ -960,9 +964,13 @@
     const customDateLabelEl = document.getElementById("custom-date-label");
     const searchInputEl = document.getElementById("search-input");
     const searchClearEl = document.getElementById("search-clear");
+    const refreshBtnEl = document.getElementById("refresh-btn");
 
     const summaryCache = new Map();
     const standingsCache = new Map();
+    // Tracks currently open game drawers so refresh keeps you inside your game:
+    // key: `${leaguePath}:${eventId}` -> { tab: string, playerTeam: string }
+    const openDrawers = new Map();
 
     function escapeHtml(str) {
       return String(str ?? "")
@@ -1018,8 +1026,16 @@
     /* ---------- INSTANT DOM-LEVEL SWITCHERS ---------- */
     window.__switchPlayerTeam = function(btn, selection) {
       const container = btn.closest(".players-root");
+      const cardEl = btn.closest(".game-card");
       if (!container) return;
       const sel = String(selection);
+
+      if (cardEl) {
+        const key = `${cardEl.dataset.league}:${cardEl.dataset.eventId}`;
+        const state = openDrawers.get(key) || { tab: "players", playerTeam: "0" };
+        state.playerTeam = sel;
+        openDrawers.set(key, state);
+      }
 
       container.querySelectorAll(".player-team-toggle button").forEach(b => {
         b.classList.toggle("active", b.dataset.sel === sel);
@@ -1039,9 +1055,12 @@
       const drawer = cardEl.querySelector(".box-drawer");
       const leaguePath = cardEl.dataset.league;
       const cacheKey = `${leaguePath}:${cardEl.dataset.eventId}`;
+      const state = openDrawers.get(cacheKey) || { tab: activeTab, playerTeam: "0" };
+      state.tab = activeTab;
+      openDrawers.set(cacheKey, state);
       cardEl.dataset.boxTab = activeTab;
       if (summaryCache.has(cacheKey)) {
-        drawer.innerHTML = renderBoxScoreHtml(summaryCache.get(cacheKey), leaguePath, activeTab);
+        drawer.innerHTML = renderBoxScoreHtml(summaryCache.get(cacheKey), leaguePath, activeTab, state.playerTeam);
       }
     };
 
@@ -1157,13 +1176,13 @@
       if (currentView === "scores") {
         if (currentLeague === "my-teams") {
           const alreadyFetched = lastCombinedData.some(d => d.league.path === leaguePath);
-          if (!exists && !alreadyFetched) loadCombinedScores();
+          if (!exists && !alreadyFetched) loadCombinedScores(false);
           else renderCombinedScoreboard();
         } else if (lastEvents.length > 0) {
           renderCurrentScoreboard();
         }
       } else if (currentView === "standings") {
-        loadCurrentView();
+        loadCurrentView(false);
       }
     }
 
@@ -1178,7 +1197,7 @@
         if (currentLeague === "my-teams") renderCombinedScoreboard();
         else if (lastEvents.length > 0) renderCurrentScoreboard();
       } else if (currentView === "standings") {
-        loadCurrentView();
+        loadCurrentView(false);
       }
     }
 
@@ -1403,8 +1422,8 @@
       `;
     }
 
-    async function fetchStandingsGroups(leaguePath) {
-      if (standingsCache.has(leaguePath)) return standingsCache.get(leaguePath);
+    async function fetchStandingsGroups(leaguePath, forceFresh = false) {
+      if (!forceFresh && standingsCache.has(leaguePath)) return standingsCache.get(leaguePath);
       const res = await fetch(`https://site.api.espn.com/apis/v2/sports/${leaguePath}/standings`);
       const data = await res.json();
       const groups = extractStandingsGroups(data);
@@ -1431,10 +1450,10 @@
       contentEl.innerHTML = cards.length ? (filterHtml + cards.join("")) : (filterHtml + `<div class="empty">No standings matched "${escapeHtml(searchQuery)}".</div>`);
     }
 
-    async function loadStandings() {
-      contentEl.innerHTML = `<div class="empty">Loading standings...</div>`;
-      try { renderLeagueStandings(await fetchStandingsGroups(currentLeague), currentLeague); }
-      catch { contentEl.innerHTML = `<div class="empty">Could not load standings right now. Try refreshing.</div>`; }
+    async function loadStandings(silent = false) {
+      if (!silent) contentEl.innerHTML = `<div class="empty">Loading standings...</div>`;
+      try { renderLeagueStandings(await fetchStandingsGroups(currentLeague, silent), currentLeague); }
+      catch { if (!silent) contentEl.innerHTML = `<div class="empty">Could not load standings right now. Try refreshing.</div>`; }
     }
 
     function renderCombinedStandingsList() {
@@ -1454,15 +1473,15 @@
       contentEl.innerHTML = cardsHtml.length ? cardsHtml.join("") : `<div class="empty">${searchQuery ? `No pinned standings matched "${escapeHtml(searchQuery)}".` : "No standings tables matched your pinned teams right now."}</div>`;
     }
 
-    async function loadCombinedStandings() {
+    async function loadCombinedStandings(silent = false) {
       const activeLeagues = getActiveFavLeagues();
       if (activeLeagues.length === 0) {
         lastCombinedStandings = [];
         contentEl.innerHTML = `<div class="empty">Pin a few teams or drivers first to see their conference and league tables here.</div>`;
         return;
       }
-      contentEl.innerHTML = `<div class="empty">Loading standings for your pinned teams...</div>`;
-      const results = await Promise.allSettled(activeLeagues.map(async league => ({ league, groups: await fetchStandingsGroups(league.path) })));
+      if (!silent) contentEl.innerHTML = `<div class="empty">Loading standings for your pinned teams...</div>`;
+      const results = await Promise.allSettled(activeLeagues.map(async league => ({ league, groups: await fetchStandingsGroups(league.path, silent) })));
       lastCombinedStandings = results.filter(r => r.status === "fulfilled").map(r => r.value);
       renderCombinedStandingsList();
     }
@@ -1600,10 +1619,10 @@
     }
 
     /* ---------- PLAYER STAT BREAKDOWNS (INSTANT DOM SWITCHING) ---------- */
-    function renderTeamPaneContent(teamObj) {
+    function renderTeamPaneContent(teamObj, showHeading = false) {
       const statGroups = (teamObj.statistics || []).filter(g => g.athletes && g.athletes.length > 0);
       const teamName = teamObj.team?.shortDisplayName || teamObj.team?.displayName || teamObj.team?.abbreviation || "Team";
-      const heading = `<div class="player-team-heading" style="display:none;">${escapeHtml(teamName)}</div>`;
+      const heading = `<div class="player-team-heading" style="display:${showHeading ? "block" : "none"};">${escapeHtml(teamName)}</div>`;
 
       if (statGroups.length === 0) {
         return heading + `<div class="empty" style="padding:10px 0;">No player stats recorded yet.</div>`;
@@ -1647,12 +1666,13 @@
       return heading + groupsHtml;
     }
 
-    function renderPlayersHtml(data) {
+    function renderPlayersHtml(data, activeSel = "0") {
       const playerTeams = data.boxscore?.players || [];
       if (playerTeams.length === 0) {
         return `<div class="empty" style="padding:14px 0;">Player stats are not available yet.</div>`;
       }
 
+      const sel = String(activeSel || "0");
       const toggleHtml = `
         <div class="player-team-toggle">
           ${playerTeams.map((pt, idx) => `
@@ -1660,22 +1680,26 @@
               type="button"
               data-sel="${idx}"
               onclick="event.stopPropagation(); window.__switchPlayerTeam(this, '${idx}')"
-              class="${idx === 0 ? "active" : ""}"
+              class="${sel === String(idx) ? "active" : ""}"
             >${escapeHtml(pt.team?.abbreviation || pt.team?.shortDisplayName || `Team ${idx + 1}`)}</button>
           `).join("")}
           <button
             type="button"
             data-sel="all"
             onclick="event.stopPropagation(); window.__switchPlayerTeam(this, 'all')"
+            class="${sel === "all" ? "active" : ""}"
           >Both</button>
         </div>
       `;
 
-      const panesHtml = playerTeams.map((pt, idx) => `
-        <div class="player-team-pane ${idx === 0 ? "visible" : ""}" data-pane-idx="${idx}">
-          ${renderTeamPaneContent(pt)}
-        </div>
-      `).join("");
+      const panesHtml = playerTeams.map((pt, idx) => {
+        const visible = sel === "all" || sel === String(idx);
+        return `
+          <div class="player-team-pane ${visible ? "visible" : ""}" data-pane-idx="${idx}">
+            ${renderTeamPaneContent(pt, sel === "all")}
+          </div>
+        `;
+      }).join("");
 
       return `<div class="players-root">${toggleHtml}${panesHtml}</div>`;
     }
@@ -1700,10 +1724,8 @@
         });
       };
 
-      // 1. Main game videos
       (data.videos || []).forEach(v => addClip(v));
 
-      // 2. Play-level videos (scoring plays, turnovers, key events, drives)
       const playLists = [
         data.scoringPlays || [],
         data.keyEvents || [],
@@ -1767,7 +1789,7 @@
     }
 
     /* ---------- BOX SCORE DRAWER ---------- */
-    function renderBoxScoreHtml(data, leaguePath, activeSubtab = "stats") {
+    function renderBoxScoreHtml(data, leaguePath, activeSubtab = "stats", activePlayerTeam = "0") {
       const isFootball = leaguePath === "football/nfl" || leaguePath === "football/college-football";
       const teams = data.boxscore?.teams || [];
       const awayTeam = teams[0];
@@ -1780,7 +1802,7 @@
       } else if (activeSubtab === "recap") {
         body = renderRecapHtml(data);
       } else if (activeSubtab === "players") {
-        body = renderPlayersHtml(data);
+        body = renderPlayersHtml(data, activePlayerTeam);
       } else if (activeSubtab === "highlights") {
         body = renderHighlightsHtml(data, leaguePath);
       } else if (activeSubtab === "stats") {
@@ -1835,35 +1857,44 @@
       `;
     }
 
+    async function fetchSummary(leaguePath, eventId) {
+      const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${leaguePath}/summary?event=${eventId}`);
+      const data = await res.json();
+      summaryCache.set(`${leaguePath}:${eventId}`, data);
+      return data;
+    }
+
     async function toggleBoxScore(cardEl) {
       const drawer = cardEl.querySelector(".box-drawer");
       if (!drawer) return;
+      const leaguePath = cardEl.dataset.league;
+      const eventId = cardEl.dataset.eventId;
+      const cacheKey = `${leaguePath}:${eventId}`;
+
       if (drawer.classList.contains("open")) {
         drawer.classList.remove("open");
+        openDrawers.delete(cacheKey);
         return;
       }
 
       drawer.classList.add("open");
-      const leaguePath = cardEl.dataset.league;
-      const eventId = cardEl.dataset.eventId;
       const isFootball = leaguePath === "football/nfl" || leaguePath === "football/college-football";
       const isFinal = cardEl.dataset.state === "post";
       const defaultTab = isFinal ? "recap" : (isFootball ? "field" : "players");
-      const cacheKey = `${leaguePath}:${eventId}`;
 
-      cardEl.dataset.boxTab = defaultTab;
+      const existing = openDrawers.get(cacheKey) || { tab: defaultTab, playerTeam: "0" };
+      openDrawers.set(cacheKey, existing);
+      cardEl.dataset.boxTab = existing.tab;
 
       if (summaryCache.has(cacheKey)) {
-        drawer.innerHTML = renderBoxScoreHtml(summaryCache.get(cacheKey), leaguePath, defaultTab);
+        drawer.innerHTML = renderBoxScoreHtml(summaryCache.get(cacheKey), leaguePath, existing.tab, existing.playerTeam);
         return;
       }
 
       drawer.innerHTML = `<div class="empty" style="padding:14px 0;">Loading game details...</div>`;
       try {
-        const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${leaguePath}/summary?event=${eventId}`);
-        const data = await res.json();
-        summaryCache.set(cacheKey, data);
-        drawer.innerHTML = renderBoxScoreHtml(data, leaguePath, defaultTab);
+        const data = await fetchSummary(leaguePath, eventId);
+        drawer.innerHTML = renderBoxScoreHtml(data, leaguePath, existing.tab, existing.playerTeam);
       } catch {
         drawer.innerHTML = `<div class="empty" style="padding:14px 0;">Could not load game details.</div>`;
       }
@@ -1897,6 +1928,9 @@
       const statusText = event.status?.type?.shortDetail || "";
       const isLive = state === "in";
       const isFinal = state === "post";
+      const isFootball = leaguePath === "football/nfl" || leaguePath === "football/college-football";
+      const possTeamId = (isLive && isFootball && comp?.situation?.possession) ? String(comp.situation.possession) : "";
+
       const leagueLabel = leagueMap[leaguePath]?.label || "";
       const watchHtml = renderWatchPills(comp);
       const redditHtml = renderRedditPills(
@@ -1906,6 +1940,13 @@
       );
       const oddsHtml = renderOddsStrip(comp, state, away, home);
 
+      const cacheKey = `${leaguePath}:${event.id}`;
+      const openState = openDrawers.get(cacheKey);
+      const drawerOpenClass = openState ? "open" : "";
+      const drawerInnerHtml = (openState && summaryCache.has(cacheKey))
+        ? renderBoxScoreHtml(summaryCache.get(cacheKey), leaguePath, openState.tab, openState.playerTeam)
+        : "";
+
       const renderTeam = (c, starred) => {
         const rankNum = c?.curatedRank?.current;
         const rankHtml = rankNum && rankNum <= 25 ? `<span class="rank">${rankNum}</span>` : "";
@@ -1913,6 +1954,7 @@
         const shortName = c?.team?.shortDisplayName || "TBD";
         const fullName = c?.team?.displayName || shortName;
         const isLoser = isFinal && c?.winner === false;
+        const hasPoss = possTeamId && teamId && String(teamId) === possTeamId;
         return `
           <div class="team-row ${isLoser ? "loser" : ""}">
             <div class="team-info">
@@ -1928,6 +1970,7 @@
               <img src="${c?.team?.logo || ""}" alt="" />
               ${rankHtml}
               <span class="team-name">${escapeHtml(shortName)}</span>
+              ${hasPoss ? `<span class="poss-ball" title="Possession">🏈</span>` : ""}
               <span class="record">${escapeHtml(c?.records?.[0]?.summary || "")}</span>
             </div>
             <div class="score">${escapeHtml(c?.score ?? "-")}</div>
@@ -1939,7 +1982,7 @@
         isPinned,
         state,
         html: `
-          <div class="game-card clickable ${isPinned ? "pinned" : ""}" data-event-id="${escapeHtml(event.id)}" data-league="${leaguePath}" data-state="${state}">
+          <div class="game-card clickable ${isPinned ? "pinned" : ""}" data-event-id="${escapeHtml(event.id)}" data-league="${leaguePath}" data-state="${state}" data-box-tab="${escapeHtml(openState?.tab || "")}">
             <div class="status-row">
               <div class="status-left">
                 ${showLeaguePill ? `<span class="league-pill">${leagueLabel}</span>` : ""}
@@ -1954,7 +1997,7 @@
               <div class="watch-list">${watchHtml}${redditHtml}</div>
               <div class="tap-hint">${isFinal ? "Recap & Stats ▾" : "Details ▾"}</div>
             </div>
-            <div class="box-drawer"></div>
+            <div class="box-drawer ${drawerOpenClass}">${drawerInnerHtml}</div>
           </div>
         `
       };
@@ -2092,34 +2135,49 @@
       contentEl.innerHTML = matchedCards.map(c => c.html).join("") + quietHtml;
     }
 
-    async function loadScores() {
+    async function refreshOpenDrawerSummaries() {
+      if (openDrawers.size === 0) return;
+      const tasks = Array.from(openDrawers.keys()).map(key => {
+        const [leaguePath, eventId] = key.split(":");
+        return fetchSummary(leaguePath, eventId).catch(() => null);
+      });
+      await Promise.allSettled(tasks);
+    }
+
+    async function loadScores(silent = false) {
       const league = leagueMap[currentLeague];
-      contentEl.innerHTML = `<div class="empty">Loading scores...</div>`;
+      if (!silent) contentEl.innerHTML = `<div class="empty">Loading scores...</div>`;
       try {
-        const res = await fetch(getScoreboardUrl(league));
+        const [res] = await Promise.all([
+          fetch(getScoreboardUrl(league)),
+          silent ? refreshOpenDrawerSummaries() : Promise.resolve()
+        ]);
         const data = await res.json();
         lastEvents = data.events || [];
         renderCurrentScoreboard();
       } catch {
-        contentEl.innerHTML = `<div class="empty">Could not load scores. Try refreshing.</div>`;
+        if (!silent) contentEl.innerHTML = `<div class="empty">Could not load scores. Try refreshing.</div>`;
       }
     }
 
-    async function loadCombinedScores() {
+    async function loadCombinedScores(silent = false) {
       const activeLeagues = getActiveFavLeagues();
       if (activeLeagues.length === 0) {
         lastCombinedData = [];
         renderCombinedScoreboard();
         return;
       }
-      contentEl.innerHTML = `<div class="empty">Loading your pinned teams...</div>`;
-      const results = await Promise.allSettled(
-        activeLeagues.map(async league => {
-          const res = await fetch(getScoreboardUrl(league));
-          const data = await res.json();
-          return { league, events: data.events || [] };
-        })
-      );
+      if (!silent) contentEl.innerHTML = `<div class="empty">Loading your pinned teams...</div>`;
+      const [results] = await Promise.all([
+        Promise.allSettled(
+          activeLeagues.map(async league => {
+            const res = await fetch(getScoreboardUrl(league));
+            const data = await res.json();
+            return { league, events: data.events || [] };
+          })
+        ),
+        silent ? refreshOpenDrawerSummaries() : Promise.resolve()
+      ]);
       lastCombinedData = results.filter(r => r.status === "fulfilled").map(r => r.value);
       renderCombinedScoreboard();
     }
@@ -2171,9 +2229,9 @@
         : `<div class="empty">${searchQuery ? `No headlines matched "${escapeHtml(searchQuery)}".` : "No clean news stories available right now."}</div>`;
     }
 
-    async function loadNews() {
+    async function loadNews(silent = false) {
       const league = leagueMap[currentLeague];
-      contentEl.innerHTML = `<div class="empty">Loading news...</div>`;
+      if (!silent) contentEl.innerHTML = `<div class="empty">Loading news...</div>`;
       const results = await Promise.allSettled((league.rss || []).map(feed => fetchRssFeed(feed, league.label)));
       const seen = new Set();
       const articles = [];
@@ -2189,14 +2247,14 @@
       renderNewsList(false);
     }
 
-    async function loadCombinedNews() {
+    async function loadCombinedNews(silent = false) {
       const activeLeagues = getActiveFavLeagues();
       if (activeLeagues.length === 0) {
         lastNewsArticles = [];
         contentEl.innerHTML = `<div class="empty">Pin a few teams or players first to see a combined news feed here.</div>`;
         return;
       }
-      contentEl.innerHTML = `<div class="empty">Loading news for your pinned teams...</div>`;
+      if (!silent) contentEl.innerHTML = `<div class="empty">Loading news for your pinned teams...</div>`;
       const jobs = [];
       activeLeagues.forEach(league => {
         (league.rss || []).forEach(feed => jobs.push(fetchRssFeed(feed, league.label).then(items => ({ league, items }))));
@@ -2238,18 +2296,18 @@
       }
     }
 
-    function loadCurrentView() {
+    async function loadCurrentView(silent = false) {
       renderFavChips();
       updateDateUI();
       updateCollegeFilterUI();
       if (currentLeague === "my-teams") {
-        if (currentView === "scores") loadCombinedScores();
-        else if (currentView === "standings") loadCombinedStandings();
-        else loadCombinedNews();
+        if (currentView === "scores") await loadCombinedScores(silent);
+        else if (currentView === "standings") await loadCombinedStandings(silent);
+        else await loadCombinedNews(silent);
       } else {
-        if (currentView === "scores") loadScores();
-        else if (currentView === "standings") loadStandings();
-        else loadNews();
+        if (currentView === "scores") await loadScores(silent);
+        else if (currentView === "standings") await loadStandings(silent);
+        else await loadNews(silent);
       }
     }
 
@@ -2274,8 +2332,9 @@
       btn.classList.add("active");
       currentLeague = btn.dataset.path;
       selectedStandingsGroup = "all";
+      openDrawers.clear();
       lastEvents = [];
-      loadCurrentView();
+      loadCurrentView(false);
     });
 
     document.getElementById("view-tabs").addEventListener("click", (e) => {
@@ -2284,7 +2343,7 @@
       document.querySelectorAll("#view-tabs button").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       currentView = btn.dataset.view;
-      loadCurrentView();
+      loadCurrentView(false);
     });
 
     document.getElementById("date-tabs").addEventListener("click", (e) => {
@@ -2293,14 +2352,16 @@
       dateMode = btn.dataset.dateMode;
       customDateStr = "";
       customDateInputEl.value = "";
-      loadCurrentView();
+      openDrawers.clear();
+      loadCurrentView(false);
     });
 
     customDateInputEl.addEventListener("change", (e) => {
       if (!e.target.value) return;
       dateMode = "custom";
       customDateStr = e.target.value;
-      loadCurrentView();
+      openDrawers.clear();
+      loadCurrentView(false);
     });
 
     document.getElementById("college-filter-tabs").addEventListener("click", (e) => {
@@ -2362,18 +2423,21 @@
       if (cardEl) toggleBoxScore(cardEl);
     });
 
-    document.getElementById("refresh-btn").addEventListener("click", () => {
-      summaryCache.clear();
-      standingsCache.clear();
-      loadCurrentView();
+    refreshBtnEl.addEventListener("click", async () => {
+      refreshBtnEl.classList.add("spinning");
+      try {
+        await loadCurrentView(true);
+      } finally {
+        refreshBtnEl.classList.remove("spinning");
+      }
     });
 
     buildNavigation();
-    loadCurrentView();
+    loadCurrentView(false);
     setInterval(() => {
       if (currentView === "scores" && dateMode === "today") {
-        if (currentLeague === "my-teams") loadCombinedScores();
-        else loadScores();
+        if (currentLeague === "my-teams") loadCombinedScores(true);
+        else loadScores(true);
       }
     }, 60000);
   </script>
