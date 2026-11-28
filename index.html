@@ -466,8 +466,9 @@
     .player-table td:first-child { text-align: left; font-weight: 600; color: #fff; max-width: 135px; overflow: hidden; text-overflow: ellipsis; }
     .player-pos { color: var(--text-dim); font-size: 0.68rem; font-weight: 600; margin-left: 4px; }
 
-    /* Highlights & X Tab */
-    .x-section-title { font-size: 0.72rem; font-weight: 800; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 8px; }
+    /* Highlights, X & YouTube Auto-Embeds */
+    .x-section-title { font-size: 0.72rem; font-weight: 800; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.04em; margin: 12px 0 8px; }
+    .x-section-title:first-child { margin-top: 0; }
     .x-btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
     .x-action-btn {
       display: flex;
@@ -491,6 +492,68 @@
     .video-card { background: #111113; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 10px; }
     .video-card video { width: 100%; max-height: 220px; display: block; background: #000; }
     .video-title { padding: 8px 10px; font-size: 0.8rem; font-weight: 600; color: #e5e5ea; line-height: 1.3; }
+
+    .yt-thumb-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      cursor: pointer;
+      overflow: hidden;
+    }
+    .yt-thumb-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.88; }
+    .yt-play-btn {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 52px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255, 0, 0, 0.88);
+      color: #fff;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-left: 3px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    }
+    .yt-iframe-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+    }
+    .yt-iframe-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .yt-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+    }
+    .yt-channel-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #ff6961;
+      background: rgba(255, 69, 58, 0.14);
+      padding: 2px 7px;
+      border-radius: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .yt-status-note {
+      font-size: 0.78rem;
+      color: var(--text-sec);
+      text-align: center;
+      padding: 10px 4px;
+    }
 
     .stat-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; font-variant-numeric: tabular-nums; }
     .stat-table th, .stat-table td { padding: 7px 4px; border-bottom: 1px solid var(--border); }
@@ -676,6 +739,11 @@
       {
         path: "football/college-football", label: "CFB", type: "team",
         subreddit: "CFB", queryParams: "groups=80&limit=200", allLabel: "All FBS",
+        ytChannels: [
+          { name: "CBS Sports", id: "UCja8sZ2T4ylIqjggA1Zuukg" },
+          { name: "NBC Sports", id: "UCqZQlzSHbVJrwrn5XvzrzcA" },
+          { name: "ESPN", id: "UCiWLfSweyRNmLpgEHekhoAg" }
+        ],
         rss: [
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/college-football/" },
           { source: "Yahoo Sports", url: "https://sports.yahoo.com/ncaaf/rss.xml" }
@@ -684,6 +752,10 @@
       {
         path: "basketball/mens-college-basketball", label: "CBB", type: "team",
         subreddit: "CollegeBasketball", queryParams: "groups=50&limit=200", allLabel: "All D1",
+        ytChannels: [
+          { name: "CBS Sports", id: "UCja8sZ2T4ylIqjggA1Zuukg" },
+          { name: "ESPN", id: "UCiWLfSweyRNmLpgEHekhoAg" }
+        ],
         rss: [
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/college-basketball/" },
           { source: "Yahoo Sports", url: "https://sports.yahoo.com/ncaab/rss.xml" }
@@ -692,6 +764,11 @@
       {
         path: "football/nfl", label: "NFL", type: "team",
         subreddit: "nfl",
+        ytChannels: [
+          { name: "NFL", id: "UCDVYQ4Zhbm3S2dlz7P1GBDg" },
+          { name: "CBS Sports", id: "UCja8sZ2T4ylIqjggA1Zuukg" },
+          { name: "NBC Sports", id: "UCqZQlzSHbVJrwrn5XvzrzcA" }
+        ],
         rss: [
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/nfl/" },
           { source: "Yahoo Sports", url: "https://sports.yahoo.com/nfl/rss.xml" }
@@ -700,6 +777,9 @@
       {
         path: "soccer/eng.1", label: "EPL", type: "team",
         subreddit: "soccer",
+        ytChannels: [
+          { name: "NBC Sports", id: "UCqZQlzSHbVJrwrn5XvzrzcA" }
+        ],
         rss: [
           { source: "BBC Sport", url: "https://feeds.bbci.co.uk/sport/football/premier-league/rss.xml" },
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/soccer/" }
@@ -708,6 +788,9 @@
       {
         path: "soccer/uefa.champions", label: "UCL", type: "team",
         subreddit: "soccer",
+        ytChannels: [
+          { name: "CBS Sports", id: "UCja8sZ2T4ylIqjggA1Zuukg" }
+        ],
         rss: [
           { source: "BBC Sport", url: "https://feeds.bbci.co.uk/sport/football/champions-league/rss.xml" },
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/soccer/" }
@@ -716,6 +799,9 @@
       {
         path: "racing/f1", label: "F1", type: "leaderboard",
         subreddit: "formula1",
+        ytChannels: [
+          { name: "Formula 1", id: "UCB_qr75-ydFVKSF9Dmo6izg" }
+        ],
         rss: [
           { source: "BBC Sport", url: "https://feeds.bbci.co.uk/sport/formula1/rss.xml" },
           { source: "Yahoo Sports", url: "https://sports.yahoo.com/f1/rss.xml" }
@@ -724,6 +810,9 @@
       {
         path: "golf/pga", label: "PGA", type: "leaderboard",
         subreddit: "golf",
+        ytChannels: [
+          { name: "PGA TOUR", id: "UCKwGZZMrhNYKzucCtTPY2Nw" }
+        ],
         rss: [
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/golf/" },
           { source: "BBC Sport", url: "https://feeds.bbci.co.uk/sport/golf/rss.xml" }
@@ -732,6 +821,9 @@
       {
         path: "hockey/nhl", label: "NHL", type: "team",
         subreddit: "hockey",
+        ytChannels: [
+          { name: "NHL", id: "UCqFMzb-4AUf6WAIbl132QKA" }
+        ],
         rss: [
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/nhl/" },
           { source: "Yahoo Sports", url: "https://sports.yahoo.com/nhl/rss.xml" }
@@ -740,6 +832,9 @@
       {
         path: "basketball/nba", label: "NBA", type: "team",
         subreddit: "nba",
+        ytChannels: [
+          { name: "NBA", id: "UCWJ2lWNubArHWmf3FIHbfcQ" }
+        ],
         rss: [
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/nba/" },
           { source: "Yahoo Sports", url: "https://sports.yahoo.com/nba/rss.xml" }
@@ -748,6 +843,9 @@
       {
         path: "baseball/mlb", label: "MLB", type: "team",
         subreddit: "baseball",
+        ytChannels: [
+          { name: "MLB", id: "UCoLrcjPV5PbUrUyXq5mjc_A" }
+        ],
         rss: [
           { source: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/mlb/" },
           { source: "Yahoo Sports", url: "https://sports.yahoo.com/mlb/rss.xml" }
@@ -968,8 +1066,7 @@
 
     const summaryCache = new Map();
     const standingsCache = new Map();
-    // Tracks currently open game drawers so refresh keeps you inside your game:
-    // key: `${leaguePath}:${eventId}` -> { tab: string, playerTeam: string }
+    const ytChannelCache = new Map();
     const openDrawers = new Map();
 
     function escapeHtml(str) {
@@ -1023,6 +1120,86 @@
     let lastNewsArticles = [];
     let lastCombinedStandings = [];
 
+    /* ---------- OFFICIAL YOUTUBE RSS AUTO-EMBEDDER ---------- */
+    function extractYtVideoId(link, guid) {
+      const str = `${link || ""} ${guid || ""}`;
+      const match = str.match(/(?:v=|youtu\.be\/|yt:video:)([a-zA-Z0-9_-]{11})/);
+      return match ? match[1] : "";
+    }
+
+    async function fetchYouTubeChannelVideos(channel) {
+      if (ytChannelCache.has(channel.id)) return ytChannelCache.get(channel.id);
+      const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channel.id}`;
+      const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+      try {
+        const res = await fetch(apiUrl);
+        const data = await res.json();
+        if (data.status !== "ok" || !Array.isArray(data.items)) return [];
+        const items = data.items.map(item => {
+          const videoId = extractYtVideoId(item.link, item.guid);
+          return {
+            videoId,
+            title: stripHtml(item.title),
+            channelName: channel.name,
+            pubDate: item.pubDate,
+            thumbnail: videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : (item.thumbnail || "")
+          };
+        }).filter(v => v.videoId);
+        ytChannelCache.set(channel.id, items);
+        return items;
+      } catch {
+        return [];
+      }
+    }
+
+    async function loadYouTubeMatchesIntoSlot(slotEl, leaguePath, teamKeywords) {
+      const league = leagueMap[leaguePath];
+      const channels = league?.ytChannels || [];
+      if (!slotEl || channels.length === 0) return;
+
+      const results = await Promise.allSettled(channels.map(ch => fetchYouTubeChannelVideos(ch)));
+      const seen = new Set();
+      const allVideos = [];
+      results.forEach(r => {
+        if (r.status !== "fulfilled") return;
+        r.value.forEach(v => {
+          if (!seen.has(v.videoId)) { seen.add(v.videoId); allVideos.push(v); }
+        });
+      });
+
+      const needles = teamKeywords.map(k => k.toLowerCase().trim()).filter(k => k.length >= 3);
+      const matched = allVideos.filter(v => {
+        const t = v.title.toLowerCase();
+        return needles.some(n => t.includes(n));
+      }).slice(0, 6);
+
+      if (matched.length === 0) {
+        slotEl.innerHTML = `<div class="yt-status-note">No recent official YouTube uploads matched this matchup yet. Use the YouTube search button below.</div>`;
+        return;
+      }
+
+      slotEl.innerHTML = matched.map(v => `
+        <div class="video-card">
+          <div class="yt-thumb-wrap" onclick="event.stopPropagation(); window.__playYouTubeEmbed(this, '${escapeHtml(v.videoId)}')">
+            <img src="${escapeHtml(v.thumbnail)}" alt="" loading="lazy" />
+            <div class="yt-play-btn">▶</div>
+          </div>
+          <div class="yt-meta-row">
+            <div class="video-title" style="padding:0;">${escapeHtml(v.title)}</div>
+            <span class="yt-channel-badge">${escapeHtml(v.channelName)}</span>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    window.__playYouTubeEmbed = function(thumbEl, videoId) {
+      if (!thumbEl || !videoId) return;
+      const wrap = document.createElement("div");
+      wrap.className = "yt-iframe-wrap";
+      wrap.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?autoplay=1&rel=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+      thumbEl.replaceWith(wrap);
+    };
+
     /* ---------- INSTANT DOM-LEVEL SWITCHERS ---------- */
     window.__switchPlayerTeam = function(btn, selection) {
       const container = btn.closest(".players-root");
@@ -1060,7 +1237,9 @@
       openDrawers.set(cacheKey, state);
       cardEl.dataset.boxTab = activeTab;
       if (summaryCache.has(cacheKey)) {
-        drawer.innerHTML = renderBoxScoreHtml(summaryCache.get(cacheKey), leaguePath, activeTab, state.playerTeam);
+        const data = summaryCache.get(cacheKey);
+        drawer.innerHTML = renderBoxScoreHtml(data, leaguePath, activeTab, state.playerTeam);
+        if (activeTab === "highlights") hydrateYouTubeSlot(drawer, data, leaguePath);
       }
     };
 
@@ -1745,7 +1924,20 @@
       return clips;
     }
 
-    /* ---------- HIGHLIGHTS: X FIRST -> ALL AD-FREE DIRECT CLIPS -> YOUTUBE ---------- */
+    function hydrateYouTubeSlot(drawerEl, data, leaguePath) {
+      const slot = drawerEl.querySelector(".yt-auto-slot");
+      if (!slot) return;
+      const comps = data.header?.competitions?.[0]?.competitors || [];
+      const awayTeam = comps.find(c => c.homeAway === "away")?.team || comps[0]?.team || {};
+      const homeTeam = comps.find(c => c.homeAway === "home")?.team || comps[1]?.team || {};
+      const keywords = [
+        awayTeam.shortDisplayName, awayTeam.name, awayTeam.location,
+        homeTeam.shortDisplayName, homeTeam.name, homeTeam.location
+      ].filter(Boolean);
+      loadYouTubeMatchesIntoSlot(slot, leaguePath, keywords);
+    }
+
+    /* ---------- HIGHLIGHTS: X FIRST -> ESPN DIRECT CLIPS -> YOUTUBE AUTO-EMBEDS ---------- */
     function renderHighlightsHtml(data, leaguePath) {
       const headerComp = data.header?.competitions?.[0];
       const comps = headerComp?.competitors || [];
@@ -1779,11 +1971,14 @@
         </div>
         <div class="x-embed-slot"></div>
 
-        ${directClipsHtml ? `<div class="x-section-title">2. Direct In-App Clips (${clips.length})</div>${directClipsHtml}` : ""}
+        ${directClipsHtml ? `<div class="x-section-title">2. ESPN Direct In-App Clips (${clips.length})</div>${directClipsHtml}` : ""}
 
-        <div class="x-section-title">Full Game Recaps</div>
+        <div class="x-section-title">${directClipsHtml ? "3." : "2."} Broadcaster & League Highlights (In-App)</div>
+        <div class="yt-auto-slot"><div class="yt-status-note">Checking official broadcaster & league YouTube feeds...</div></div>
+
+        <div class="x-section-title">More Highlights</div>
         <div class="x-btn-grid">
-          <a class="x-action-btn yt-btn" href="${ytUrl}" target="_blank" rel="noopener noreferrer">▶ YouTube: ${escapeHtml(awayName)} vs ${escapeHtml(homeName)}</a>
+          <a class="x-action-btn yt-btn" href="${ytUrl}" target="_blank" rel="noopener noreferrer">▶ Search YouTube: ${escapeHtml(awayName)} vs ${escapeHtml(homeName)}</a>
         </div>
       `;
     }
@@ -1887,7 +2082,9 @@
       cardEl.dataset.boxTab = existing.tab;
 
       if (summaryCache.has(cacheKey)) {
-        drawer.innerHTML = renderBoxScoreHtml(summaryCache.get(cacheKey), leaguePath, existing.tab, existing.playerTeam);
+        const data = summaryCache.get(cacheKey);
+        drawer.innerHTML = renderBoxScoreHtml(data, leaguePath, existing.tab, existing.playerTeam);
+        if (existing.tab === "highlights") hydrateYouTubeSlot(drawer, data, leaguePath);
         return;
       }
 
@@ -1895,6 +2092,7 @@
       try {
         const data = await fetchSummary(leaguePath, eventId);
         drawer.innerHTML = renderBoxScoreHtml(data, leaguePath, existing.tab, existing.playerTeam);
+        if (existing.tab === "highlights") hydrateYouTubeSlot(drawer, data, leaguePath);
       } catch {
         drawer.innerHTML = `<div class="empty" style="padding:14px 0;">Could not load game details.</div>`;
       }
@@ -2072,6 +2270,17 @@
       };
     }
 
+    function hydrateAllOpenYouTubeSlots() {
+      contentEl.querySelectorAll(".game-card").forEach(cardEl => {
+        if (cardEl.dataset.boxTab !== "highlights") return;
+        const drawer = cardEl.querySelector(".box-drawer.open");
+        const cacheKey = `${cardEl.dataset.league}:${cardEl.dataset.eventId}`;
+        if (drawer && summaryCache.has(cacheKey)) {
+          hydrateYouTubeSlot(drawer, summaryCache.get(cacheKey), cardEl.dataset.league);
+        }
+      });
+    }
+
     function renderCurrentScoreboard() {
       const league = leagueMap[currentLeague];
       let eventsToShow = lastEvents;
@@ -2096,6 +2305,7 @@
 
       cards.sort((a, b) => Number(b.isPinned) - Number(a.isPinned) || getStatePriority(a.state) - getStatePriority(b.state) || a.idx - b.idx);
       contentEl.innerHTML = cards.map(c => c.html).join("");
+      hydrateAllOpenYouTubeSlots();
     }
 
     function renderCombinedScoreboard() {
@@ -2133,6 +2343,7 @@
       const quietHtml = !searchQuery && quietLeagues.length > 0
         ? `<div class="quiet-note">No games on this date for your pins in: ${quietLeagues.join(", ")}</div>` : "";
       contentEl.innerHTML = matchedCards.map(c => c.html).join("") + quietHtml;
+      hydrateAllOpenYouTubeSlots();
     }
 
     async function refreshOpenDrawerSummaries() {
@@ -2425,6 +2636,7 @@
 
     refreshBtnEl.addEventListener("click", async () => {
       refreshBtnEl.classList.add("spinning");
+      ytChannelCache.clear();
       try {
         await loadCurrentView(true);
       } finally {
