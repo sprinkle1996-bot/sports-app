@@ -403,90 +403,23 @@
     .box-subtabs button.active { background: var(--surface-2); color: var(--text); }
 
     /* Playoff Bracket Styles */
-    .bracket-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
+    .bracket-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .bracket-title { font-size: 1rem; font-weight: 800; letter-spacing: -0.01em; }
     .bracket-sub { font-size: 0.72rem; color: var(--text-sec); font-weight: 600; }
-    .bracket-section-label {
-      font-size: 0.68rem;
-      font-weight: 800;
-      color: var(--text-sec);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin: 12px 0 8px;
-    }
+    .bracket-section-label { font-size: 0.68rem; font-weight: 800; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.05em; margin: 12px 0 8px; }
     .bracket-section-label:first-of-type { margin-top: 0; }
-    .bracket-byes {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-    .bracket-bye-pill {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      background: #111113;
-      border: 1px solid rgba(48, 209, 88, 0.35);
-      border-radius: 10px;
-      padding: 8px 10px;
-      font-size: 0.82rem;
-      font-weight: 600;
-    }
-    .bracket-bye-pill.pinned {
-      border-color: rgba(255, 214, 10, 0.55);
-      background: rgba(255, 214, 10, 0.1);
-      color: var(--gold);
-    }
-    .bracket-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
-    }
-    @media (min-width: 520px) {
-      .bracket-grid { grid-template-columns: 1fr 1fr; }
-    }
-    .bracket-matchup {
-      background: #111113;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    .bracket-team {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.84rem;
-    }
+    .bracket-byes { display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 8px; margin-bottom: 10px; }
+    .bracket-bye-pill { display: flex; align-items: center; gap: 7px; background: #111113; border: 1px solid rgba(48, 209, 88, 0.35); border-radius: 10px; padding: 8px 10px; font-size: 0.82rem; font-weight: 600; }
+    .bracket-bye-pill.pinned { border-color: rgba(255, 214, 10, 0.55); background: rgba(255, 214, 10, 0.1); color: var(--gold); }
+    .bracket-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    @media (min-width: 520px) { .bracket-grid { grid-template-columns: 1fr 1fr; } }
+    .bracket-matchup { background: #111113; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .bracket-team { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 0.84rem; }
     .bracket-team:last-child { border-bottom: none; }
-    .bracket-team.pinned {
-      background: rgba(255, 214, 10, 0.1);
-      color: var(--gold);
-      font-weight: 700;
-    }
-    .bracket-team-left {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      min-width: 0;
-    }
-    .bracket-seed {
-      font-size: 0.72rem;
-      font-weight: 800;
-      color: var(--text-sec);
-      min-width: 16px;
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-    }
-    .bracket-team.pinned .bracket-seed,
-    .bracket-bye-pill.pinned .bracket-seed { color: var(--gold); }
+    .bracket-team.pinned { background: rgba(255, 214, 10, 0.1); color: var(--gold); font-weight: 700; }
+    .bracket-team-left { display: flex; align-items: center; gap: 7px; min-width: 0; }
+    .bracket-seed { font-size: 0.72rem; font-weight: 800; color: var(--text-sec); min-width: 16px; text-align: right; font-variant-numeric: tabular-nums; }
+    .bracket-team.pinned .bracket-seed, .bracket-bye-pill.pinned .bracket-seed { color: var(--gold); }
     .bracket-logo { width: 20px; height: 20px; object-fit: contain; flex-shrink: 0; }
     .bracket-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .bracket-rec { font-size: 0.72rem; color: var(--text-dim); font-variant-numeric: tabular-nums; flex-shrink: 0; }
@@ -561,8 +494,141 @@
     .player-table th:first-child { text-align: left; }
     .player-table td { padding: 7px 5px; text-align: right; border-bottom: 1px solid var(--border); white-space: nowrap; color: #e5e5ea; }
     .player-table tr:last-child td { border-bottom: none; }
-    .player-table td:first-child { text-align: left; font-weight: 600; color: #fff; max-width: 135px; overflow: hidden; text-overflow: ellipsis; }
+    .player-table td:first-child { text-align: left; font-weight: 600; color: #fff; max-width: 145px; overflow: hidden; text-overflow: ellipsis; }
     .player-pos { color: var(--text-dim); font-size: 0.68rem; font-weight: 600; margin-left: 4px; }
+    .player-link-btn {
+      background: transparent;
+      border: none;
+      padding: 0;
+      color: #64d2ff;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: bottom;
+    }
+    .player-link-btn:active { opacity: 0.65; }
+
+    /* In-App Player Season Stats Sheet (Modal) */
+    .player-modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      align-items: flex-end;
+      justify-content: center;
+      padding: 16px 12px max(16px, env(safe-area-inset-bottom));
+    }
+    .player-modal-backdrop.open { display: flex; }
+    .player-modal {
+      width: 100%;
+      max-width: 620px;
+      max-height: 82vh;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75);
+    }
+    .player-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: #141416;
+    }
+    .player-modal-id {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .player-modal-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      object-fit: cover;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .player-modal-name {
+      font-size: 1.08rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .player-modal-sub {
+      font-size: 0.78rem;
+      color: var(--text-sec);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+    .player-modal-close {
+      background: var(--surface-2);
+      color: var(--text);
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .player-modal-body {
+      padding: 14px 16px 18px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .pstat-section-title {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--text-sec);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 14px 0 8px;
+    }
+    .pstat-section-title:first-child { margin-top: 0; }
+    .pstat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .pstat-tile {
+      background: #111113;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+    .pstat-val {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #ffffff;
+      font-variant-numeric: tabular-nums;
+    }
+    .pstat-lbl {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-sec);
+      margin-top: 3px;
+      text-transform: uppercase;
+    }
 
     /* Highlights, X & YouTube Auto-Embeds */
     .x-section-title { font-size: 0.72rem; font-weight: 800; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.04em; margin: 12px 0 8px; }
@@ -591,14 +657,7 @@
     .video-card video { width: 100%; max-height: 220px; display: block; background: #000; }
     .video-title { padding: 8px 10px; font-size: 0.8rem; font-weight: 600; color: #e5e5ea; line-height: 1.3; }
 
-    .yt-thumb-wrap {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      background: #000;
-      cursor: pointer;
-      overflow: hidden;
-    }
+    .yt-thumb-wrap { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; cursor: pointer; overflow: hidden; }
     .yt-thumb-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.88; }
     .yt-play-btn {
       position: absolute;
@@ -763,6 +822,25 @@
       </div>
 
       <div id="content">Loading...</div>
+    </div>
+  </div>
+
+  <!-- In-App Player Season Stats Sheet -->
+  <div class="player-modal-backdrop" id="player-modal-backdrop" onclick="if (event.target === this) window.__closePlayerModal()">
+    <div class="player-modal" role="dialog" aria-modal="true" aria-labelledby="pm-name">
+      <div class="player-modal-header">
+        <div class="player-modal-id">
+          <img class="player-modal-avatar" id="pm-avatar" src="" alt="" style="display:none;" />
+          <div style="min-width:0;">
+            <div class="player-modal-name" id="pm-name">Player</div>
+            <div class="player-modal-sub" id="pm-sub"></div>
+          </div>
+        </div>
+        <button type="button" class="player-modal-close" onclick="window.__closePlayerModal()" aria-label="Close">✕</button>
+      </div>
+      <div class="player-modal-body" id="pm-body">
+        <div class="empty" style="padding:24px 0;">Loading season stats...</div>
+      </div>
     </div>
   </div>
 
@@ -1169,11 +1247,18 @@
     const searchClearEl = document.getElementById("search-clear");
     const refreshBtnEl = document.getElementById("refresh-btn");
 
+    const playerModalBackdropEl = document.getElementById("player-modal-backdrop");
+    const pmAvatarEl = document.getElementById("pm-avatar");
+    const pmNameEl = document.getElementById("pm-name");
+    const pmSubEl = document.getElementById("pm-sub");
+    const pmBodyEl = document.getElementById("pm-body");
+
     const summaryCache = new Map();
     const standingsCache = new Map();
     const standingsRawCache = new Map();
     const cfbRankingsCache = new Map();
     const ytChannelCache = new Map();
+    const playerStatsCache = new Map();
     const openDrawers = new Map();
 
     function escapeHtml(str) {
@@ -1219,7 +1304,7 @@
     let currentView = "scores";
     let collegeFilter = "all";
     let statusFilter = "all";
-    let standingsMode = "tables"; // "tables" | "bracket"
+    let standingsMode = "tables";
     let dateMode = "today";
     let customDateStr = "";
     let selectedStandingsGroup = "all";
@@ -1228,6 +1313,125 @@
     let lastCombinedData = [];
     let lastNewsArticles = [];
     let lastCombinedStandings = [];
+
+    /* ---------- IN-APP PLAYER SEASON STATS MODAL ---------- */
+    window.__closePlayerModal = function() {
+      playerModalBackdropEl.classList.remove("open");
+    };
+
+    function renderPlayerSeasonStatsHtml(overviewData, statsData) {
+      const blocks = [];
+
+      // 1. Primary: ESPN Athlete Overview (Regular Season + Career splits)
+      const ovStats = overviewData?.statistics;
+      const ovLabels = ovStats?.labels || ovStats?.names || [];
+      const ovSplits = ovStats?.splits || [];
+
+      if (ovLabels.length > 0 && ovSplits.length > 0) {
+        ovSplits.forEach(split => {
+          const vals = split.stats || [];
+          if (vals.length === 0) return;
+          const tiles = ovLabels.map((lbl, idx) => {
+            const v = vals[idx];
+            if (v === undefined || v === null || v === "") return "";
+            return `
+              <div class="pstat-tile">
+                <div class="pstat-val">${escapeHtml(v)}</div>
+                <div class="pstat-lbl">${escapeHtml(lbl)}</div>
+              </div>
+            `;
+          }).filter(Boolean).join("");
+
+          if (tiles) {
+            const title = split.displayName || ovStats.displayName || "Season Stats";
+            blocks.push(`<div class="pstat-section-title">${escapeHtml(title)}</div><div class="pstat-grid">${tiles}</div>`);
+          }
+        });
+      }
+
+      // 2. Fallback / Supplement: ESPN Full Stats Categories (latest season row per category)
+      if (blocks.length === 0 && Array.isArray(statsData?.categories)) {
+        statsData.categories.forEach(cat => {
+          const labels = cat.labels || cat.names || [];
+          const rows = cat.statistics || [];
+          if (labels.length === 0 || rows.length === 0) return;
+          const latest = rows[rows.length - 1];
+          const vals = latest?.stats || [];
+          if (vals.length === 0) return;
+
+          const tiles = labels.map((lbl, idx) => {
+            const v = vals[idx];
+            if (v === undefined || v === null || v === "") return "";
+            return `
+              <div class="pstat-tile">
+                <div class="pstat-val">${escapeHtml(v)}</div>
+                <div class="pstat-lbl">${escapeHtml(lbl)}</div>
+              </div>
+            `;
+          }).filter(Boolean).join("");
+
+          if (tiles) {
+            const yr = latest.season?.displayName || latest.season?.year || "";
+            const title = [yr, cat.displayName || cat.name || "Season Stats"].filter(Boolean).join(" · ");
+            blocks.push(`<div class="pstat-section-title">${escapeHtml(title)}</div><div class="pstat-grid">${tiles}</div>`);
+          }
+        });
+      }
+
+      if (blocks.length === 0) {
+        return `<div class="empty" style="padding:24px 8px;">Season stats are not available for this player yet.</div>`;
+      }
+
+      return blocks.join("");
+    }
+
+    window.__openPlayerModal = async function(btn) {
+      const leaguePath = btn.dataset.league;
+      const athleteId = btn.dataset.athleteId;
+      const name = btn.dataset.athleteName || "Player";
+      const pos = btn.dataset.athletePos || "";
+      const teamName = btn.dataset.teamName || "";
+      const headshot = btn.dataset.headshot || "";
+
+      if (!leaguePath || !athleteId) return;
+
+      pmNameEl.textContent = name;
+      pmSubEl.textContent = [teamName, pos].filter(Boolean).join(" · ");
+      if (headshot) {
+        pmAvatarEl.src = headshot;
+        pmAvatarEl.style.display = "block";
+      } else {
+        pmAvatarEl.style.display = "none";
+      }
+
+      playerModalBackdropEl.classList.add("open");
+
+      const cacheKey = `${leaguePath}:${athleteId}`;
+      if (playerStatsCache.has(cacheKey)) {
+        pmBodyEl.innerHTML = playerStatsCache.get(cacheKey);
+        return;
+      }
+
+      pmBodyEl.innerHTML = `<div class="empty" style="padding:28px 0;">Loading season stats...</div>`;
+
+      try {
+        const base = `https://site.web.api.espn.com/apis/common/v3/sports/${leaguePath}/athletes/${athleteId}`;
+        const ovRes = await fetch(`${base}/overview`);
+        const ovData = ovRes.ok ? await ovRes.json() : null;
+
+        let statsData = null;
+        if (!ovData?.statistics?.splits?.length) {
+          const stRes = await fetch(`${base}/stats`);
+          if (stRes.ok) statsData = await stRes.json();
+        }
+
+        const html = renderPlayerSeasonStatsHtml(ovData, statsData);
+        playerStatsCache.set(cacheKey, html);
+        pmBodyEl.innerHTML = html;
+      } catch {
+        pmBodyEl.innerHTML = `<div class="empty" style="padding:28px 0;">Could not load season stats right now.</div>`;
+      }
+    };
 
     /* ---------- OFFICIAL YOUTUBE RSS AUTO-EMBEDDER ---------- */
     function extractYtVideoId(link, guid) {
@@ -1805,7 +2009,6 @@
     async function renderPlayoffBracket(leaguePath, forceFresh = false) {
       contentEl.innerHTML = `<div class="empty">Building current playoff bracket...</div>`;
 
-      // 1. CFB 12-Team Playoff (from CFP / AP Rankings)
       if (leaguePath === "football/college-football") {
         try {
           let data = cfbRankingsCache.get(leaguePath);
@@ -1827,13 +2030,7 @@
             const t = r.team || {};
             const name = t.nickname || t.location || t.name || "TBD";
             const isFav = isFavorited(leaguePath, t.id, [name, t.name, t.abbreviation]);
-            return {
-              seed: r.current || (i + 1),
-              name,
-              logo: t.logo || "",
-              record: r.recordSummary || "",
-              isFav
-            };
+            return { seed: r.current || (i + 1), name, logo: t.logo || "", record: r.recordSummary || "", isFav };
           });
           contentEl.innerHTML = `
             <div class="bracket-card">
@@ -1858,7 +2055,6 @@
         return;
       }
 
-      // 2. Pro Leagues & UCL (from Standings API)
       try {
         await fetchStandingsGroups(leaguePath, forceFresh);
         const raw = standingsRawCache.get(leaguePath);
@@ -1867,7 +2063,6 @@
           return;
         }
 
-        // UCL League Phase -> Round of 16 + Knockout Play-offs
         if (leaguePath === "soccer/uefa.champions") {
           const allEntries = collectNodeEntries(raw);
           const teams = allEntries.map((e, i) => toBracketTeam(e, leaguePath, i + 1)).sort((a, b) => a.seed - b.seed);
@@ -1892,7 +2087,6 @@
           return;
         }
 
-        // Conference-based Pro Leagues (NFL, NBA, NHL, MLB)
         const confNodes = raw.children || [];
         const cardsHtml = confNodes.map(conf => {
           const seenIds = new Set();
@@ -1949,7 +2143,6 @@
               ` : ""}
             `;
           } else {
-            // NHL
             bodyHtml = `
               <div class="bracket-section-label">First Round (Seeds 1–8)</div>
               <div class="bracket-grid">
@@ -2171,8 +2364,8 @@
       `;
     }
 
-    /* ---------- PLAYER STAT BREAKDOWNS (INSTANT DOM SWITCHING) ---------- */
-    function renderTeamPaneContent(teamObj, showHeading = false) {
+    /* ---------- PLAYER STAT BREAKDOWNS (CLICKABLE FOR SEASON STATS) ---------- */
+    function renderTeamPaneContent(teamObj, showHeading = false, leaguePath = "") {
       const statGroups = (teamObj.statistics || []).filter(g => g.athletes && g.athletes.length > 0);
       const teamName = teamObj.team?.shortDisplayName || teamObj.team?.displayName || teamObj.team?.abbreviation || "Team";
       const heading = `<div class="player-team-heading" style="display:${showHeading ? "block" : "none"};">${escapeHtml(teamName)}</div>`;
@@ -2187,12 +2380,28 @@
         const colHeaders = headers.slice(0, maxCols);
 
         const rowsHtml = group.athletes.slice(0, 14).map(a => {
+          const athleteId = a.athlete?.id || "";
           const name = a.athlete?.shortName || a.athlete?.displayName || "Player";
+          const fullName = a.athlete?.displayName || name;
           const pos = a.athlete?.position?.abbreviation || "";
+          const headshot = a.athlete?.headshot?.href || "";
           const vals = (a.stats || []).slice(0, maxCols);
+          const nameHtml = athleteId
+            ? `<button
+                 type="button"
+                 class="player-link-btn"
+                 data-league="${escapeHtml(leaguePath)}"
+                 data-athlete-id="${escapeHtml(athleteId)}"
+                 data-athlete-name="${escapeHtml(fullName)}"
+                 data-athlete-pos="${escapeHtml(pos)}"
+                 data-team-name="${escapeHtml(teamName)}"
+                 data-headshot="${escapeHtml(headshot)}"
+                 onclick="event.stopPropagation(); window.__openPlayerModal(this)"
+               >${escapeHtml(name)}</button>`
+            : escapeHtml(name);
           return `
             <tr>
-              <td>${escapeHtml(name)}${pos ? `<span class="player-pos">${escapeHtml(pos)}</span>` : ""}</td>
+              <td>${nameHtml}${pos ? `<span class="player-pos">${escapeHtml(pos)}</span>` : ""}</td>
               ${vals.map(v => `<td>${escapeHtml(v)}</td>`).join("")}
             </tr>
           `;
@@ -2219,7 +2428,7 @@
       return heading + groupsHtml;
     }
 
-    function renderPlayersHtml(data, activeSel = "0") {
+    function renderPlayersHtml(data, activeSel = "0", leaguePath = "") {
       const playerTeams = data.boxscore?.players || [];
       if (playerTeams.length === 0) {
         return `<div class="empty" style="padding:14px 0;">Player stats are not available yet.</div>`;
@@ -2249,7 +2458,7 @@
         const visible = sel === "all" || sel === String(idx);
         return `
           <div class="player-team-pane ${visible ? "visible" : ""}" data-pane-idx="${idx}">
-            ${renderTeamPaneContent(pt, sel === "all")}
+            ${renderTeamPaneContent(pt, sel === "all", leaguePath)}
           </div>
         `;
       }).join("");
@@ -2371,7 +2580,7 @@
       } else if (activeSubtab === "recap") {
         body = renderRecapHtml(data);
       } else if (activeSubtab === "players") {
-        body = renderPlayersHtml(data, activePlayerTeam);
+        body = renderPlayersHtml(data, activePlayerTeam, leaguePath);
       } else if (activeSubtab === "highlights") {
         body = renderHighlightsHtml(data, leaguePath);
       } else if (activeSubtab === "stats") {
@@ -3064,6 +3273,7 @@
     refreshBtnEl.addEventListener("click", async () => {
       refreshBtnEl.classList.add("spinning");
       ytChannelCache.clear();
+      playerStatsCache.clear();
       try {
         await loadCurrentView(true);
       } finally {
